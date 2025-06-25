@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
 CREATE TYPE user_role_type AS ENUM ('USER', 'ADMIN');
 CREATE TYPE temperature_sensitivity_type AS ENUM ('ONE', 'TWO', 'THREE', 'FOUR', 'FIVE');
 CREATE TYPE gender_type AS ENUM ('MALE', 'FEMALE', 'OTHER');
@@ -41,7 +43,7 @@ CREATE TYPE humidity_type AS (
 
 CREATE TABLE users
 (
-    user_id    UUID PRIMARY KEY NOT NULL,
+    user_id    UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     created_at TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
     password   VARCHAR(255)     NOT NULL,
@@ -52,7 +54,7 @@ CREATE TABLE users
 
 CREATE TABLE profiles
 (
-    profile_id              UUID PRIMARY KEY NOT NULL,
+    profile_id              UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     user_id                 UUID             NOT NULL,
     created_at              TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at              TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -67,7 +69,7 @@ CREATE TABLE profiles
 
 CREATE TABLE notifications
 (
-    notification_id UUID PRIMARY KEY NOT NULL,
+    notification_id UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     user_id         UUID             NOT NULL,
     created_at      TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
     title           VARCHAR(50)      NOT NULL,
@@ -86,7 +88,7 @@ CREATE TABLE follows
 
 CREATE TABLE weathers
 (
-    weather_id    UUID PRIMARY KEY   NOT NULL,
+    weather_id    UUID PRIMARY KEY   NOT NULL DEFAULT gen_random_uuid(),
     forecasted_at TIMESTAMP          NOT NULL,
     forecast_at   TIMESTAMP          NOT NULL,
     sky_status    sky_status_type    NOT NULL,
@@ -99,7 +101,7 @@ CREATE TABLE weathers
 
 CREATE TABLE feeds
 (
-    feed_id    UUID PRIMARY KEY NOT NULL,
+    feed_id    UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     user_id    UUID             NOT NULL,
     content    TEXT,
     created_at TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -108,7 +110,7 @@ CREATE TABLE feeds
 
 CREATE TABLE feed_comment
 (
-    feed_comment_id UUID PRIMARY KEY NOT NULL,
+    feed_comment_id UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     feed_id         UUID             NOT NULL,
     user_id         UUID             NOT NULL,
     comment         TEXT             NOT NULL,
@@ -125,7 +127,7 @@ CREATE TABLE feed_like
 
 CREATE TABLE clothes
 (
-    clothes_id UUID PRIMARY KEY NOT NULL,
+    clothes_id UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     user_id    UUID             NOT NULL,
     name       VARCHAR(255)     NOT NULL,
     image_url  VARCHAR(1024),
@@ -136,21 +138,21 @@ CREATE TABLE clothes
 
 CREATE TABLE feed_clothes
 (
-    feed_clothes_id UUID PRIMARY KEY NOT NULL,
     feed_id         UUID             NOT NULL,
-    clothes_id      UUID             NOT NULL
+    clothes_id      UUID             NOT NULL,
+    PRIMARY KEY (feed_id, clothes_id)
 );
 
 CREATE TABLE attributes
 (
-    definition_id     UUID PRIMARY KEY NOT NULL,
+    definition_id     UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     definition_name   VARCHAR(50)      NOT NULL,
     selectable_values TEXT[] NOT NULL
 );
 
 CREATE TABLE clothes_attributes
 (
-    clothes_attributes_id UUID PRIMARY KEY NOT NULL,
+    clothes_attributes_id UUID PRIMARY KEY NOT NULL DEFAULT gen_random_uuid(),
     clothes_id            UUID             NOT NULL,
     definition_id         UUID             NOT NULL,
     value                 VARCHAR(50)      NOT NULL
