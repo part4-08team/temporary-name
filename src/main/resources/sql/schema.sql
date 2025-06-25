@@ -61,7 +61,7 @@ CREATE TABLE profiles
     birth_date              DATE,
     profile_img_url         VARCHAR(1024),
     location                location_type,
-    temperature_sensitivity temperature_sensit ivity_type
+    temperature_sensitivity temperature_sensitivity_type
 );
 
 
@@ -72,7 +72,7 @@ CREATE TABLE notifications
     created_at      TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
     title           VARCHAR(50)      NOT NULL,
     content         VARCHAR(255)     NOT NULL,
-    level           level_type       NOT NULL DEFAULT FALSE,
+    level           level_type       NOT NULL
 );
 
 
@@ -103,7 +103,7 @@ CREATE TABLE feeds
     user_id    UUID             NOT NULL,
     content    TEXT,
     created_at TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE feed_comment
@@ -113,8 +113,8 @@ CREATE TABLE feed_comment
     user_id         UUID             NOT NULL,
     comment         TEXT             NOT NULL,
     created_at      TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at      TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
-)
+    updated_at      TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
 
 CREATE TABLE feed_like
 (
@@ -138,7 +138,7 @@ CREATE TABLE feed_clothes
 (
     feed_clothes_id UUID PRIMARY KEY NOT NULL,
     feed_id         UUID             NOT NULL,
-    clothes_id      UUID             NOT NULL,
+    clothes_id      UUID             NOT NULL
 );
 
 CREATE TABLE attributes
@@ -153,7 +153,7 @@ CREATE TABLE clothes_attributes
     clothes_attributes_id UUID PRIMARY KEY NOT NULL,
     clothes_id            UUID             NOT NULL,
     definition_id         UUID             NOT NULL,
-    value                 VARCHAR(50)      NOT NULL,
+    value                 VARCHAR(50)      NOT NULL
 );
 
 
