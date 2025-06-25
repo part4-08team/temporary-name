@@ -1,6 +1,7 @@
+#임시 DB 도커 컴포즈
 services:
   postgres:
-    image: 'postgres:latest'
+    image: postgres:latest
     environment:
       POSTGRES_DB: postgres
       POSTGRES_PASSWORD: postgres
@@ -9,8 +10,6 @@ services:
       - postgres-data:/var/lib/postgresql/data
     ports:
       - 5433
-
-
 
 volumes:
   postgres-data:
