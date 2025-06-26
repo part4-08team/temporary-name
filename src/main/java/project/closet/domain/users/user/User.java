@@ -61,18 +61,17 @@ public class User extends BaseUpdatableEntity {
     return createdUser;
   }
 
-  void updateRole(UserRole userRole) {
-    Objects.requireNonNull(userRole, "userRole must not be null");
+  void changeRole(UserRole userRole) {
     if (userRole == role) return;
-    this.role = userRole;
+    this.role = Objects.requireNonNull(userRole, "userRole must not be null");
   }
 
-  void updatePassword(String password) {
-    Objects.requireNonNull(password, "password must not be null");
-    this.password = password;
+  void changePassword(String password) {
+    if (Objects.equals(this.password, password)) return;
+    this.password = Objects.requireNonNull(password, "password must not be null");
   }
 
-  void updateLock(boolean locked) {
+  void changeLock(boolean locked) {
     if (this.locked == locked) return;
     this.locked = locked;
   }

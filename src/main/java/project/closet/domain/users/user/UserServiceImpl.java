@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import project.closet.domain.users.auth.dto.ChangePasswordRequest;
 import project.closet.domain.users.user.dto.ProfileDto;
 import project.closet.domain.users.user.dto.ProfileFindRequest;
+import project.closet.domain.users.user.dto.ProfileUpdateRequest;
 import project.closet.domain.users.user.dto.ProfileUpdateWithImageUrlRequest;
 import project.closet.domain.users.user.dto.UserCreateRequest;
 import project.closet.domain.users.user.dto.UserDto;
@@ -48,7 +49,7 @@ public class UserServiceImpl implements UserService {
   public UserDto updateUserRole(UUID userId, UserRoleUpdateRequest request) {
 
     User user = findUserById(userId);
-    user.updateRole(request.role());
+    user.changeRole(request.role());
     return UserDto.from(user);
   }
 
@@ -65,7 +66,7 @@ public class UserServiceImpl implements UserService {
   public ProfileDto updateUserProfile(UUID userId, ProfileUpdateWithImageUrlRequest request) {
 
     Profile profile = findProfileByUserId(userId);
-    //profile.update(request);
+    updateProfile(profile, request);
     return ProfileDto.of(userId, profile);
   }
 
@@ -73,14 +74,14 @@ public class UserServiceImpl implements UserService {
   public void updateUserPassword(UUID userId, ChangePasswordRequest request) {
 
     User user = findUserById(userId);
-    user.updatePassword(generateHashedPassword(request.password()));
+    user.changePassword(generateHashedPassword(request.password()));
   }
 
   @Override
   public UUID updateUserLock(UUID userId, UserLockUpdateRequest request) {
 
     User user = findUserById(userId);
-    user.updateLock(request.locked());
+    user.changeLock(request.locked());
     return user.getId();
   }
 
@@ -103,5 +104,15 @@ public class UserServiceImpl implements UserService {
     return profileRepository.findByUserId(userId)
         .orElseThrow(
             () -> new IllegalArgumentException("프로필 조회 실패 : userId에 해당하는 Profile 이 존재하지 않습니다."));
+  }
+
+  private void updateProfile(Profile profile, ProfileUpdateWithImageUrlRequest dto) {
+    ProfileUpdateRequest request = dto.profileUpdateRequest();
+    profile.changeName(request.name());
+    profile.changeLocation(request.location());
+    profile.changeBirthDate(request.birthDate());
+    profile.changeGender(request.gender());
+    profile.changeTemperatureSensitivity(request.temperatureSensitivity());
+    profile.changeProfileImageUrl(dto.imageUrl());
   }
 }

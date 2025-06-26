@@ -23,6 +23,7 @@ import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 import project.closet.common.dto.Location;
 import project.closet.domain.base.BaseUpdatableEntity;
+import project.closet.domain.users.user.User.Gender;
 
 @Entity
 @Getter
@@ -65,7 +66,34 @@ public class Profile extends BaseUpdatableEntity {
     this.name = Objects.requireNonNull(name, "name must not be null");
   }
 
-  // update 추가
+  void changeName(String name) {
+    if (Objects.equals(this.name, name)) return;
+    this.name = Objects.requireNonNull(name, "name must not be null");
+  }
+
+  void changeGender(Gender gender) {
+    if (this.gender == gender) return;
+    this.gender = Objects.requireNonNull(gender, "gender must not be null");
+  }
+
+  void changeBirthDate(LocalDate birthDate) {
+    if (Objects.equals(this.birthDate, birthDate)) return;
+    this.birthDate = Objects.requireNonNull(birthDate, "birthDate must not be null");
+  }
+
+  void changeLocation(Location location) {
+    this.location = Objects.requireNonNull(location, "location must not be null");
+  }
+
+  void changeProfileImageUrl(String newImageUrl) {
+    if (Objects.equals(this.profileImageUrl, newImageUrl)) return;
+    this.profileImageUrl = Objects.requireNonNull(newImageUrl, "profileImageUrl must not be null");
+  }
+
+  void changeTemperatureSensitivity(TemperatureSensitivity sensitivity) {
+    if (this.temperatureSensitivity == sensitivity) return;
+    this.temperatureSensitivity = Objects.requireNonNull(sensitivity, "temperatureSensitivity must not be null");
+  }
 
   @Override
   public boolean equals(Object o) {
