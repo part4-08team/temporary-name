@@ -32,6 +32,10 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     // url 검증 gradle
     implementation 'commons-validator:commons-validator:1.7'
+
+    // postgresql에서 만든 enum타입과 매칭
+    implementation "io.hypersistence:hypersistence-utils-hibernate-63:3.10.1" // https://www.baeldung.com/java-enums-jpa-postgresql
+
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
     runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor 'org.projectlombok:lombok'
