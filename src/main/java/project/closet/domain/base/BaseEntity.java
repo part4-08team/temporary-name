@@ -18,4 +18,5 @@ public abstract class BaseEntity {
   @Column(updatable = false, nullable = false)
   private Instant createdAt;
 
+
 }

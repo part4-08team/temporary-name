@@ -40,15 +40,15 @@ public class Profile extends BaseUpdatableEntity {
   @Column(name = "name", nullable = false)
   private String name;
 
-  @Column(name = "gender", nullable = false, columnDefinition = "gender_type")
+  @Column(name = "gender", columnDefinition = "gender_type")
   @Enumerated(EnumType.STRING)
   @JdbcType(PostgreSQLEnumJdbcType.class)
   private Gender gender;
 
-  @Column(name = "birth_date", nullable = false)
+  @Column(name = "birth_date")
   private LocalDate birthDate;
 
-  @Column(name = "profile_image_url", nullable = false)
+  @Column(name = "profile_image_url")
   private String profileImgUrl;
 
   @Column(name = "location", columnDefinition = "location_type")
@@ -57,7 +57,12 @@ public class Profile extends BaseUpdatableEntity {
   @Column(name = "temperature_sensitivity", nullable = false, columnDefinition = "temperature_sensitivity_type")
   @Enumerated(EnumType.STRING)
   @JdbcType(PostgreSQLEnumJdbcType.class)
-  private TemperatureSensitivity temperatureSensitivity;
+  private TemperatureSensitivity temperatureSensitivity = TemperatureSensitivity.ZERO;
+
+  protected Profile(User user, String name) {
+    this.user = Objects.requireNonNull(user, "user must not be null");
+    this.name = Objects.requireNonNull(name, "name must not be null");
+  }
 
   @Override
   public boolean equals(Object o) {

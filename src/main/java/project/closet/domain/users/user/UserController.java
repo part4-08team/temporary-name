@@ -37,7 +37,7 @@ public class UserController {
   @PostMapping
   public ResponseEntity<UserDto> createUser(UserCreateRequest request) {
 
-    UserDto userDto = userService.createUser(request);
+    UserDto userDto = userService.registerUser(request);
     return ResponseEntity.status(HttpStatus.OK).body(userDto);
   }
 
@@ -58,10 +58,10 @@ public class UserController {
   @PatchMapping("/{userId}/profiles")
   public ResponseEntity<?> updateUserProfiles(
       @RequestParam("userId") UUID userId,
-      @RequestBody ProfileUpdateRequest updateRequest
+      @RequestBody ProfileUpdateRequest request
   ) {
 
-    ProfileDto userProfileDto = userService.updateUserProfile(userId, updateRequest);
+    ProfileDto userProfileDto = userService.updateUserProfile(userId, request);
     return ResponseEntity.status(HttpStatus.OK).body(userProfileDto);
   }
 

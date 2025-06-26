@@ -13,6 +13,7 @@ import jakarta.persistence.Table;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcType;
@@ -23,6 +24,7 @@ import project.closet.domain.base.BaseUpdatableEntity;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "users")
+@Builder
 public class User extends BaseUpdatableEntity {
 
   @Id @GeneratedValue(strategy = GenerationType.UUID)
@@ -41,10 +43,26 @@ public class User extends BaseUpdatableEntity {
   @Column(name = "role", nullable = false, columnDefinition = "user_role_type")
   @Enumerated(EnumType.STRING)
   @JdbcType(PostgreSQLEnumJdbcType.class)
-  private UserRole role;
+  private UserRole role = UserRole.USER;
 
   @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   private Profile profile;
+
+  private User(String email, String password) {
+    this.password = password;
+    this.email = email;
+  }
+
+  public static User createUserWithProfile(String name, String email, String password) {
+    Objects.requireNonNull(name, "name must not be null");
+    Objects.requireNonNull(email, "email must not be null");
+    Objects.requireNonNull(password, "password must not be null");
+
+    User user = new User(email, password);
+    new Profile(user, name);
+    return user;
+  }
+
 
   @Override
   public boolean equals(Object o) {

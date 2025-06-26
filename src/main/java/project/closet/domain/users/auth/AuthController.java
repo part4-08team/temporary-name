@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import project.closet.domain.users.auth.dto.ChangePasswordRequest;
+import project.closet.domain.users.auth.dto.SignInRequest;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -24,13 +25,13 @@ public class AuthController {
 
   // 로그인
   @PostMapping("/sign-in")
-  public ResponseEntity<String> login() {
+  public ResponseEntity<String> login(SignInRequest request) {
 
     return ResponseEntity.status(HttpStatus.OK).body("Login Success");
   }
 
   @PostMapping("/reset-password")
-  public ResponseEntity<String> resetPassword(@RequestBody ChangePasswordRequest dto) {
+  public ResponseEntity<String> resetPassword(@RequestBody ChangePasswordRequest request) {
 
     return ResponseEntity.status(HttpStatus.OK).build();
   }
@@ -38,7 +39,7 @@ public class AuthController {
   @PostMapping("/refresh")
   public ResponseEntity<String> refresh(@RequestParam("refreshToken") String refreshToken) {
 
-    return ResponseEntity.status(HttpStatus.OK).body("Token Refresh Success");
+    return ResponseEntity.status(HttpStatus.OK).body("Success : Token Refreshed");
   }
 
   @GetMapping("/me")

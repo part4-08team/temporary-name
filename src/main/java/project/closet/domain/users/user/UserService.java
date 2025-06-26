@@ -13,7 +13,7 @@ public interface UserService {
 
   UserDto getUsers(ProfileFindRequest dto);
 
-  UserDto createUser(UserCreateRequest dto);
+  UserDto registerUser(UserCreateRequest dto);
 
   UserDto updateUserRole(UUID userId);
 
