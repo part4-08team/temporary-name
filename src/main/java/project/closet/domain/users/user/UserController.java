@@ -1,5 +1,6 @@
 package project.closet.domain.users.user;
 
+import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,10 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 import project.closet.domain.users.auth.dto.ChangePasswordRequest;
 import project.closet.domain.users.user.dto.ProfileDto;
 import project.closet.domain.users.user.dto.ProfileFindRequest;
-import project.closet.domain.users.user.dto.ProfileUpdateRequest;
+import project.closet.domain.users.user.dto.ProfileUpdateWithImageUrlRequest;
 import project.closet.domain.users.user.dto.UserCreateRequest;
 import project.closet.domain.users.user.dto.UserDto;
 import project.closet.domain.users.user.dto.UserLockUpdateRequest;
+import project.closet.domain.users.user.dto.UserRoleUpdateRequest;
 
 @RestController
 @RequestMapping("/api/users")
@@ -42,9 +44,12 @@ public class UserController {
   }
 
   @PatchMapping("/{userId}/role")
-  public ResponseEntity<UserDto> updateUserRole(@RequestParam("userId") UUID userId) {
+  public ResponseEntity<UserDto> updateUserRole(
+      @RequestParam("userId") UUID userId,
+      @RequestBody @Valid UserRoleUpdateRequest request
+  ) {
 
-    UserDto userDto = userService.updateUserRole(userId);
+    UserDto userDto = userService.updateUserRole(userId, request);
     return ResponseEntity.status(HttpStatus.OK).body(userDto);
   }
 
@@ -58,8 +63,7 @@ public class UserController {
   @PatchMapping("/{userId}/profiles")
   public ResponseEntity<?> updateUserProfiles(
       @RequestParam("userId") UUID userId,
-      @RequestBody ProfileUpdateRequest request
-  ) {
+      @RequestBody @Valid ProfileUpdateWithImageUrlRequest request) {
 
     ProfileDto userProfileDto = userService.updateUserProfile(userId, request);
     return ResponseEntity.status(HttpStatus.OK).body(userProfileDto);
@@ -68,7 +72,8 @@ public class UserController {
   @PatchMapping("/{userId}/password")
   public ResponseEntity<?> updateUserPassword(
       @RequestParam("userId") UUID userId,
-      @RequestBody ChangePasswordRequest request) {
+      @RequestBody @Valid ChangePasswordRequest request) {
+
     userService.updateUserPassword(userId, request);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
@@ -76,7 +81,7 @@ public class UserController {
   @PatchMapping("/{userId}/lock")
   public ResponseEntity<UUID> lockUser(
       @RequestParam("userId") UUID userId,
-      @RequestBody UserLockUpdateRequest request) {
+      @RequestBody @Valid UserLockUpdateRequest request) {
 
     UUID userUUID = userService.updateUserLock(userId, request);
     return ResponseEntity.status(HttpStatus.OK).body(userUUID);

@@ -4,10 +4,11 @@ import java.util.UUID;
 import project.closet.domain.users.auth.dto.ChangePasswordRequest;
 import project.closet.domain.users.user.dto.ProfileDto;
 import project.closet.domain.users.user.dto.ProfileFindRequest;
-import project.closet.domain.users.user.dto.ProfileUpdateRequest;
+import project.closet.domain.users.user.dto.ProfileUpdateWithImageUrlRequest;
 import project.closet.domain.users.user.dto.UserCreateRequest;
 import project.closet.domain.users.user.dto.UserDto;
 import project.closet.domain.users.user.dto.UserLockUpdateRequest;
+import project.closet.domain.users.user.dto.UserRoleUpdateRequest;
 
 public interface UserService {
 
@@ -15,11 +16,11 @@ public interface UserService {
 
   UserDto registerUser(UserCreateRequest dto);
 
-  UserDto updateUserRole(UUID userId);
+  UserDto updateUserRole(UUID userId, UserRoleUpdateRequest request);
 
   ProfileDto getUserProfile(UUID userId);
 
-  ProfileDto updateUserProfile(UUID userId, ProfileUpdateRequest updateRequest);
+  ProfileDto updateUserProfile(UUID userId, ProfileUpdateWithImageUrlRequest updateRequest);
 
   void updateUserPassword(UUID userId, ChangePasswordRequest request);
 

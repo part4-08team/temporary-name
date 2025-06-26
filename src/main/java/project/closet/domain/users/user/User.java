@@ -13,7 +13,6 @@ import jakarta.persistence.Table;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcType;
@@ -24,7 +23,6 @@ import project.closet.domain.base.BaseUpdatableEntity;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "users")
-@Builder
 public class User extends BaseUpdatableEntity {
 
   @Id @GeneratedValue(strategy = GenerationType.UUID)
@@ -53,16 +51,26 @@ public class User extends BaseUpdatableEntity {
     this.email = email;
   }
 
-  public static User createUserWithProfile(String name, String email, String password) {
+  static User createUserWithProfile(String name, String email, String password) {
     Objects.requireNonNull(name, "name must not be null");
     Objects.requireNonNull(email, "email must not be null");
     Objects.requireNonNull(password, "password must not be null");
 
-    User user = new User(email, password);
-    new Profile(user, name);
-    return user;
+    User createdUser = new User(email, password);
+    createdUser.profile = new Profile(createdUser, name);
+    return createdUser;
   }
 
+  public void updateRole(UserRole userRole) {
+    Objects.requireNonNull(userRole, "userRole must not be null");
+    if (userRole == role) return;
+    this.role = userRole;
+  }
+
+  public void updatePassword(String password) {
+    Objects.requireNonNull(password, "password must not be null");
+    this.password = password;
+  }
 
   @Override
   public boolean equals(Object o) {

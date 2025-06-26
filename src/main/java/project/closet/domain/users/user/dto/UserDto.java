@@ -1,6 +1,7 @@
 package project.closet.domain.users.user.dto;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import project.closet.common.util.TimeConverter;
@@ -20,14 +21,14 @@ public record UserDto(
 ) {
 
   public static UserDto from(User user) {
-
+    // todo : OAuth 기능 추가 시 linkedOAuthProviders 필요
     return new UserDto(
         user.getId(),
         TimeConverter.toLocalDateTime(user.getCreatedAt()),
         user.getEmail(),
         user.getProfile().getName(),
         user.getRole(),
-        null,
+        new HashSet<>(),
         user.isLocked()
     );
   }
