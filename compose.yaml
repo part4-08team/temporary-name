@@ -1,6 +1,7 @@
 #임시 DB 도커 컴포즈
 services:
   postgres:
+    container_name: closet-postgres
     image: postgres:latest
     environment:
       POSTGRES_DB: postgres
@@ -9,7 +10,7 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     ports:
-      - 5433
+      - 5433:5432
 
 volumes:
   postgres-data:
