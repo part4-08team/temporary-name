@@ -61,16 +61,22 @@ public class User extends BaseUpdatableEntity {
     return createdUser;
   }
 
-  public void updateRole(UserRole userRole) {
+  void updateRole(UserRole userRole) {
     Objects.requireNonNull(userRole, "userRole must not be null");
     if (userRole == role) return;
     this.role = userRole;
   }
 
-  public void updatePassword(String password) {
+  void updatePassword(String password) {
     Objects.requireNonNull(password, "password must not be null");
     this.password = password;
   }
+
+  void updateLock(boolean locked) {
+    if (this.locked == locked) return;
+    this.locked = locked;
+  }
+
 
   @Override
   public boolean equals(Object o) {
@@ -87,6 +93,7 @@ public class User extends BaseUpdatableEntity {
     return Objects.hashCode(id);
   }
 
+
   public enum UserRole {
     USER, ADMIN
   }
@@ -95,5 +102,12 @@ public class User extends BaseUpdatableEntity {
     MALE, FEMALE, OTHER
   }
 
-  // toString
+  @Override
+  public String toString() {
+    return "User{" +
+        "id=" + id +
+        ", email='" + email + '\'' +
+        ", locked=" + locked +
+        ", role=" + role + '}';
+  }
 }

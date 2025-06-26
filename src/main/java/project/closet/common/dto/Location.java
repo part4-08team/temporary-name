@@ -1,6 +1,7 @@
 package project.closet.common.dto;
 
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
@@ -10,7 +11,7 @@ import org.hibernate.type.SqlTypes;
 
 // todo : 불변 객체 vs 가변 객체  논의
 @Embeddable
-@Struct(name = "location_type", attributes = {"latitude", "longitude", "x", "y", "locationName"})
+@Struct(name = "location_type")
 public record Location(
 
     @NotBlank(message = "위도를 입력해주세요.")
@@ -26,7 +27,8 @@ public record Location(
     int y,
 
     @JdbcTypeCode(SqlTypes.ARRAY)
-    List<String> locationName
+    @Column(name = "location_names")
+    List<String> locationNames
 ) {
 
 }

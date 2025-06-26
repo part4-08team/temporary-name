@@ -16,20 +16,22 @@ import project.closet.domain.users.user.dto.UserRoleUpdateRequest;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
   private final ProfileRepository profileRepository;
 
+  @Transactional(readOnly = true)
   @Override
   public UserDto getUsers(ProfileFindRequest dto) {
+
 
 
     return null;
   }
 
-  @Transactional
   @Override
   public UserDto registerUser(UserCreateRequest dto) {
 
@@ -42,26 +44,27 @@ public class UserServiceImpl implements UserService {
     return UserDto.from(savedUser);
   }
 
-  @Transactional
   @Override
   public UserDto updateUserRole(UUID userId, UserRoleUpdateRequest request) {
-    User user = userRepository.findById(userId)
-        .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
 
-    user.updateRole(UserRole.ADMIN);
+    User user = findUserById(userId);
+    user.updateRole(request.role());
     return UserDto.from(user);
   }
 
+
+  @Transactional(readOnly = true)
   @Override
   public ProfileDto getUserProfile(UUID userId) {
-    return null;
+
+    Profile profile = findProfileByUserId(userId);
+    return ProfileDto.of(userId, profile);
   }
 
   @Override
   public ProfileDto updateUserProfile(UUID userId, ProfileUpdateWithImageUrlRequest request) {
 
-    Profile profile = profileRepository.findByUserId(userId)
-        .orElseThrow(() -> new IllegalArgumentException("프로필 조회 실패 : userId에 해당하는 Profile 이 존재하지 않습니다."));
+    Profile profile = findProfileByUserId(userId);
     profile.update(request);
     return ProfileDto.of(userId, profile);
   }
@@ -76,8 +79,9 @@ public class UserServiceImpl implements UserService {
   @Override
   public UUID updateUserLock(UUID userId, UserLockUpdateRequest request) {
 
-
-    return null;
+    User user = findUserById(userId);
+    user.updateLock(request.locked());
+    return user.getId();
   }
 
   private String generateHashedPassword(String password) {
@@ -93,5 +97,11 @@ public class UserServiceImpl implements UserService {
   private User findUserById(UUID userId) {
     return userRepository.findById(userId)
         .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 유저입니다."));
+  }
+
+  private Profile findProfileByUserId(UUID userId) {
+    return profileRepository.findByUserId(userId)
+        .orElseThrow(
+            () -> new IllegalArgumentException("프로필 조회 실패 : userId에 해당하는 Profile 이 존재하지 않습니다."));
   }
 }

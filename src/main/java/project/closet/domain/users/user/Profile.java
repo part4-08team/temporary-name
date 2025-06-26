@@ -123,8 +123,16 @@ public class Profile extends BaseUpdatableEntity {
     return Objects.hashCode(id);
   }
 
-  // toString
-
+  @Override
+  public String toString() {
+    return "Profile{" +
+        "id=" + id +
+        ", name='" + name + '\'' +
+        ", gender=" + gender +
+        ", birthDate=" + birthDate +
+        ", temperatureSensitivity=" + temperatureSensitivity +
+        '}';
+  }
 
   @Getter
   @AllArgsConstructor

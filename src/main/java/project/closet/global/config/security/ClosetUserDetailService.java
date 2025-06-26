@@ -8,8 +8,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import project.closet.domain.users.user.User;
+import project.closet.domain.users.user.User.UserRole;
 import project.closet.domain.users.user.UserRepository;
-import project.closet.domain.users.user.UserRole;
 
 @RequiredArgsConstructor
 @Service

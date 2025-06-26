@@ -47,7 +47,7 @@ public class SecurityConfig {
             config.setAllowCredentials(true);
             config.setExposedHeaders(Collections.singletonList("Authorization"));
             config.setMaxAge(3600L);
-            return null;
+            return config;
           }
         }
     ));
