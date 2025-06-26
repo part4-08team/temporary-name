@@ -3,6 +3,7 @@ package project.closet.global.config.security;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -12,19 +13,21 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+  private final JWTConfigProperties jwtProperties;
 
   // 임시 - 나중에 프론트 Origin으로 변경
   private static final String[] ALLOWED_ORIGINS = {
       "http://localhost:5173",
       "https://project.sb.sprinnt.learn.codeit.kr", // prod용 : front request에 이렇게
   };
-
-
 
   /**
    어드민 기능 - 초기화, 권환 관리, 계정 잠금
@@ -33,6 +36,7 @@ public class SecurityConfig {
    비밀본호 초기화
    */
 
+  // 임시
   @Bean
   public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 
@@ -44,8 +48,8 @@ public class SecurityConfig {
             config.setAllowedOriginPatterns(List.of(ALLOWED_ORIGINS));
             config.setAllowedOrigins(Collections.singletonList("*"));
             config.setAllowedHeaders(Collections.singletonList("*"));
-            config.setAllowCredentials(true);
             config.setExposedHeaders(Collections.singletonList("Authorization"));
+            config.setAllowCredentials(true);
             config.setMaxAge(3600L);
             return config;
           }
@@ -55,11 +59,15 @@ public class SecurityConfig {
     http.securityContext(contextConfig -> contextConfig.requireExplicitSave(false))
         .sessionManagement(smc -> smc.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
+
     http.authorizeHttpRequests(request -> request
         .requestMatchers("/temp/**").hasRole("ADMIN")
-        .requestMatchers("/api/v1/auth/**").permitAll()
+        .requestMatchers("/api/**").permitAll()
         .anyRequest().authenticated()
     );
+
+    http.addFilterAfter(new JWTTokenGeneratorFilter(jwtProperties), BasicAuthenticationFilter.class);
+    http.addFilterBefore(new JWTTokenValidatorFilter(jwtProperties), BasicAuthenticationFilter.class);
 
     http.formLogin(AbstractHttpConfigurer::disable);
     http.httpBasic(Customizer.withDefaults());
@@ -70,7 +78,6 @@ public class SecurityConfig {
   public PasswordEncoder passwordEncoder() {
     return PasswordEncoderFactories.createDelegatingPasswordEncoder();
   }
-
 
   /**
    * password 강력하게 통제한다면 사용

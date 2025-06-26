@@ -77,7 +77,6 @@ public class User extends BaseUpdatableEntity {
     this.locked = locked;
   }
 
-
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -92,7 +91,6 @@ public class User extends BaseUpdatableEntity {
   public int hashCode() {
     return Objects.hashCode(id);
   }
-
 
   public enum UserRole {
     USER, ADMIN
