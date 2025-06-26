@@ -9,12 +9,11 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public record JWTConfigProperties(
     @NotBlank(message = "jwt.secret is required")
-    String jwtSecret,
+    String secret,
 
     @NotBlank(message = "jwt.header is required")
-    String jwtHeader,
+    String header,
 
     @Min(1)
-    long jwtExpiration) {
-
+    long expiration) {
 }

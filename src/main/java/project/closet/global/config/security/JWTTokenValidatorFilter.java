@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 public class JWTTokenValidatorFilter extends OncePerRequestFilter {
@@ -18,6 +19,12 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {
+
+    String jwt = request.getHeader(jwtProperties.header());
+
+    if (jwt == null || !jwt.startsWith("Bearer ")) {
+      throw new BadCredentialsException("Missing or invalid Authorization header");
+    }
 
 
     filterChain.doFilter(request, response);
