@@ -30,14 +30,14 @@ public class UserController {
 
   // 계정 목록 조회
   @GetMapping
-  public ResponseEntity<UserDto> getUsers(ProfileFindRequest request) {
+  public ResponseEntity<UserDto> getUsers(@RequestBody @Valid ProfileFindRequest request) {
 
     UserDto userDtoList = userService.getUsers(request);
     return ResponseEntity.status(HttpStatus.OK).body(userDtoList);
   }
 
   @PostMapping
-  public ResponseEntity<UserDto> createUser(UserCreateRequest request) {
+  public ResponseEntity<UserDto> createUser(@RequestBody @Valid UserCreateRequest request) {
 
     UserDto userDto = userService.registerUser(request);
     return ResponseEntity.status(HttpStatus.OK).body(userDto);

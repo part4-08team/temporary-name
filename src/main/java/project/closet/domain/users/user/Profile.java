@@ -28,8 +28,7 @@ import project.closet.domain.users.user.dto.ProfileUpdateRequest;
 import project.closet.domain.users.user.dto.ProfileUpdateWithImageUrlRequest;
 import project.closet.domain.users.util.UrlValidatorUtil;
 
-@Entity
-@Getter
+@Entity @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "profiles")
 public class Profile extends BaseUpdatableEntity {

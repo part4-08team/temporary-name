@@ -36,8 +36,8 @@ public class UserServiceImpl implements UserService {
   public UserDto registerUser(UserCreateRequest dto) {
 
     validateDuplicatedEmail(dto.email());
-    String hashedPassword = generateHashedPassword(dto.password());
 
+    String hashedPassword = generateHashedPassword(dto.password());
     User user = User.createUserWithProfile(dto.name(), dto.email(), hashedPassword);
     User savedUser = userRepository.save(user);
 
