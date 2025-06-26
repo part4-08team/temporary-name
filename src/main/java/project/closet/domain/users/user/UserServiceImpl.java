@@ -3,11 +3,13 @@ package project.closet.domain.users.user;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import project.closet.domain.users.auth.dto.ChangePasswordRequest;
 import project.closet.domain.users.user.dto.ProfileDto;
 import project.closet.domain.users.user.dto.ProfileFindRequest;
 import project.closet.domain.users.user.dto.ProfileUpdateRequest;
 import project.closet.domain.users.user.dto.UserCreateRequest;
 import project.closet.domain.users.user.dto.UserDto;
+import project.closet.domain.users.user.dto.UserLockUpdateRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +40,16 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public ProfileDto updateUserProfile(UUID userId, ProfileUpdateRequest updateRequest) {
+    return null;
+  }
+
+  @Override
+  public void updateUserPassword(UUID userId, ChangePasswordRequest request) {
+
+  }
+
+  @Override
+  public UUID updateUserLock(UUID userId, UserLockUpdateRequest request) {
     return null;
   }
 }

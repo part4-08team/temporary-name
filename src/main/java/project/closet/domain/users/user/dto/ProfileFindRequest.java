@@ -25,6 +25,4 @@ public record ProfileFindRequest(
 
     // 기본값 설정 뭐로 하지
   }
-
-
 }
