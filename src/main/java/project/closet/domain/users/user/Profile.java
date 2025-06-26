@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcType;
@@ -47,7 +48,7 @@ public class Profile extends BaseUpdatableEntity {
   @Column(name = "gender", columnDefinition = "gender_type")
   @Enumerated(EnumType.STRING)
   @JdbcType(PostgreSQLEnumJdbcType.class)
-  private Gender gender;
+  private User.Gender gender;
 
   @Column(name = "birth_date")
   private LocalDate birthDate;
@@ -105,6 +106,8 @@ public class Profile extends BaseUpdatableEntity {
   }
 
 
+
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -121,4 +124,18 @@ public class Profile extends BaseUpdatableEntity {
   }
 
   // toString
+
+
+  @Getter
+  @AllArgsConstructor
+  public enum TemperatureSensitivity {
+    ZERO(0, "추위 많이 탐"),
+    ONE(1, "추위에 조금 민감"),
+    TWO(2, "추위를 약간 느낌" ),
+    THREE(3, "더위를 약간 느낌"),
+    FOUR(4, "더위에 조금 민감"),
+    FIVE(5, "더위 많이 탐");
+    private final int value;
+    private final String description;
+  }
 }

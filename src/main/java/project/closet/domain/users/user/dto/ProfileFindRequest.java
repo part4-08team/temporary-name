@@ -2,7 +2,7 @@ package project.closet.domain.users.user.dto;
 
 import java.util.Objects;
 import java.util.UUID;
-import project.closet.domain.users.user.UserRole;
+import project.closet.domain.users.user.User.UserRole;
 
 public record ProfileFindRequest(
     String cursor,

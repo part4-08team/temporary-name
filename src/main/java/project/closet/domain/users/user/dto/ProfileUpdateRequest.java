@@ -3,8 +3,8 @@ package project.closet.domain.users.user.dto;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDate;
 import project.closet.common.dto.Location;
-import project.closet.domain.users.user.Gender;
-import project.closet.domain.users.user.TemperatureSensitivity;
+import project.closet.domain.users.user.Profile.TemperatureSensitivity;
+import project.closet.domain.users.user.User.Gender;
 
 public record ProfileUpdateRequest(
     @NotBlank(message = "이름을 입력해주세요.")

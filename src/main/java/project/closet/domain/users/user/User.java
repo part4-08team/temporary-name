@@ -87,5 +87,13 @@ public class User extends BaseUpdatableEntity {
     return Objects.hashCode(id);
   }
 
+  public enum UserRole {
+    USER, ADMIN
+  }
+
+  public enum Gender {
+    MALE, FEMALE, OTHER
+  }
+
   // toString
 }
