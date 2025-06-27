@@ -41,6 +41,7 @@ public class SecurityConfig {
   public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 
     // http.cors(corsConfig -> corsConfig.disable());  // cors 불확인 (임시)
+    // http.csrf(AbstractHttpConfigurer::disable); // 프론트에서 csrf를 못 찾음
     http.cors(corsConfig -> corsConfig.configurationSource(new CorsConfigurationSource() {
           @Override
           public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
@@ -58,7 +59,6 @@ public class SecurityConfig {
 
     http.securityContext(contextConfig -> contextConfig.requireExplicitSave(false))
         .sessionManagement(smc -> smc.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
 
     http.authorizeHttpRequests(request -> request
         .requestMatchers("/temp/**").hasRole("ADMIN")

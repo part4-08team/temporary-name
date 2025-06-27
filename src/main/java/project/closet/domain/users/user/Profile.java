@@ -21,12 +21,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.dialect.PostgreSQLEnumJdbcType;
-import org.springframework.util.StringUtils;
 import project.closet.common.dto.Location;
 import project.closet.domain.base.BaseUpdatableEntity;
-import project.closet.domain.users.user.dto.ProfileUpdateRequest;
-import project.closet.domain.users.user.dto.ProfileUpdateWithImageUrlRequest;
-import project.closet.domain.users.util.UrlValidatorUtil;
 
 @Entity @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -67,45 +63,6 @@ public class Profile extends BaseUpdatableEntity {
     this.user = Objects.requireNonNull(user, "user must not be null");
     this.name = Objects.requireNonNull(name, "name must not be null");
   }
-
-  void update(ProfileUpdateWithImageUrlRequest requestWithImageUrl) {
-    if (requestWithImageUrl == null) return;
-    updateImageUrl(requestWithImageUrl.imageUrl());
-    updateFromProfileUpdateRequest(requestWithImageUrl.profileUpdateRequest());
-  }
-
-  private void updateImageUrl(String imageUrl) {
-    if (StringUtils.hasText(imageUrl) && UrlValidatorUtil.isValidUrl(imageUrl)) {
-      this.profileImageUrl = imageUrl;
-    }
-  }
-
-  private void updateFromProfileUpdateRequest(ProfileUpdateRequest request) {
-    if (request == null) return;
-
-    if (StringUtils.hasText(request.name())) {
-      this.name = request.name();
-    }
-
-    if (request.gender() != null && request.gender() != this.gender) {
-      this.gender = request.gender();
-    }
-
-    if (request.birthDate() != null && request.birthDate() != this.birthDate) {
-      this.birthDate = request.birthDate();
-    }
-
-    if (request.location() != null && request.location() != this.location) {
-      this.location = request.location();
-    }
-
-    if (request.temperatureSensitivity() != null && request.temperatureSensitivity() != this.temperatureSensitivity) {
-      this.temperatureSensitivity = request.temperatureSensitivity();
-    }
-  }
-
-
-
 
   @Override
   public boolean equals(Object o) {
