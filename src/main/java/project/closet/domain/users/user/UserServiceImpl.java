@@ -65,7 +65,7 @@ public class UserServiceImpl implements UserService {
   public ProfileDto updateUserProfile(UUID userId, ProfileUpdateWithImageUrlRequest request) {
 
     Profile profile = findProfileByUserId(userId);
-    profile.update(request);
+    // TODO : profile update
     return ProfileDto.of(userId, profile);
   }
 
