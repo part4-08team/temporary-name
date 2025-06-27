@@ -1,13 +1,13 @@
-package project.closet.domain.users.user.dto;
+package project.closet.domain.users.dto;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import project.closet.common.util.TimeConverter;
-import project.closet.domain.users.auth.OAuthProvider;
-import project.closet.domain.users.user.User;
-import project.closet.domain.users.user.User.UserRole;
+import project.closet.domain.users.OAuthProvider;
+import project.closet.domain.users.User;
+import project.closet.domain.users.User.UserRole;
 
 public record UserDto(
     UUID id,

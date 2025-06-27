@@ -1,4 +1,4 @@
-package project.closet.domain.users.auth.dto;
+package project.closet.domain.users.dto;
 
 import jakarta.validation.constraints.NotBlank;
 

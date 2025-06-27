@@ -1,4 +1,4 @@
-package project.closet.domain.users.user;
+package project.closet.domain.users;
 
 import java.util.Optional;
 import java.util.UUID;

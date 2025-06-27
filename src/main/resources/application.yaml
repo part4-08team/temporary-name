@@ -21,6 +21,26 @@ spring:
     jdbc:
       initialize-schema: never
 
+  # 임시 비밀번호 메일 전송
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:carer3759@gmail.com} # 임시 이메일
+    password: ${MAIL_PASSWORD:wudqbddfqwlmelki} # gamil 비번 아니 아니라 '앱 비밀번호' 발급 받고 ㄱ
+    properties:
+      mail:
+        debug: true # dev
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connection-timeout: 5000  # 나중에 recilence 도입하면 그거보다는 길게
+        location: ${MAIL_LOCATION:localhost}
+        from: ${MAIL_FROM:carer3759@gmail.com}  # 헤더에 한글 들어가는 것 때문
+
+
+
 jwt:
   secret: ${JWT_SECRET:secret}
   header: ${JWT_HEADER:Authorization}

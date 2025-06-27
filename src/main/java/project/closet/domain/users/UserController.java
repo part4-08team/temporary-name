@@ -1,4 +1,4 @@
-package project.closet.domain.users.user;
+package project.closet.domain.users;
 
 import jakarta.validation.Valid;
 import java.util.UUID;
@@ -12,14 +12,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import project.closet.domain.users.auth.dto.ChangePasswordRequest;
-import project.closet.domain.users.user.dto.ProfileDto;
-import project.closet.domain.users.user.dto.ProfileFindRequest;
-import project.closet.domain.users.user.dto.ProfileUpdateWithImageUrlRequest;
-import project.closet.domain.users.user.dto.UserCreateRequest;
-import project.closet.domain.users.user.dto.UserDto;
-import project.closet.domain.users.user.dto.UserLockUpdateRequest;
-import project.closet.domain.users.user.dto.UserRoleUpdateRequest;
+import project.closet.domain.users.dto.ChangePasswordRequest;
+import project.closet.domain.users.dto.ProfileDto;
+import project.closet.domain.users.dto.ProfileFindRequest;
+import project.closet.domain.users.dto.ProfileUpdateWithImageUrlRequest;
+import project.closet.domain.users.dto.UserCreateRequest;
+import project.closet.domain.users.dto.UserDto;
+import project.closet.domain.users.dto.UserLockUpdateRequest;
+import project.closet.domain.users.dto.UserRoleUpdateRequest;
 
 @RestController
 @RequestMapping("/api/users")

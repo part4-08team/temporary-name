@@ -1,4 +1,4 @@
-package project.closet.domain.users.user;
+package project.closet.domain.users;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -61,18 +61,18 @@ public class User extends BaseUpdatableEntity {
     return createdUser;
   }
 
-  void updateRole(UserRole userRole) {
-    Objects.requireNonNull(userRole, "userRole must not be null");
+  void changeRole(UserRole userRole) {
     if (userRole == role) return;
+    Objects.requireNonNull(userRole, "userRole must not be null");
     this.role = userRole;
   }
 
-  void updatePassword(String password) {
+  void changePassword(String password) {
     Objects.requireNonNull(password, "password must not be null");
     this.password = password;
   }
 
-  void updateLock(boolean locked) {
+  void changeLocked(boolean locked) {
     if (this.locked == locked) return;
     this.locked = locked;
   }

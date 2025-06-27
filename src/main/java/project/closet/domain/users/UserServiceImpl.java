@@ -1,18 +1,20 @@
-package project.closet.domain.users.user;
+package project.closet.domain.users;
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.closet.domain.users.auth.dto.ChangePasswordRequest;
-import project.closet.domain.users.user.dto.ProfileDto;
-import project.closet.domain.users.user.dto.ProfileFindRequest;
-import project.closet.domain.users.user.dto.ProfileUpdateWithImageUrlRequest;
-import project.closet.domain.users.user.dto.UserCreateRequest;
-import project.closet.domain.users.user.dto.UserDto;
-import project.closet.domain.users.user.dto.UserLockUpdateRequest;
-import project.closet.domain.users.user.dto.UserRoleUpdateRequest;
+import project.closet.domain.users.dto.ChangePasswordRequest;
+import project.closet.domain.users.dto.ProfileDto;
+import project.closet.domain.users.dto.ProfileFindRequest;
+import project.closet.domain.users.dto.ProfileUpdateWithImageUrlRequest;
+import project.closet.domain.users.dto.UserCreateRequest;
+import project.closet.domain.users.dto.UserDto;
+import project.closet.domain.users.dto.UserLockUpdateRequest;
+import project.closet.domain.users.dto.UserPasswordReset;
+import project.closet.domain.users.dto.UserRoleUpdateRequest;
+import project.closet.domain.users.util.TemporaryPasswordFactory;
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +50,7 @@ public class UserServiceImpl implements UserService {
   public UserDto updateUserRole(UUID userId, UserRoleUpdateRequest request) {
 
     User user = findUserById(userId);
-    user.updateRole(request.role());
+    user.changeRole(request.role());
     return UserDto.from(user);
   }
 
@@ -65,7 +67,7 @@ public class UserServiceImpl implements UserService {
   public ProfileDto updateUserProfile(UUID userId, ProfileUpdateWithImageUrlRequest request) {
 
     Profile profile = findProfileByUserId(userId);
-    profile.update(request);
+
     return ProfileDto.of(userId, profile);
   }
 
@@ -73,14 +75,14 @@ public class UserServiceImpl implements UserService {
   public void updateUserPassword(UUID userId, ChangePasswordRequest request) {
 
     User user = findUserById(userId);
-    user.updatePassword(generateHashedPassword(request.password()));
+    user.changePassword(generateHashedPassword(request.password()));
   }
 
   @Override
   public UUID updateUserLock(UUID userId, UserLockUpdateRequest request) {
 
     User user = findUserById(userId);
-    user.updateLock(request.locked());
+    user.changeLocked(request.locked());
     return user.getId();
   }
 
