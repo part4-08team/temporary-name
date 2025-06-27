@@ -12,9 +12,9 @@ import project.closet.domain.users.dto.ProfileUpdateWithImageUrlRequest;
 import project.closet.domain.users.dto.UserCreateRequest;
 import project.closet.domain.users.dto.UserDto;
 import project.closet.domain.users.dto.UserLockUpdateRequest;
-import project.closet.domain.users.dto.UserPasswordReset;
 import project.closet.domain.users.dto.UserRoleUpdateRequest;
-import project.closet.domain.users.util.TemporaryPasswordFactory;
+import project.closet.domain.users.repository.ProfileRepository;
+import project.closet.domain.users.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor

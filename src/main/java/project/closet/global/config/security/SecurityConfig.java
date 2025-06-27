@@ -6,10 +6,14 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -61,9 +65,10 @@ public class SecurityConfig {
         .sessionManagement(smc -> smc.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
     http.authorizeHttpRequests(request -> request
-        .requestMatchers("/temp/**").hasRole("ADMIN")
-        .requestMatchers("/api/**").permitAll()
-        .anyRequest().authenticated()
+        .requestMatchers("/api/auth/sign-in").permitAll() // 로그인 페이지는 permitAll()
+        .requestMatchers("/temp/**").hasRole("TEMP") // 임시비밀번호 로그인 시 URL
+        .requestMatchers("/api/**").hasRole("USER")
+        .requestMatchers("/api/users").hasRole("ADMIN") // TODO : 관리자 전용 URL 나중에 찾기
     );
 
     http.addFilterAfter(new JWTTokenGeneratorFilter(jwtProperties), BasicAuthenticationFilter.class);
@@ -77,6 +82,19 @@ public class SecurityConfig {
   @Bean
   public PasswordEncoder passwordEncoder() {
     return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+  }
+
+  @Bean
+  public AuthenticationProvider userDetailsProvider(
+      UserDetailsService userDetailsService,
+      PasswordEncoder passwordEncoder) {
+
+    return new ClosetUserDetailsProvider(userDetailsService, passwordEncoder);
+  }
+
+  @Bean
+  public GrantedAuthority grantedAuthority() {
+    return new SimpleGrantedAuthority("ROLE_");
   }
 
   /**

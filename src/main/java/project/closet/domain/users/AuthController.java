@@ -1,5 +1,6 @@
 package project.closet.domain.users;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,13 +9,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import project.closet.domain.users.dto.ChangePasswordRequest;
+import project.closet.domain.users.dto.ResetPasswordRequest;
 import project.closet.domain.users.dto.SignInRequest;
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
+  private final AuthService authService;
 
   // 로그 아웃
   @PostMapping("/sign-out")
@@ -31,9 +34,8 @@ public class AuthController {
   }
 
   @PostMapping("/reset-password")
-  public ResponseEntity<String> resetPassword(@RequestBody ChangePasswordRequest request) {
-
-
+  public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
+    authService.resetPassword(request);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 

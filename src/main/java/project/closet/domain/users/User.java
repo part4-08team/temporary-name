@@ -43,6 +43,9 @@ public class User extends BaseUpdatableEntity {
   @JdbcType(PostgreSQLEnumJdbcType.class)
   private UserRole role = UserRole.USER;
 
+  @Column(name = "is_temporary_password", nullable = false)
+  private boolean isTemporaryPassword = false;
+
   @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   private Profile profile;
 
@@ -75,6 +78,11 @@ public class User extends BaseUpdatableEntity {
   void changeLocked(boolean locked) {
     if (this.locked == locked) return;
     this.locked = locked;
+  }
+
+  void changeTemporaryPassword(boolean isTemporaryPassword) {
+    if (this.isTemporaryPassword == isTemporaryPassword) return;
+    this.isTemporaryPassword = isTemporaryPassword;
   }
 
   @Override
