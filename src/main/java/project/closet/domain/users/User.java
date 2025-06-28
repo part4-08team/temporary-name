@@ -114,6 +114,7 @@ public class User extends BaseUpdatableEntity {
         "id=" + id +
         ", email='" + email + '\'' +
         ", locked=" + locked +
-        ", role=" + role + '}';
+        ", role=" + role +
+        ", isTemporaryPassword=" + isTemporaryPassword + '}';
   }
 }

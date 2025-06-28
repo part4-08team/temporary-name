@@ -33,9 +33,9 @@ class UserRepositoryTest {
   @DisplayName("user와 profile이 함께 save")
   void saveUserWithProfile() {
     // given
-    String name = "John";
-    String email = "Q1YrQ@example.com";
-    String password = "password";
+    var name = "John";
+    var email = "Q1YrQ@example.com";
+    var password = "password";
 
     // when
     var user = User.createUserWithProfile(name, email, password);
@@ -52,8 +52,8 @@ class UserRepositoryTest {
     assertThat(optionalUser.isPresent()).isTrue();
     assertThat(optionalProfile.isPresent()).isTrue();
 
-    User foundUser = optionalUser.get();
-    Profile foundProfile = optionalProfile.get();
+    var foundUser = optionalUser.get();
+    var foundProfile = optionalProfile.get();
 
     assertThat(foundUser).isEqualTo(savedUser);
     assertThat(foundProfile.getUser()).isEqualTo(foundUser);
