@@ -1,4 +1,4 @@
-package project.closet.domain.users.user.dto;
+package project.closet.domain.users.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

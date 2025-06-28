@@ -1,11 +1,11 @@
-package project.closet.domain.users.user.dto;
+package project.closet.domain.users.dto;
 
 import java.time.LocalDate;
 import java.util.UUID;
 import project.closet.common.dto.Location;
-import project.closet.domain.users.user.Profile;
-import project.closet.domain.users.user.Profile.TemperatureSensitivity;
-import project.closet.domain.users.user.User.Gender;
+import project.closet.domain.users.Profile;
+import project.closet.domain.users.Profile.TemperatureSensitivity;
+import project.closet.domain.users.User.Gender;
 import project.closet.domain.users.util.UrlValidatorUtil;
 
 public record ProfileDto(

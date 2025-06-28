@@ -1,18 +1,20 @@
-package project.closet.domain.users.user;
+package project.closet.domain.users;
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.closet.domain.users.auth.dto.ChangePasswordRequest;
-import project.closet.domain.users.user.dto.ProfileDto;
-import project.closet.domain.users.user.dto.ProfileFindRequest;
-import project.closet.domain.users.user.dto.ProfileUpdateWithImageUrlRequest;
-import project.closet.domain.users.user.dto.UserCreateRequest;
-import project.closet.domain.users.user.dto.UserDto;
-import project.closet.domain.users.user.dto.UserLockUpdateRequest;
-import project.closet.domain.users.user.dto.UserRoleUpdateRequest;
+import project.closet.domain.users.dto.ChangePasswordRequest;
+import project.closet.domain.users.dto.ProfileDto;
+import project.closet.domain.users.dto.ProfileFindRequest;
+import project.closet.domain.users.dto.ProfileUpdateWithImageUrlRequest;
+import project.closet.domain.users.dto.UserCreateRequest;
+import project.closet.domain.users.dto.UserDto;
+import project.closet.domain.users.dto.UserLockUpdateRequest;
+import project.closet.domain.users.dto.UserRoleUpdateRequest;
+import project.closet.domain.users.repository.ProfileRepository;
+import project.closet.domain.users.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor

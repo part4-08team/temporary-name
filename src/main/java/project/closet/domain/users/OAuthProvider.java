@@ -1,4 +1,4 @@
-package project.closet.domain.users.auth;
+package project.closet.domain.users;
 
 public enum OAuthProvider {
   GOOGLE, KAKAO

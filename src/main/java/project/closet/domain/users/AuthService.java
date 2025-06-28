@@ -1,4 +1,4 @@
-package project.closet.domain.users.auth;
+package project.closet.domain.users;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package project.closet.domain.users.user;
+package project.closet.domain.users;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
