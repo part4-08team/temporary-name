@@ -64,6 +64,8 @@ public class JwtUtils {
         .compact();
   }
 
+
+
   private String joiningAuthorities(List<GrantedAuthority> authorities) {
     return authorities.stream()
         .map(GrantedAuthority::getAuthority)

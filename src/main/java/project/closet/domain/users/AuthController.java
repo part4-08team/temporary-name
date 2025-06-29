@@ -1,5 +1,8 @@
 package project.closet.domain.users;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import project.closet.domain.users.dto.ResetPasswordRequest;
 import project.closet.domain.users.dto.SignInRequest;
+import project.closet.domain.users.dto.SignInResponse;
+import project.closet.global.config.security.JWTConfigProperties;
+import project.closet.global.config.security.TokenType;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -18,6 +24,7 @@ import project.closet.domain.users.dto.SignInRequest;
 public class AuthController {
 
   private final AuthService authService;
+  private final JWTConfigProperties jwtProperties;
 
   // 로그 아웃
   @PostMapping("/sign-out")
@@ -28,7 +35,14 @@ public class AuthController {
 
   // 로그인
   @PostMapping("/sign-in")
-  public ResponseEntity<String> login(SignInRequest request) {
+  public ResponseEntity<String> login(
+      @RequestBody @Valid SignInRequest request,
+      HttpServletResponse response) {
+
+    SignInResponse tokens = authService.login(request);
+    // todo : Refresh Token key 알아보기
+    response.setHeader(jwtProperties.header(), tokens.accessToken());
+    response.addCookie(createCookie(TokenType.REFRESH.name(), tokens.refreshToken()));
 
     return ResponseEntity.status(HttpStatus.OK).body("Login Success");
   }
@@ -52,5 +66,12 @@ public class AuthController {
 
     // 인증정보 조회 완성
     return ResponseEntity.status(HttpStatus.OK).body("Success : Find Access Token");
+  }
+
+  private Cookie createCookie(String name, String value) {
+    Cookie cookie = new Cookie(name, value);
+    cookie.setHttpOnly(true);
+    cookie.setMaxAge((int) jwtProperties.refreshExpiration());
+    return cookie;
   }
 }

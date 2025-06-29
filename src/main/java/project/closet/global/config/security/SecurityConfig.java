@@ -6,8 +6,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -72,11 +73,10 @@ public class SecurityConfig {
         .requestMatchers("/api/users").hasRole("ADMIN") // TODO : 관리자 전용 URL 나중에 찾기
     );
 
-    http.addFilterAfter(new JWTTokenGeneratorFilter(jwtProperties, jwtUtils), BasicAuthenticationFilter.class);
     http.addFilterBefore(new JWTTokenValidatorFilter(jwtProperties, jwtUtils), BasicAuthenticationFilter.class);
 
     http.formLogin(AbstractHttpConfigurer::disable);
-    http.httpBasic(Customizer.withDefaults());
+    http.httpBasic(AbstractHttpConfigurer::disable);
     return http.build();
   }
 
@@ -96,6 +96,14 @@ public class SecurityConfig {
   @Bean
   public GrantedAuthority grantedAuthority() {
     return new SimpleGrantedAuthority("ROLE_");
+  }
+
+  @Bean
+  public AuthenticationManager authenticationManager(AuthenticationProvider provider) {
+
+    ProviderManager providerManager = new ProviderManager(provider);
+    providerManager.setEraseCredentialsAfterAuthentication(true);
+    return providerManager;
   }
 
   /**

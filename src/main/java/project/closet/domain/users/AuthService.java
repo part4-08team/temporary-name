@@ -1,8 +1,12 @@
 package project.closet.domain.users;
 
 import project.closet.domain.users.dto.ResetPasswordRequest;
+import project.closet.domain.users.dto.SignInRequest;
+import project.closet.domain.users.dto.SignInResponse;
 
 public interface AuthService {
+
+  SignInResponse login(SignInRequest request);
 
   void resetPassword(ResetPasswordRequest request);
 
