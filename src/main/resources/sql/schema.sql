@@ -59,7 +59,7 @@ CREATE TABLE profiles
     created_at              TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at              TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP,
     name                    VARCHAR(255)     NOT NULL,
-    gender                  gender_type      NOT NULL,
+    gender                  gender_type,
     birth_date              DATE,
     profile_img_url         VARCHAR(1024),
     location                location_type,
