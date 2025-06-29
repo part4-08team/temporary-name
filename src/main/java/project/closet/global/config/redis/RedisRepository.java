@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 public class RedisRepository {
 
   private final RedisTemplate<String, String> redisTemplate;
-  private static final String KEY_PREFIX = "user:refreshExpiration:";
+  private static final String KEY_PREFIX = "user:refreshToken:";
 
   // todo : 어떤 형태로 저장할지 고민
   public void save(UUID userId, String refreshToken, Duration ttl) {
