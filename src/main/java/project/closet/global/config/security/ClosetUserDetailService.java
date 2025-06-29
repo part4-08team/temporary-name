@@ -30,7 +30,8 @@ public class ClosetUserDetailService implements UserDetailsService {
     String role = determineRole(user);
     List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
 
-    return new org.springframework.security.core.userdetails.User(
+    return new ClosetUserDetails(
+        user.getId(),
         user.getEmail(),
         user.getPassword(),
         authorities

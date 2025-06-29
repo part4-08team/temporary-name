@@ -18,5 +18,8 @@ public record JWTConfigProperties(
     long expiration,
 
     @Min(86400) // 최소 1DAY 이상
-    long refreshExpiration) {
+    long refreshExpiration,
+
+    @NotBlank(message = "jwt.refreshHeader is required")
+    String refreshHeader) {
 }

@@ -25,13 +25,16 @@ public class ClosetUserDetailsProvider implements AuthenticationProvider {
     String username = authentication.getName();
     String password = authentication.getCredentials().toString();
 
-    UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-    boolean isMatch = passwordEncoder.matches(password, userDetails.getPassword());
+    UserDetails closetUserDetails = userDetailsService.loadUserByUsername(username);
+    boolean isMatch = passwordEncoder.matches(password, closetUserDetails.getPassword());
     if (!isMatch) {
       throw new BadCredentialsException("Bad credentials");
     }
 
-    return new UsernamePasswordAuthenticationToken(username, password, userDetails.getAuthorities());
+    return new UsernamePasswordAuthenticationToken(
+        closetUserDetails, // principal
+        password, // credentials
+        closetUserDetails.getAuthorities());
   }
 
   @Override

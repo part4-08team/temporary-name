@@ -46,7 +46,7 @@ jwt:
   header: ${JWT_HEADER:Authorization}
   expiration: ${JWT_EXPIRATION:3600}
   refresh-expiration: ${JWT_REFRESH_EXPIRATION:259200} # 3일
-
+  refresh-header: ${JWT_REFRESH_HEADER:Cookie}
 
 
 logging:

@@ -1,5 +1,6 @@
 package project.closet.global.config.security;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,15 +28,27 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {
 
-    String jwt = request.getHeader(jwtProperties.header());
+    String accessToken = request.getHeader(jwtProperties.header());
 
-    if (jwt == null || !jwt.startsWith("Bearer ")) {
+    if (accessToken == null || !accessToken.startsWith("Bearer ")) {
       throw new BadCredentialsException("Missing or invalid Authorization header");
     }
 
     try {
-      String username = jwtUtils.getUsername(jwt);
-      List<GrantedAuthority> authorities = jwtUtils.getAuthorities(jwt);
+      jwtUtils.validateTokenExpiration(accessToken);
+    } catch (ExpiredJwtException e){
+      // 프론트 코드 나중에 찾아보기 - reissue 엔드포인트로 가도록
+      response.getWriter().write("Access-Token is expired");
+      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+      return;
+    }
+
+
+
+
+    try {
+      String username = jwtUtils.getUsername(accessToken);
+      List<GrantedAuthority> authorities = jwtUtils.getAuthorities(accessToken);
       Authentication authentication = new UsernamePasswordAuthenticationToken(
           username, null, authorities);
 
