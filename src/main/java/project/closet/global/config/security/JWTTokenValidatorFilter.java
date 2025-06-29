@@ -43,8 +43,12 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
       return;
     }
 
-
-
+    String tokenType = jwtUtils.getTokenType(accessToken);
+    if (!TokenType.ACCESS.name().equals(tokenType)) {
+      response.getWriter().write("Invalid token type");
+      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+      return;
+    }
 
     try {
       String username = jwtUtils.getUsername(accessToken);

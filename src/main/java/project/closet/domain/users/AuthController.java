@@ -35,15 +35,16 @@ public class AuthController {
 
   @PostMapping("/reset-password")
   public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
+
     authService.resetPassword(request);
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 
   @PostMapping("/refresh")
-  public ResponseEntity<String> refresh(@RequestParam("refreshToken") String refreshToken) {
+  public ResponseEntity<String> refresh(@RequestParam(name = "refreshToken") String refreshToken) {
 
-
-    return ResponseEntity.status(HttpStatus.OK).body("Success : Token Refreshed");
+    String newAccessToken = authService.reissueAccessToken(refreshToken);
+    return ResponseEntity.status(HttpStatus.OK).body(newAccessToken);
   }
 
   @GetMapping("/me")

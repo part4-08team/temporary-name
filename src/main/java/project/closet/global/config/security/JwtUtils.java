@@ -25,12 +25,12 @@ public class JwtUtils {
     parser = Jwts.parser().verifyWith(getSecretKey()).build();
   }
 
-  public String getUsername(String token) {
-    return getPayload(token).get("username", String.class);
-  }
-
   public UUID getUserId(String token) {
     return UUID.fromString(getPayload(token).get("userId", String.class));
+  }
+
+  public String getUsername(String token) {
+    return getPayload(token).get("username", String.class);
   }
 
   public List<GrantedAuthority> getAuthorities(String token) {
@@ -46,7 +46,12 @@ public class JwtUtils {
     return Keys.hmacShaKeyFor(properties.secret().getBytes(StandardCharsets.UTF_8));
   }
 
-  public String createJwtToken(TokenType category, UUID userId, String username, List<GrantedAuthority> authorities) {
+  public String getTokenType(String token) {
+    return getPayload(token).get("type", String.class);
+  }
+
+  public String createJwtToken(TokenType category, UUID userId, String username,
+      List<GrantedAuthority> authorities) {
 
     return Jwts.builder()
         .claim("type", category.name())
