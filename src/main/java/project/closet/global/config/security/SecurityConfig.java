@@ -18,9 +18,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import project.closet.global.config.redis.RedisRepository;
 
 @Configuration
 @RequiredArgsConstructor
@@ -28,6 +29,7 @@ public class SecurityConfig {
 
   private final JWTConfigProperties jwtProperties;
   private final JwtUtils jwtUtils;
+  private final RedisRepository redisRepository;
 
   // 임시 - 나중에 프론트 Origin으로 변경
   private static final String[] ALLOWED_ORIGINS = {
@@ -73,7 +75,7 @@ public class SecurityConfig {
         .requestMatchers("/api/users").hasRole("ADMIN") // TODO : 관리자 전용 URL 나중에 찾기
     );
 
-    http.addFilterBefore(new JWTTokenValidatorFilter(jwtProperties, jwtUtils), BasicAuthenticationFilter.class);
+    http.addFilterBefore(new JWTTokenValidatorFilter(jwtProperties, jwtUtils, redisRepository), UsernamePasswordAuthenticationFilter.class);
 
     http.formLogin(AbstractHttpConfigurer::disable);
     http.httpBasic(AbstractHttpConfigurer::disable);

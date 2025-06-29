@@ -3,6 +3,7 @@ package project.closet.global.config.security;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -13,15 +14,19 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+import project.closet.global.config.redis.RedisRepository;
 
 public class JWTTokenValidatorFilter extends OncePerRequestFilter {
 
   private final JWTConfigProperties jwtProperties;
   private final JwtUtils jwtUtils;
+  private final RedisRepository redisRepository;
 
-  public JWTTokenValidatorFilter(JWTConfigProperties jwtProperties, JwtUtils jwtUtils) {
+  public JWTTokenValidatorFilter(JWTConfigProperties jwtProperties, JwtUtils jwtUtils,
+      RedisRepository redisRepository) {
     this.jwtProperties = jwtProperties;
     this.jwtUtils = jwtUtils;
+    this.redisRepository = redisRepository;
   }
 
   /**
@@ -43,6 +48,17 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
      * 블랙리스트인지 확인
      */
 
+
+
+    /**
+     * Redis에 Cookie에 있는 refresh-Token이 있는지 확인
+     * 없으면 : 금지 or 잠금 or 만료 된걸로
+     */
+    String refreshToken = extractRefreshToken(request);
+    if (!redisRepository.existsByUserId(jwtUtils.getUserId(refreshToken))) {
+      throw new BadCredentialsException("Invalid refresh token");
+    }
+
     try {
       String username = jwtUtils.getUsername(accessToken);
       List<GrantedAuthority> authorities = jwtUtils.getAuthorities(accessToken);
@@ -58,9 +74,22 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
     filterChain.doFilter(request, response);
   }
 
+  private String extractRefreshToken(HttpServletRequest request) {
+    Cookie[] cookies = request.getCookies();
+    for (Cookie cookie : cookies) {
+      if (TokenType.REFRESH.name().equals(cookie.getName())) {
+        return cookie.getValue();
+      }
+    }
+
+    throw new BadCredentialsException("Missing refresh token");
+  }
+
   @Override
   protected boolean shouldNotFilter(HttpServletRequest request) {
-    return request.getServletPath().equals("/api/auth/sign-in");
+
+    return request.getServletPath()
+        .equals("/api/auth/sign-in") || request.getServletPath().equals("/api/auth/reissue");
   }
 
   /**

@@ -16,6 +16,7 @@ import project.closet.domain.users.dto.UserLockUpdateRequest;
 import project.closet.domain.users.dto.UserRoleUpdateRequest;
 import project.closet.domain.users.repository.ProfileRepository;
 import project.closet.domain.users.repository.UserRepository;
+import project.closet.global.config.redis.RedisRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +26,7 @@ public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
   private final ProfileRepository profileRepository;
+  private final RedisRepository redisRepository;
 
   @Transactional(readOnly = true)
   @Override
@@ -57,6 +59,7 @@ public class UserServiceImpl implements UserService {
 
     User user = findUserById(userId);
     user.changeRole(request.role());
+    redisRepository.deleteByUserId(userId);
     return UserDto.from(user);
   }
 
@@ -84,11 +87,13 @@ public class UserServiceImpl implements UserService {
     user.changePassword(generateHashedPassword(request.password()));
   }
 
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
   @Override
   public UUID updateUserLock(UUID userId, UserLockUpdateRequest request) {
 
     User user = findUserById(userId);
     user.changeLocked(request.locked());
+    redisRepository.deleteByUserId(userId);
     return user.getId();
   }
 

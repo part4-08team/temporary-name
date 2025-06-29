@@ -12,26 +12,26 @@ import org.springframework.stereotype.Repository;
 public class RedisRepository {
 
   private final RedisTemplate<String, String> redisTemplate;
-  private static final String KEY_PREFIX = "user:";
+  private static final String KEY_PREFIX = "user:refreshExpiration:";
 
   // todo : 어떤 형태로 저장할지 고민
-  public void save(UUID userId, Duration ttl) {
-    String key = KEY_PREFIX + userId;
-    redisTemplate.opsForValue().set(key, ttl.toString(), ttl);
+  public void save(UUID userId, String refreshToken, Duration ttl) {
+    redisTemplate.opsForValue().set(getKeyName(userId), refreshToken, ttl);
   }
 
   public String findByUserId(UUID userId) {
-    String key = KEY_PREFIX + userId;
-    return redisTemplate.opsForValue().get(key);
+    return redisTemplate.opsForValue().get(getKeyName(userId));
   }
 
   public void deleteByUserId(UUID userId) {
-    String key = KEY_PREFIX + userId;
-    redisTemplate.delete(key);
+    redisTemplate.delete(getKeyName(userId));
   }
 
   public boolean existsByUserId(UUID userId) {
-    String key = KEY_PREFIX + userId;
-    return redisTemplate.hasKey(key);
+    return redisTemplate.hasKey(getKeyName(userId));
+  }
+
+  private String getKeyName(UUID userId) {
+    return KEY_PREFIX + userId;
   }
 }

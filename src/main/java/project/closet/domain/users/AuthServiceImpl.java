@@ -1,7 +1,9 @@
 package project.closet.domain.users;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import java.time.Duration;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -17,7 +19,9 @@ import project.closet.domain.users.dto.SignInRequest;
 import project.closet.domain.users.dto.SignInResponse;
 import project.closet.domain.users.repository.UserRepository;
 import project.closet.domain.users.util.TemporaryPasswordFactory;
+import project.closet.global.config.redis.RedisRepository;
 import project.closet.global.config.security.ClosetUserDetails;
+import project.closet.global.config.security.JWTConfigProperties;
 import project.closet.global.config.security.JwtUtils;
 import project.closet.global.config.security.TokenType;
 
@@ -29,6 +33,8 @@ public class AuthServiceImpl implements AuthService {
   private final UserRepository userRepository;
   private final JwtUtils jwtUtils;
   private final AuthenticationManager authenticationManager;
+  private final RedisRepository redisRepository;
+  private final JWTConfigProperties jwtProperties;
 
 
   /**
@@ -64,6 +70,9 @@ public class AuthServiceImpl implements AuthService {
           userDetails.getUserId(),
           userDetails.getUsername(),
           (List<GrantedAuthority>) authenticate.getAuthorities());
+
+      redisRepository.save(userDetails.getUserId(), refreshToken,
+          Duration.ofSeconds(jwtProperties.refreshExpiration()));
 
       return new SignInResponse(accessToken, refreshToken);
     } catch (Exception e) {
@@ -102,11 +111,17 @@ public class AuthServiceImpl implements AuthService {
    * todo : 추가로 검증할 것 : BlackList
    * todo : Refresh Rotate 방식으로 할건지 확인
    */
+  @Transactional
   @Override
   public String reissueAccessToken(String refreshToken) {
 
     validateRefreshTokenType(refreshToken);
     validateRefreshTokenExpiration(refreshToken);
+
+    UUID userId = jwtUtils.getUserId(refreshToken);
+    if (!redisRepository.existsByUserId(userId)) {
+      throw new BadCredentialsException("Reissue Error : Invalid refresh token");
+    }
 
     try {
       return jwtUtils.createJwtToken(
