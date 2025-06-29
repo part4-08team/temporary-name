@@ -42,9 +42,12 @@ spring:
 
 
 jwt:
-  secret: ${JWT_SECRET:secret}
+  secret: ${JWT_SECRET:44a81d8d4c44e07f56c9019fabb29194bd524d3018f79562d625749f7c709b5f} # 나중에 바꾸기
   header: ${JWT_HEADER:Authorization}
   expiration: ${JWT_EXPIRATION:3600}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION:259200} # 3일
+
+
 
 logging:
   pattern:

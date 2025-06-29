@@ -15,5 +15,8 @@ public record JWTConfigProperties(
     String header,
 
     @Min(1)
-    long expiration) {
+    long expiration,
+
+    @Min(86400) // 최소 1DAY 이상
+    long refreshExpiration) {
 }

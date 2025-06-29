@@ -26,6 +26,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 public class SecurityConfig {
 
   private final JWTConfigProperties jwtProperties;
+  private final JwtUtils jwtUtils;
 
   // 임시 - 나중에 프론트 Origin으로 변경
   private static final String[] ALLOWED_ORIGINS = {
@@ -71,8 +72,8 @@ public class SecurityConfig {
         .requestMatchers("/api/users").hasRole("ADMIN") // TODO : 관리자 전용 URL 나중에 찾기
     );
 
-    http.addFilterAfter(new JWTTokenGeneratorFilter(jwtProperties), BasicAuthenticationFilter.class);
-    http.addFilterBefore(new JWTTokenValidatorFilter(jwtProperties), BasicAuthenticationFilter.class);
+    http.addFilterAfter(new JWTTokenGeneratorFilter(jwtProperties, jwtUtils), BasicAuthenticationFilter.class);
+    http.addFilterBefore(new JWTTokenValidatorFilter(jwtProperties, jwtUtils), BasicAuthenticationFilter.class);
 
     http.formLogin(AbstractHttpConfigurer::disable);
     http.httpBasic(Customizer.withDefaults());

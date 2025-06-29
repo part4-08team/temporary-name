@@ -1,7 +1,6 @@
 package project.closet.global.config.security;
 
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,7 +8,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 import java.util.stream.Collectors;
-import javax.crypto.SecretKey;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,9 +19,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JWTTokenGeneratorFilter extends OncePerRequestFilter {
 
   private final JWTConfigProperties jwtProperties;
+  private final JwtUtils jwtUtils;
 
-  public JWTTokenGeneratorFilter(JWTConfigProperties jwtProperties) {
+  public JWTTokenGeneratorFilter(JWTConfigProperties jwtProperties, JwtUtils jwtUtils) {
     this.jwtProperties = jwtProperties;
+    this.jwtUtils = jwtUtils;
   }
 
   @Override
@@ -35,10 +35,9 @@ public class JWTTokenGeneratorFilter extends OncePerRequestFilter {
       throw new BadCredentialsException("Authorization is failed");
     }
 
-    long expiration = System.currentTimeMillis() + jwtProperties.expiration();
-
     try {
-      SecretKey secretKey = Keys.hmacShaKeyFor(jwtProperties.secret().getBytes());
+
+      // Access Token
       String token = Jwts.builder()
           .issuer("team-eight")
           .claim("username", authentication.getName())
@@ -47,7 +46,7 @@ public class JWTTokenGeneratorFilter extends OncePerRequestFilter {
               .collect(Collectors.joining(",")))
           .issuedAt(new Date())
           .expiration(new Date(System.currentTimeMillis() + jwtProperties.expiration()))
-          .signWith(secretKey).compact();
+          .signWith(jwtUtils.getSecretKey()).compact();
 
       response.setHeader(jwtProperties.header(), "Bearer " + token);
       // redis -> user의 id key, value -> token

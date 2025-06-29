@@ -1,31 +1,26 @@
 package project.closet.global.config.security;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-import javax.crypto.SecretKey;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 public class JWTTokenValidatorFilter extends OncePerRequestFilter {
 
   private final JWTConfigProperties jwtProperties;
+  private final JwtUtils jwtUtils;
 
-  public JWTTokenValidatorFilter(JWTConfigProperties jwtProperties) {
+  public JWTTokenValidatorFilter(JWTConfigProperties jwtProperties, JwtUtils jwtUtils) {
     this.jwtProperties = jwtProperties;
+    this.jwtUtils = jwtUtils;
   }
 
   @Override
@@ -39,20 +34,10 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
     }
 
     try {
-      SecretKey secretKey = Keys.hmacShaKeyFor(jwtProperties.secret().getBytes(UTF_8));
-      Claims claims = Jwts.parser()
-          .verifyWith(secretKey)
-          .build()
-          .parseSignedClaims(jwt)
-          .getPayload();
-
-      String username = claims.get("username", String.class);
-      String authorities = claims.get("authorities", String.class);
-      List<GrantedAuthority> grantedAuthorities = AuthorityUtils.commaSeparatedStringToAuthorityList(
-          authorities);
-
+      String username = jwtUtils.getUsername(jwt);
+      List<GrantedAuthority> authorities = jwtUtils.getAuthorities(jwt);
       Authentication authentication = new UsernamePasswordAuthenticationToken(
-          username, null, grantedAuthorities);
+          username, null, authorities);
 
       SecurityContextHolder.getContext().setAuthentication(authentication);
 
