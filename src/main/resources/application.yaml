@@ -39,7 +39,10 @@ spring:
         location: ${MAIL_LOCATION:localhost}
         from: ${MAIL_FROM:carer3759@gmail.com}  # 헤더에 한글 들어가는 것 때문
 
-
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
 
 jwt:
   secret: ${JWT_SECRET:44a81d8d4c44e07f56c9019fabb29194bd524d3018f79562d625749f7c709b5f} # 나중에 바꾸기

@@ -1,5 +1,6 @@
 #임시 DB 도커 컴포즈
 services:
+
   postgres:
     container_name: closet-postgres
     image: postgres:latest
@@ -11,6 +12,16 @@ services:
       - postgres-data:/var/lib/postgresql/data
     ports:
       - 5433:5432
+
+  cache-server:
+    container_name: closet-cache-server
+    image: redis:latest
+    ports:
+      - 6379:6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 30s
 
 volumes:
   postgres-data:

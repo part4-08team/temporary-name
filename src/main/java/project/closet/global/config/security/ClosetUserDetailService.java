@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,12 +21,21 @@ import project.closet.domain.users.repository.UserRepository;
 public class ClosetUserDetailService implements UserDetailsService {
 
   private final UserRepository userRepository;
+  private final JwtBlackList jwtBlackList;
 
   @Override
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
     User user = userRepository.findByEmail(email)
-        .orElseThrow(() -> new UsernameNotFoundException("해당 유저가 존재하지 않습니다."));
+        .orElseThrow(() -> new UsernameNotFoundException("Wrong email : No User matches"));
+
+    if (user.isLocked()) {
+      throw new BadCredentialsException("Your account is locked.");
+    }
+
+    if (jwtBlackList.isBlackListed(user.getId())) {
+      throw new BadCredentialsException("You are Black");
+    }
 
     String role = determineRole(user);
     List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));

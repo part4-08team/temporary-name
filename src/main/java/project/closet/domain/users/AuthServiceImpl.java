@@ -31,6 +31,9 @@ public class AuthServiceImpl implements AuthService {
   private final AuthenticationManager authenticationManager;
 
 
+  /**
+   * todo : 로그인 되어있을 경우 userId key값 기반에서 Redis에 저장된 정보 삭제
+   */
   @Override
   public SignInResponse login(SignInRequest request) {
 
@@ -69,14 +72,13 @@ public class AuthServiceImpl implements AuthService {
   }
 
 
-  // todo : recilence 로직 구현 : 설정 값보다 더 실패하면 관리자한테 메일 보내기
+  // todo : recilence 로직 구현 : 설정 값보다 더 실패하면 관리자한테 메일 보내기 (send 부분만 recilence)
   @Transactional
   @Override
   public void resetPassword(ResetPasswordRequest request) {
 
     User user = userRepository.findByEmail(request.email())
-        .orElseThrow(
-            () -> new IllegalArgumentException("Wrong email : No User matches this email."));
+        .orElseThrow(() -> new IllegalArgumentException("Wrong email : No User matches"));
 
     String tempPassword = TemporaryPasswordFactory.createTempPassword();
     user.changePassword(tempPassword);
@@ -102,15 +104,9 @@ public class AuthServiceImpl implements AuthService {
    */
   @Override
   public String reissueAccessToken(String refreshToken) {
-    // 토큰 타입 확인
+
     validateRefreshTokenType(refreshToken);
-    // refresh token 만료 시간 검증
-    try {
-      jwtUtils.validateTokenExpiration(refreshToken);
-    } catch (ExpiredJwtException e) {
-      // 예외 Example value 형식으로
-      throw new IllegalArgumentException("Refresh token is expired");
-    }
+    validateRefreshTokenExpiration(refreshToken);
 
     try {
       return jwtUtils.createJwtToken(
@@ -129,4 +125,14 @@ public class AuthServiceImpl implements AuthService {
       throw new IllegalArgumentException("Invalid token type");
     }
   }
+
+  private void validateRefreshTokenExpiration(String refreshToken) {
+    try {
+      jwtUtils.validateTokenExpiration(refreshToken);
+    } catch (ExpiredJwtException e) {
+      // 예외 Example value 형식으로
+      throw new IllegalArgumentException("Refresh token is expired");
+    }
+  }
+
 }

@@ -2,6 +2,7 @@ package project.closet.domain.users;
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +47,11 @@ public class UserServiceImpl implements UserService {
     return UserDto.from(savedUser);
   }
 
+  /**
+   * 요구사항 : 권한 변경 시 해당 사용자는 자동으로 로그아웃됩니다.
+   * 해당 userId기반의 redis refresh 토큰 삭제
+   */
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
   @Override
   public UserDto updateUserRole(UUID userId, UserRoleUpdateRequest request) {
 

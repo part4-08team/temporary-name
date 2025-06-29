@@ -38,6 +38,7 @@ public class JwtUtils {
     return AuthorityUtils.commaSeparatedStringToAuthorityList(authorities);
   }
 
+  // 나중에 Error 타입 비슷하면 여기에 몰아서 처리하기 (token type 검증 메서드도 추가)
   public void validateTokenExpiration(String token) {
     parser.parseSignedClaims(token);
   }
