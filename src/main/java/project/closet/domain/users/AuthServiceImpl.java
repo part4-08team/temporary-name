@@ -5,6 +5,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,18 +15,21 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import project.closet.domain.users.User.UserRole;
 import project.closet.domain.users.dto.ResetPasswordRequest;
 import project.closet.domain.users.dto.SignInRequest;
 import project.closet.domain.users.dto.SignInResponse;
 import project.closet.domain.users.repository.UserRepository;
 import project.closet.domain.users.util.TemporaryPasswordFactory;
 import project.closet.global.config.redis.RedisRepository;
+import project.closet.global.config.security.AdminProperties;
 import project.closet.global.config.security.ClosetUserDetails;
 import project.closet.global.config.security.JWTConfigProperties;
 import project.closet.global.config.security.JwtBlackList;
 import project.closet.global.config.security.JwtUtils;
 import project.closet.global.config.security.TokenType;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -37,6 +41,22 @@ public class AuthServiceImpl implements AuthService {
   private final RedisRepository redisRepository;
   private final JWTConfigProperties jwtProperties;
   private final JwtBlackList jwtBlackList;
+  private final AdminProperties adminProperties;
+
+  @Transactional
+  @Override
+  public void initAdmin() {
+    if (userRepository.existsByEmail(adminProperties.email())) {
+      log.info("Admin email already exists");
+      return;
+    }
+
+    User user = User.createUserWithProfile(adminProperties.username(),
+        adminProperties.email(), adminProperties.password());
+    user.changeRole(UserRole.ADMIN);
+    userRepository.save(user);
+    log.info("Admin created");
+  }
 
   @Override
   public void logout(String accessToken) {

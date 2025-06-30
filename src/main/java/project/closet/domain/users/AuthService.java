@@ -7,6 +7,9 @@ import project.closet.domain.users.dto.SignInResponse;
 
 public interface AuthService {
 
+  @Transactional
+  void initAdmin();
+
   void logout(String accessToken);
 
   SignInResponse login(SignInRequest request);
