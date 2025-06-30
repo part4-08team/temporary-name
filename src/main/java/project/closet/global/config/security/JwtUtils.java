@@ -43,6 +43,12 @@ public class JwtUtils {
     parser.parseSignedClaims(token);
   }
 
+  public long getTtl(String token) {
+    long expirationTime = getPayload(token).getExpiration().getTime();
+    long currentTime = System.currentTimeMillis();
+    return Math.max(0, expirationTime - currentTime);
+  }
+
   public SecretKey getSecretKey() {
     return Keys.hmacShaKeyFor(properties.secret().getBytes(StandardCharsets.UTF_8));
   }
@@ -50,6 +56,8 @@ public class JwtUtils {
   public String getTokenType(String token) {
     return getPayload(token).get("type", String.class);
   }
+
+
 
   public String createJwtToken(TokenType category, UUID userId, String username,
       List<GrantedAuthority> authorities) {

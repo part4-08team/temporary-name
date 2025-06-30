@@ -44,20 +44,10 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
 
     validateTokenExpiration(accessToken);
     validateTokenType(TokenType.ACCESS, accessToken);
+    validateAccessTokenInRedis(accessToken);
     /**
-     * 블랙리스트인지 확인
+     * todo : 블랙리스트인지 확인
      */
-
-
-
-    /**
-     * Redis에 Cookie에 있는 refresh-Token이 있는지 확인
-     * 없으면 : 금지 or 잠금 or 만료 된걸로
-     */
-    String refreshToken = extractRefreshToken(request);
-    if (!redisRepository.existsByUserId(jwtUtils.getUserId(refreshToken))) {
-      throw new BadCredentialsException("Invalid refresh token");
-    }
 
     try {
       String username = jwtUtils.getUsername(accessToken);
@@ -74,10 +64,22 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
     filterChain.doFilter(request, response);
   }
 
+
+  /**
+   * null : 만료 or 로그아웃 시킨 것
+   * not equal : 다른 로그인으로 인해 강제 로그아웃
+   */
+  private void validateAccessTokenInRedis(String accessToken) {
+    String redisAccessToken = (String) redisRepository.findByUserId(jwtUtils.getUserId(accessToken));
+    if (redisAccessToken == null || !redisAccessToken.equals(accessToken)) {
+      throw new BadCredentialsException("Invalid accesstoken");
+    }
+  }
+
   private String extractRefreshToken(HttpServletRequest request) {
     Cookie[] cookies = request.getCookies();
     for (Cookie cookie : cookies) {
-      if (TokenType.REFRESH.name().equals(cookie.getName())) {
+      if (TokenType.ACCESS.name().equals(cookie.getName())) {
         return cookie.getValue();
       }
     }

@@ -71,7 +71,7 @@ public class AuthServiceImpl implements AuthService {
           userDetails.getUsername(),
           (List<GrantedAuthority>) authenticate.getAuthorities());
 
-      redisRepository.save(userDetails.getUserId(), refreshToken,
+      redisRepository.save(userDetails.getUserId(), accessToken,
           Duration.ofSeconds(jwtProperties.refreshExpiration()));
 
       return new SignInResponse(accessToken, refreshToken);
@@ -123,12 +123,17 @@ public class AuthServiceImpl implements AuthService {
       throw new BadCredentialsException("Reissue Error : Invalid refresh token");
     }
 
+    // todo : refresh-Token에 저장된 userId를 기반으로 DB에서 찾아오기
+
     try {
-      return jwtUtils.createJwtToken(
+      String newAccessToken = jwtUtils.createJwtToken(
           TokenType.ACCESS,
-          jwtUtils.getUserId(refreshToken),
+          userId,
           jwtUtils.getUsername(refreshToken),
           jwtUtils.getAuthorities(refreshToken));
+
+      redisRepository.save(userId, newAccessToken, Duration.ofSeconds(jwtUtils.getTtl(refreshToken)));
+      return newAccessToken;
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

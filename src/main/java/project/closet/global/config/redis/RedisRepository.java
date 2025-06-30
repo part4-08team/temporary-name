@@ -11,15 +11,16 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class RedisRepository {
 
-  private final RedisTemplate<String, String> redisTemplate;
-  private static final String KEY_PREFIX = "user:refreshToken:";
+  private final RedisTemplate<String, Object> redisTemplate;
+  private static final String KEY_PREFIX = "user:accessToken:";
 
   // todo : 어떤 형태로 저장할지 고민
-  public void save(UUID userId, String refreshToken, Duration ttl) {
-    redisTemplate.opsForValue().set(getKeyName(userId), refreshToken, ttl);
+  public void save(UUID userId, String accessToken, Duration ttl) {
+    // 흠... 검증 로직 넣을까
+    redisTemplate.opsForValue().set(getKeyName(userId), accessToken, ttl);
   }
 
-  public String findByUserId(UUID userId) {
+  public Object findByUserId(UUID userId) {
     return redisTemplate.opsForValue().get(getKeyName(userId));
   }
 
