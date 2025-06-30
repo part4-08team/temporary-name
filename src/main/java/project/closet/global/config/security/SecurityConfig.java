@@ -30,6 +30,7 @@ public class SecurityConfig {
   private final JWTConfigProperties jwtProperties;
   private final JwtUtils jwtUtils;
   private final RedisRepository redisRepository;
+  private final JwtBlackList jwtBlackList;
 
   // 임시 - 나중에 프론트 Origin으로 변경
   private static final String[] ALLOWED_ORIGINS = {
@@ -76,7 +77,7 @@ public class SecurityConfig {
         .requestMatchers("/api/**").authenticated()
     );
 
-    http.addFilterBefore(new JWTTokenValidatorFilter(jwtProperties, jwtUtils, redisRepository), UsernamePasswordAuthenticationFilter.class);
+    http.addFilterBefore(new JWTTokenValidatorFilter(jwtProperties, jwtUtils, redisRepository, jwtBlackList), UsernamePasswordAuthenticationFilter.class);
 
     http.formLogin(AbstractHttpConfigurer::disable);
     http.httpBasic(AbstractHttpConfigurer::disable);

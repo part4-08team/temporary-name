@@ -20,12 +20,14 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
   private final JWTConfigProperties jwtProperties;
   private final JwtUtils jwtUtils;
   private final RedisRepository redisRepository;
+  private final JwtBlackList jwtBlackList;
 
   public JWTTokenValidatorFilter(JWTConfigProperties jwtProperties, JwtUtils jwtUtils,
-      RedisRepository redisRepository) {
+      RedisRepository redisRepository, JwtBlackList jwtBlackList) {
     this.jwtProperties = jwtProperties;
     this.jwtUtils = jwtUtils;
     this.redisRepository = redisRepository;
+    this.jwtBlackList = jwtBlackList;
   }
 
   /**
@@ -43,7 +45,11 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
 
     validateTokenExpiration(accessToken);
     validateTokenType(TokenType.ACCESS, accessToken);
+
     validateAccessTokenInRedis(accessToken);
+    if (jwtBlackList.isBlackListed(jwtUtils.getUserId(accessToken))){
+      throw new BadCredentialsException("You are Black");
+    }
     /**
      * todo : 블랙리스트인지 확인
      */
@@ -68,7 +74,7 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
    * null : 만료 or 로그아웃 시킨 것
    * not equal : 다른 로그인으로 인해 강제 로그아웃
    */
-  private void validateAccessTokenInRedis(String accessToken) {
+  private void validateAccessTokenInRedis(String accessToken){
     String redisAccessToken = (String) redisRepository.findByUserId(jwtUtils.getUserId(accessToken));
     if (redisAccessToken == null || !redisAccessToken.equals(accessToken)) {
       throw new BadCredentialsException("Invalid accesstoken");
