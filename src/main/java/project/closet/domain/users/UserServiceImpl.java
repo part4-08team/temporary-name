@@ -16,7 +16,7 @@ import project.closet.domain.users.dto.UserLockUpdateRequest;
 import project.closet.domain.users.dto.UserRoleUpdateRequest;
 import project.closet.domain.users.repository.ProfileRepository;
 import project.closet.domain.users.repository.UserRepository;
-import project.closet.global.config.redis.RedisRepository;
+import project.closet.common.redis.RedisRepository;
 
 @Service
 @RequiredArgsConstructor

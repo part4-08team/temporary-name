@@ -25,7 +25,7 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.csrf.CsrfTokenRequestHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import project.closet.global.config.redis.RedisRepository;
+import project.closet.common.redis.RedisRepository;
 
 @Configuration
 @RequiredArgsConstructor

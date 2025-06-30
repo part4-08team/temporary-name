@@ -21,7 +21,7 @@ import project.closet.domain.users.dto.SignInRequest;
 import project.closet.domain.users.dto.SignInResponse;
 import project.closet.domain.users.repository.UserRepository;
 import project.closet.domain.users.util.TemporaryPasswordFactory;
-import project.closet.global.config.redis.RedisRepository;
+import project.closet.common.redis.RedisRepository;
 import project.closet.global.config.security.AdminProperties;
 import project.closet.global.config.security.ClosetUserDetails;
 import project.closet.global.config.security.JWTConfigProperties;

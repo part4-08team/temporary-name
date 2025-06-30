@@ -1,4 +1,4 @@
-package project.closet.global.config.redis;
+package project.closet.global.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

@@ -13,7 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
-import project.closet.global.config.redis.RedisRepository;
+import project.closet.common.redis.RedisRepository;
 
 public class JWTTokenValidatorFilter extends OncePerRequestFilter {
 

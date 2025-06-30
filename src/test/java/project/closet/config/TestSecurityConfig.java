@@ -14,20 +14,7 @@ public class TestSecurityConfig {
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//    http.cors(corsConfig -> corsConfig.configurationSource(new CorsConfigurationSource() {
-//         @Override
-//         public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-//           CorsConfiguration config = new CorsConfiguration();
-//           config.setAllowedOriginPatterns(List.of(ALLOWED_ORIGINS));
-//           config.setAllowedOrigins(Collections.singletonList("*"));
-//           config.setAllowedHeaders(Collections.singletonList("*"));
-//           config.setExposedHeaders(Collections.singletonList("Authorization"));
-//           config.setAllowCredentials(true);
-//           config.setMaxAge(3600L);
-//           return config;
-//         }
-//       }
-//    ));
+
     http.csrf(AbstractHttpConfigurer::disable);
 
     http.authorizeHttpRequests(request -> request

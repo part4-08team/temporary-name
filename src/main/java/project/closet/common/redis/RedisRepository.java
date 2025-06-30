@@ -1,4 +1,4 @@
-package project.closet.global.config.redis;
+package project.closet.common.redis;
 
 
 import java.time.Duration;
