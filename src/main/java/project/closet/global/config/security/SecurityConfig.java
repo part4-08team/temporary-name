@@ -20,6 +20,9 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.security.web.csrf.CsrfTokenRequestHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import project.closet.global.config.redis.RedisRepository;
@@ -50,9 +53,8 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 
-    // http.cors(corsConfig -> corsConfig.disable());  // cors 불확인 (임시)
-    // http.csrf(AbstractHttpConfigurer::disable); // 프론트에서 csrf를 못 찾음
-    //http.csrf()
+    CsrfTokenRequestHandler csrfTokenRequestHandler = new CsrfTokenRequestAttributeHandler();
+
     http.cors(corsConfig -> corsConfig.configurationSource(new CorsConfigurationSource() {
           @Override
           public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
@@ -68,6 +70,13 @@ public class SecurityConfig {
         }
     ));
 
+    http.csrf( csrfConfig ->
+        csrfConfig
+            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+            .csrfTokenRequestHandler(csrfTokenRequestHandler)
+            .ignoringRequestMatchers("/api/auth/sign-in")
+        );
+
     http.securityContext(contextConfig -> contextConfig.requireExplicitSave(false))
         .sessionManagement(smc -> smc.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
@@ -82,6 +91,7 @@ public class SecurityConfig {
     );
 
     http.addFilterBefore(new JWTTokenValidatorFilter(jwtProperties, jwtUtils, redisRepository, jwtBlackList), UsernamePasswordAuthenticationFilter.class);
+    http.addFilterBefore(new CsrfCookieFilter(), UsernamePasswordAuthenticationFilter.class);
 
     http.formLogin(AbstractHttpConfigurer::disable);
     http.httpBasic(AbstractHttpConfigurer::disable);

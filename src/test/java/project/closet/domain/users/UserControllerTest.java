@@ -44,13 +44,13 @@ public class UserControllerTest {
   final LocalDate birthDate = LocalDate.of(1999, 10, 24);
 
   @Autowired
-  MockMvcTester mockMvcTester; // 최신 버전
+  MockMvcTester mockMvcTester;
 
   @Autowired
-  ObjectMapper objectMapper; // JSON 처리를 위한 필수
+  ObjectMapper objectMapper;
 
-  @MockitoBean  // 이게 최신버전 (deprecated : MockBean)
-  UserService userService;  // 서비스 레이어 Mcok 처리
+  @MockitoBean
+  UserService userService;
 
   @Test
   void createUser() throws JsonProcessingException {
