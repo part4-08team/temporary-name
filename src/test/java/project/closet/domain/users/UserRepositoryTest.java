@@ -5,8 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Optional;
 import java.util.UUID;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +26,6 @@ import project.closet.global.config.JpaAuditingConfiguration;
 @ActiveProfiles("test")
 class UserRepositoryTest {
 
-//  @Container
-//  @ServiceConnection
-//  static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>
-//      (DockerImageName.parse("postgres:latest"));
-
   @Autowired
   private static PostgreSQLContainer<?> postgres;
 
@@ -44,16 +37,6 @@ class UserRepositoryTest {
 
   @Autowired
   private TestEntityManager tem;
-
-  @BeforeAll
-  static void beforeAll() {
-    postgres.start();
-  }
-
-  @AfterAll
-  static void afterAll() {
-    postgres.stop();
-  }
 
 
   @Test
