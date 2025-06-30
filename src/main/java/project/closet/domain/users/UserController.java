@@ -32,6 +32,7 @@ public class UserController {
   @GetMapping
   public ResponseEntity<UserDto> getUsers(@RequestBody @Valid ProfileFindRequest request) {
 
+    // todo : 반환값 API에 맞춰서 바꾸기
     UserDto userDtoList = userService.getUsers(request);
     return ResponseEntity.status(HttpStatus.OK).body(userDtoList);
   }
