@@ -1,3 +1,31 @@
+DROP TABLE IF EXISTS clothes_attributes CASCADE;
+DROP TABLE IF EXISTS attributes CASCADE;
+DROP TABLE IF EXISTS feed_clothes CASCADE;
+DROP TABLE IF EXISTS clothes CASCADE;
+DROP TABLE IF EXISTS feed_like CASCADE;
+DROP TABLE IF EXISTS feed_comment CASCADE;
+DROP TABLE IF EXISTS feeds CASCADE;
+DROP TABLE IF EXISTS weathers CASCADE;
+DROP TABLE IF EXISTS follows CASCADE;
+DROP TABLE IF EXISTS notifications CASCADE;
+DROP TABLE IF EXISTS profiles CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
+DROP TYPE IF EXISTS location_type CASCADE;
+DROP TYPE IF EXISTS temperature_type CASCADE;
+DROP TYPE IF EXISTS precipitation_info_type CASCADE;
+DROP TYPE IF EXISTS wind_speed_type CASCADE;
+DROP TYPE IF EXISTS humidity_type CASCADE;
+DROP TYPE IF EXISTS user_role_type CASCADE;
+DROP TYPE IF EXISTS temperature_sensitivity_type CASCADE;
+DROP TYPE IF EXISTS gender_type CASCADE;
+DROP TYPE IF EXISTS level_type CASCADE;
+DROP TYPE IF EXISTS sky_status_type CASCADE;
+DROP TYPE IF EXISTS asWord_type CASCADE;
+DROP TYPE IF EXISTS precipitation_type CASCADE;
+DROP TYPE IF EXISTS clothes_type CASCADE;
+
+-- Create extension
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 CREATE TYPE user_role_type AS ENUM ('USER', 'ADMIN');
@@ -62,7 +90,7 @@ CREATE TABLE profiles
     name                    VARCHAR(255)     NOT NULL,
     gender                  gender_type,
     birth_date              DATE,
-    profile_image_url       VARCHAR(1024),
+    profile_image_url         VARCHAR(1024),
     location                location_type,
     temperature_sensitivity temperature_sensitivity_type
 );
