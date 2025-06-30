@@ -12,10 +12,7 @@ public record ProfileUpdateWithImageUrlRequest(
 ) {
 
   public ProfileUpdateWithImageUrlRequest {
-
-    boolean isValidUrl = UrlValidatorUtil.isValidUrl(imageUrl);
-
-    if (!isValidUrl) {
+    if (imageUrl != null && !UrlValidatorUtil.isValidUrl(imageUrl)) {
       throw new IllegalArgumentException("유효하지 않은 imageUrl 입니다.");
     }
   }

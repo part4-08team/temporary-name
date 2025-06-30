@@ -6,6 +6,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -70,11 +71,12 @@ public class SecurityConfig {
         .sessionManagement(smc -> smc.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
     http.authorizeHttpRequests(request -> request
-        .requestMatchers("/api/auth/sign-in").permitAll() // 로그인 페이지는 permitAll()
-        .requestMatchers("/temp/**").hasRole("TEMP") // 임시비밀번호 로그인 시 URL
+        .requestMatchers("/api/auth/sign-in").permitAll()
+        .requestMatchers(HttpMethod.PATCH,"/api/users/**/password").hasAnyRole("TEMP", "USER") // 임시비밀번호 로그인 시 URL
+        .requestMatchers(HttpMethod.GET,"/api/users").hasRole("ADMIN")
+        .requestMatchers(HttpMethod.PATCH, "/api/users/**/role").hasRole("ADMIN")
+        .requestMatchers(HttpMethod.PATCH, "/api/users/**/lock").hasRole("ADMIN")
         .requestMatchers("/api/**").hasRole("USER")
-        .requestMatchers("/api/users").hasRole("ADMIN") // TODO : 관리자 전용 URL 나중에 찾기
-        .requestMatchers("/api/**").authenticated()
     );
 
     http.addFilterBefore(new JWTTokenValidatorFilter(jwtProperties, jwtUtils, redisRepository, jwtBlackList), UsernamePasswordAuthenticationFilter.class);

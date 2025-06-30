@@ -19,7 +19,7 @@ public record ProfileDto(
 ) {
 
   public ProfileDto {
-    if (!UrlValidatorUtil.isValidUrl(profileImageUrl)) {
+    if (profileImageUrl != null && !UrlValidatorUtil.isValidUrl(profileImageUrl)) {
       throw new IllegalArgumentException("profileImageUrl must be a valid URL");
     }
   }
