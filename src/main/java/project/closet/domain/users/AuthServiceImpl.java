@@ -142,6 +142,13 @@ public class AuthServiceImpl implements AuthService {
     }
   }
 
+  @Transactional
+  @Override
+  public String getAccessToken(String refreshToken) {
+    UUID userId = jwtUtils.getUserId(refreshToken);
+    return (String) redisRepository.findByUserId(userId);
+  }
+
   private void validateRefreshTokenType(String token) {
     String tokenType = jwtUtils.getTokenType(token);
     if (!TokenType.REFRESH.name().equals(tokenType)) {

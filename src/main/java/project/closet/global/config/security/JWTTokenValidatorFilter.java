@@ -3,7 +3,6 @@ package project.closet.global.config.security;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -74,17 +73,6 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
     if (redisAccessToken == null || !redisAccessToken.equals(accessToken)) {
       throw new BadCredentialsException("Invalid accesstoken");
     }
-  }
-
-  private String extractRefreshToken(HttpServletRequest request) {
-    Cookie[] cookies = request.getCookies();
-    for (Cookie cookie : cookies) {
-      if (TokenType.ACCESS.name().equals(cookie.getName())) {
-        return cookie.getValue();
-      }
-    }
-
-    throw new BadCredentialsException("Missing refresh token");
   }
 
   @Override

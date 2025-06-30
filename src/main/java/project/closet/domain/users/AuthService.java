@@ -14,4 +14,7 @@ public interface AuthService {
   void resetPassword(ResetPasswordRequest request);
 
   String reissueAccessToken(String refreshToken);
+
+  @Transactional
+  String getAccessToken(String refreshToken);
 }

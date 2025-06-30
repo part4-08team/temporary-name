@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,6 +31,7 @@ public class AuthController {
   // 로그 아웃
   @PostMapping("/sign-out")
   public ResponseEntity<?> logout(HttpServletRequest request) {
+
     authService.logout(request.getHeader("authorization"));
     return ResponseEntity.status(HttpStatus.OK).build();
   }
@@ -41,7 +43,6 @@ public class AuthController {
       HttpServletResponse response) {
 
     SignInResponse tokens = authService.login(request);
-    // todo : Refresh Token key 알아보기
     response.setHeader(jwtProperties.header(), tokens.accessToken());
     response.addCookie(createCookie(TokenType.REFRESH.getTokenName(), tokens.refreshToken()));
 
@@ -63,10 +64,10 @@ public class AuthController {
   }
 
   @GetMapping("/me")
-  public ResponseEntity<String> findAccessToken(@RequestParam("refreshToken") String refreshToken) {
+  public ResponseEntity<String> findAccessToken(HttpServletRequest request) {
 
-    // 인증정보 조회 완성
-    return ResponseEntity.status(HttpStatus.OK).body("Success : Find Access Token");
+    String accessToken = authService.getAccessToken(extractRefreshToken(request));
+    return ResponseEntity.status(HttpStatus.OK).body(accessToken);
   }
 
   private Cookie createCookie(String name, String value) {
@@ -74,5 +75,16 @@ public class AuthController {
     cookie.setHttpOnly(true);
     cookie.setMaxAge((int) jwtProperties.refreshExpiration());
     return cookie;
+  }
+
+  private String extractRefreshToken(HttpServletRequest request) {
+    Cookie[] cookies = request.getCookies();
+    for (Cookie cookie : cookies) {
+      if (TokenType.REFRESH.getTokenName().equals(cookie.getName())) {
+        return cookie.getValue();
+      }
+    }
+
+    throw new BadCredentialsException("Missing or Invalid refresh-token");
   }
 }
