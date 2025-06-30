@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,7 +47,7 @@ public class UserController {
 
   @PatchMapping("/{userId}/role")
   public ResponseEntity<UserDto> updateUserRole(
-      @RequestParam("userId") UUID userId,
+      @PathVariable("userId") UUID userId,
       @RequestBody @Valid UserRoleUpdateRequest request
   ) {
 
@@ -55,7 +56,7 @@ public class UserController {
   }
 
   @GetMapping("/{userId}/profiles")
-  public ResponseEntity<?> getUserProfiles(@RequestParam("userId") UUID userId) {
+  public ResponseEntity<?> getUserProfiles(@PathVariable("userId") UUID userId) {
 
     ProfileDto userProfileDto = userService.getUserProfile(userId);
     return ResponseEntity.status(HttpStatus.OK).body(userProfileDto);
@@ -63,7 +64,7 @@ public class UserController {
 
   @PatchMapping("/{userId}/profiles")
   public ResponseEntity<?> updateUserProfiles(
-      @RequestParam("userId") UUID userId,
+      @PathVariable("userId") UUID userId,
       @RequestBody @Valid ProfileUpdateWithImageUrlRequest request) {
 
     ProfileDto userProfileDto = userService.updateUserProfile(userId, request);
@@ -72,7 +73,7 @@ public class UserController {
 
   @PatchMapping("/{userId}/password")
   public ResponseEntity<?> updateUserPassword(
-      @RequestParam("userId") UUID userId,
+      @PathVariable("userId") UUID userId,
       @RequestBody @Valid ChangePasswordRequest request) {
 
     userService.updateUserPassword(userId, request);

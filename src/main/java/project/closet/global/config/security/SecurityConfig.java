@@ -72,11 +72,12 @@ public class SecurityConfig {
 
     http.authorizeHttpRequests(request -> request
         .requestMatchers("/api/auth/sign-in").permitAll()
-        .requestMatchers(HttpMethod.PATCH,"/api/users/**/password").hasAnyRole("TEMP", "USER") // 임시비밀번호 로그인 시 URL
+        .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
+        .requestMatchers(HttpMethod.PATCH,"/api/users/*/password").hasAnyRole("TEMP", "USER") // 임시비밀번호 로그인 시 URL
         .requestMatchers(HttpMethod.GET,"/api/users").hasRole("ADMIN")
-        .requestMatchers(HttpMethod.PATCH, "/api/users/**/role").hasRole("ADMIN")
-        .requestMatchers(HttpMethod.PATCH, "/api/users/**/lock").hasRole("ADMIN")
-        .requestMatchers("/api/**").hasRole("USER")
+        .requestMatchers(HttpMethod.PATCH, "/api/users/*/role").hasRole("ADMIN")
+        .requestMatchers(HttpMethod.PATCH, "/api/users/*/lock").hasRole("ADMIN")
+        .requestMatchers("/api/*").hasRole("USER")
     );
 
     http.addFilterBefore(new JWTTokenValidatorFilter(jwtProperties, jwtUtils, redisRepository, jwtBlackList), UsernamePasswordAuthenticationFilter.class);

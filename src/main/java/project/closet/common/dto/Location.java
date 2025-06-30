@@ -3,7 +3,8 @@ package project.closet.common.dto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import java.util.List;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.Struct;
@@ -14,16 +15,15 @@ import org.hibernate.type.SqlTypes;
 @Struct(name = "location_type")
 public record Location(
 
-    @NotBlank(message = "위도를 입력해주세요.")
+    @Min(value = -90, message = "Latitude must be greater than -90")
+    @Max(value = 90, message = "Latitude must be smaller than 90.")
     double latitude,
 
-    @NotBlank(message = "경도를 입력해주세요.")
+    @Min(value = -180, message = "Longitude must be greater than -180")
+    @Max(value = 180, message = "Longitude must be smaller than 180.")
     double longitude,
 
-    @NotBlank(message = "x좌표를 입력해주세요.")
     int x,
-
-    @NotBlank(message = "y좌표를 입력해주세요.")
     int y,
 
     @JdbcTypeCode(SqlTypes.ARRAY)
