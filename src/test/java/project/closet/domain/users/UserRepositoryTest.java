@@ -38,15 +38,15 @@ class UserRepositoryTest {
   @Autowired
   private TestEntityManager tem;
 
+  final String name = "John";
+  final String email = "Q1YrQ@example.com";
+  final String password = "password";
 
   @Test
   @DisplayName("user와 profile이 함께 save")
   @Transactional
   void saveUserWithProfile() {
     // given
-    var name = "John";
-    var email = "Q1YrQ@example.com";
-    var password = "password";
 
     // when
     var user = User.createUserWithProfile(name, email, password);
@@ -70,4 +70,68 @@ class UserRepositoryTest {
     assertThat(foundProfile.getUser()).isEqualTo(foundUser);
   }
 
+  @Test
+  void findUserByEmail() {
+    // given
+    User user = User.createUserWithProfile("John", email, "password");
+    User savedUser = userRepository.save(user);
+
+    tem.flush();
+    tem.clear();
+
+    // when + then
+    Optional<User> optionalUser = userRepository.findByEmail(email);
+    assertThat(optionalUser.isPresent()).isTrue();
+
+    User foundUser = optionalUser.get();
+    assertThat(foundUser).isEqualTo(savedUser);
+  }
+
+  @Test
+  @DisplayName("올바른 이메일이면 false")
+  void existsByEmail_success() {
+    // given
+    User user = User.createUserWithProfile("John", email, "password");
+    User savedUser = userRepository.save(user);
+
+    tem.flush();
+    tem.clear();
+
+    // when + then
+    boolean exists = userRepository.existsByEmail(email);
+    assertThat(exists).isTrue();
+  }
+
+  @Test
+  @DisplayName("잘못된 이메일이면 false")
+  void existsByEmail_false() {
+    String wrongEmail = "wrong-email";
+    User user = User.createUserWithProfile("John", email, "password");
+    User savedUser = userRepository.save(user);
+
+    tem.flush();
+    tem.clear();
+
+    // when + then
+    boolean exists = userRepository.existsByEmail(wrongEmail);
+    assertThat(exists).isFalse();
+  }
+
+  @Test
+  void findUserById() {
+    // given
+    User user = User.createUserWithProfile("John", email, "password");
+    User savedUser = userRepository.save(user);
+
+    tem.flush();
+    tem.clear();
+
+    // when + then
+    Optional<User> optionalUser = userRepository.findById(savedUser.getId());
+    assertThat(optionalUser.isPresent()).isTrue();
+
+
+    User foundUser = optionalUser.get();
+    assertThat(foundUser).isEqualTo(savedUser);
+  }
 }

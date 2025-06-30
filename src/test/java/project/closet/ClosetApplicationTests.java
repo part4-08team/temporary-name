@@ -19,12 +19,11 @@ class ClosetApplicationTests {
   @Autowired
   PostgreSQLContainer<?> container;
 
+  // redis Container도 필요
   @Test
   void contextLoads() {
-    container.start();
     log.info("---{}---", container.getJdbcUrl());
     log.info("---{}---", container.getUsername());
     log.info("---{}---", container.getPassword());
-    container.stop();
   }
 }
