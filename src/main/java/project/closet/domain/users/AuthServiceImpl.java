@@ -22,6 +22,7 @@ import project.closet.domain.users.util.TemporaryPasswordFactory;
 import project.closet.global.config.redis.RedisRepository;
 import project.closet.global.config.security.ClosetUserDetails;
 import project.closet.global.config.security.JWTConfigProperties;
+import project.closet.global.config.security.JwtBlackList;
 import project.closet.global.config.security.JwtUtils;
 import project.closet.global.config.security.TokenType;
 
@@ -35,8 +36,8 @@ public class AuthServiceImpl implements AuthService {
   private final AuthenticationManager authenticationManager;
   private final RedisRepository redisRepository;
   private final JWTConfigProperties jwtProperties;
+  private final JwtBlackList jwtBlackList;
 
-  @Transactional
   @Override
   public void logout(String accessToken) {
     UUID userId = jwtUtils.getUserId(accessToken);
@@ -111,10 +112,8 @@ public class AuthServiceImpl implements AuthService {
 
   /**
    * 검증 : 타입 + 만료시간
-   * todo : 추가로 검증할 것 : BlackList
    * todo : Refresh Rotate 방식으로 할건지 확인
    */
-  @Transactional
   @Override
   public String reissueAccessToken(String refreshToken) {
 
@@ -126,7 +125,9 @@ public class AuthServiceImpl implements AuthService {
       throw new BadCredentialsException("Reissue Error : Invalid refresh token");
     }
 
-    // todo : refresh-Token에 저장된 userId를 기반으로 DB에서 찾아오기
+    if (jwtBlackList.isBlackListed(userId)) {
+      throw new BadCredentialsException("You are Black");
+    }
 
     try {
       String newAccessToken = jwtUtils.createJwtToken(
@@ -142,7 +143,6 @@ public class AuthServiceImpl implements AuthService {
     }
   }
 
-  @Transactional
   @Override
   public String getAccessToken(String refreshToken) {
     UUID userId = jwtUtils.getUserId(refreshToken);
