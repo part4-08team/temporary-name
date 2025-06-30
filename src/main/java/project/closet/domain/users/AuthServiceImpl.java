@@ -36,10 +36,13 @@ public class AuthServiceImpl implements AuthService {
   private final RedisRepository redisRepository;
   private final JWTConfigProperties jwtProperties;
 
+  @Transactional
+  @Override
+  public void logout(String accessToken) {
+    UUID userId = jwtUtils.getUserId(accessToken);
+    redisRepository.deleteByUserId(userId);
+  }
 
-  /**
-   * todo : 로그인 되어있을 경우 userId key값 기반에서 Redis에 저장된 정보 삭제
-   */
   @Override
   public SignInResponse login(SignInRequest request) {
 

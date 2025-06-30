@@ -73,6 +73,7 @@ public class SecurityConfig {
         .requestMatchers("/temp/**").hasRole("TEMP") // 임시비밀번호 로그인 시 URL
         .requestMatchers("/api/**").hasRole("USER")
         .requestMatchers("/api/users").hasRole("ADMIN") // TODO : 관리자 전용 URL 나중에 찾기
+        .requestMatchers("/api/**").authenticated()
     );
 
     http.addFilterBefore(new JWTTokenValidatorFilter(jwtProperties, jwtUtils, redisRepository), UsernamePasswordAuthenticationFilter.class);

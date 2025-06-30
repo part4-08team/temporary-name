@@ -1,6 +1,7 @@
 package project.closet.domain.users;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +29,8 @@ public class AuthController {
 
   // 로그 아웃
   @PostMapping("/sign-out")
-  public ResponseEntity<?> logout() {
-
+  public ResponseEntity<?> logout(HttpServletRequest request) {
+    authService.logout(request.getHeader("authorization"));
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 
@@ -42,7 +43,7 @@ public class AuthController {
     SignInResponse tokens = authService.login(request);
     // todo : Refresh Token key 알아보기
     response.setHeader(jwtProperties.header(), tokens.accessToken());
-    response.addCookie(createCookie(TokenType.REFRESH.name(), tokens.refreshToken()));
+    response.addCookie(createCookie(TokenType.REFRESH.getTokenName(), tokens.refreshToken()));
 
     return ResponseEntity.status(HttpStatus.OK).body("Login Success");
   }
