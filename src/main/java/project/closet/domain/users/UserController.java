@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import project.closet.domain.users.dto.ChangePasswordRequest;
 import project.closet.domain.users.dto.ProfileDto;
@@ -56,14 +55,14 @@ public class UserController {
   }
 
   @GetMapping("/{userId}/profiles")
-  public ResponseEntity<?> getUserProfiles(@PathVariable("userId") UUID userId) {
+  public ResponseEntity<ProfileDto> getUserProfiles(@PathVariable("userId") UUID userId) {
 
     ProfileDto userProfileDto = userService.getUserProfile(userId);
     return ResponseEntity.status(HttpStatus.OK).body(userProfileDto);
   }
 
   @PatchMapping("/{userId}/profiles")
-  public ResponseEntity<?> updateUserProfiles(
+  public ResponseEntity<ProfileDto> updateUserProfiles(
       @PathVariable("userId") UUID userId,
       @RequestBody @Valid ProfileUpdateWithImageUrlRequest request) {
 
@@ -82,7 +81,7 @@ public class UserController {
 
   @PatchMapping("/{userId}/lock")
   public ResponseEntity<UUID> lockUser(
-      @RequestParam("userId") UUID userId,
+      @PathVariable("userId") UUID userId,
       @RequestBody @Valid UserLockUpdateRequest request) {
 
     UUID userUUID = userService.updateUserLock(userId, request);

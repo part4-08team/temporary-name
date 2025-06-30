@@ -77,7 +77,7 @@ public class SecurityConfig {
         .requestMatchers(HttpMethod.GET,"/api/users").hasRole("ADMIN")
         .requestMatchers(HttpMethod.PATCH, "/api/users/*/role").hasRole("ADMIN")
         .requestMatchers(HttpMethod.PATCH, "/api/users/*/lock").hasRole("ADMIN")
-        .requestMatchers("/api/*").hasRole("USER")
+        .requestMatchers("/api/**").hasRole("USER")
     );
 
     http.addFilterBefore(new JWTTokenValidatorFilter(jwtProperties, jwtUtils, redisRepository, jwtBlackList), UsernamePasswordAuthenticationFilter.class);
