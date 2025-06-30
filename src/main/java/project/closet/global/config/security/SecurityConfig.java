@@ -52,6 +52,7 @@ public class SecurityConfig {
 
     // http.cors(corsConfig -> corsConfig.disable());  // cors 불확인 (임시)
     // http.csrf(AbstractHttpConfigurer::disable); // 프론트에서 csrf를 못 찾음
+    //http.csrf()
     http.cors(corsConfig -> corsConfig.configurationSource(new CorsConfigurationSource() {
           @Override
           public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {

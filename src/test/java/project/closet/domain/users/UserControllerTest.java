@@ -101,6 +101,8 @@ public class UserControllerTest {
     result.extractingPath("$.email").isEqualTo(email);
     result.extractingPath("$.name").isEqualTo(name);
     result.extractingPath("$.role").isEqualTo(UserRole.ADMIN.toString());
+    result.extractingPath("$.linkedOAuthProviders").asArray().hasSize(0);
+    result.extractingPath("$.locked").isEqualTo(false);
   }
 
   @WithMockUser

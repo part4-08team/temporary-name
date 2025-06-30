@@ -5,20 +5,36 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Optional;
 import java.util.UUID;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import project.closet.config.TestContainerConfig;
 import project.closet.domain.users.repository.ProfileRepository;
 import project.closet.domain.users.repository.UserRepository;
+import project.closet.global.config.JpaAuditingConfiguration;
 
 @DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Testcontainers
+@Import({JpaAuditingConfiguration.class, TestContainerConfig.class})
 @ActiveProfiles("test")
 class UserRepositoryTest {
+
+//  @Container
+//  @ServiceConnection
+//  static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>
+//      (DockerImageName.parse("postgres:latest"));
+
+  @Autowired
+  private static PostgreSQLContainer<?> postgres;
 
   @Autowired
   private UserRepository userRepository;
@@ -29,8 +45,20 @@ class UserRepositoryTest {
   @Autowired
   private TestEntityManager tem;
 
+  @BeforeAll
+  static void beforeAll() {
+    postgres.start();
+  }
+
+  @AfterAll
+  static void afterAll() {
+    postgres.stop();
+  }
+
+
   @Test
   @DisplayName("user와 profile이 함께 save")
+  @Transactional
   void saveUserWithProfile() {
     // given
     var name = "John";
@@ -58,4 +86,5 @@ class UserRepositoryTest {
     assertThat(foundUser).isEqualTo(savedUser);
     assertThat(foundProfile.getUser()).isEqualTo(foundUser);
   }
+
 }

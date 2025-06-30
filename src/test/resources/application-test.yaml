@@ -1,13 +1,5 @@
 spring:
-  test:
-    database:
-      replace: none
-
-  datasource:
-    url: jdbc:postgresql://${DATABASE_HOST:localhost}:${DATABASE_PORT:5433}/${DATABASE_NAME:postgres}
-    username: ${DATABASE_USERNAME:postgres}
-    password: ${DATABASE_PASSWORD:postgres}
-    driver-class-name: org.postgresql.Driver
+  # 테스트 컨테이너 사용
 
   jpa:
     hibernate:
