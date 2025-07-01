@@ -16,7 +16,6 @@ public class RedisRepository {
 
   // todo : 어떤 형태로 저장할지 고민
   public void save(UUID userId, String accessToken, Duration ttl) {
-    // 흠... 검증 로직 넣을까
     redisTemplate.opsForValue().set(getKeyName(userId), accessToken, ttl);
   }
 
