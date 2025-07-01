@@ -145,10 +145,6 @@ public class AuthServiceImpl implements AuthService {
       throw new BadCredentialsException("Reissue Error : Invalid refresh token");
     }
 
-    if (jwtBlackList.isBlackListed(userId)) {
-      throw new BadCredentialsException("You are Black");
-    }
-
     try {
       String newAccessToken = jwtUtils.createJwtToken(
           TokenType.ACCESS,

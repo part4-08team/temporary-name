@@ -33,10 +33,6 @@ public class ClosetUserDetailService implements UserDetailsService {
       throw new BadCredentialsException("Your account is locked.");
     }
 
-    if (jwtBlackList.isBlackListed(user.getId())) {
-      throw new BadCredentialsException("You are Black");
-    }
-
     String role = determineRole(user);
     List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
 

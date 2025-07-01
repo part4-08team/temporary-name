@@ -47,9 +47,6 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
     validateTokenType(TokenType.ACCESS, accessToken);
 
     validateAccessTokenInRedis(accessToken);
-    if (jwtBlackList.isBlackListed(jwtUtils.getUserId(accessToken))){
-      throw new BadCredentialsException("You are Black");
-    }
 
     try {
       String username = jwtUtils.getUsername(accessToken);

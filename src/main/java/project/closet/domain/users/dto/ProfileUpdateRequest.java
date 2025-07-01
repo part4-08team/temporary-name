@@ -23,5 +23,4 @@ public record ProfileUpdateRequest(
     //@NotBlank(message = "온도 민감도를 입력해주세요.")
     TemperatureSensitivity temperatureSensitivity
 ) {
-
 }
