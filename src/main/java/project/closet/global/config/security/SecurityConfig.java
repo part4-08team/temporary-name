@@ -74,7 +74,7 @@ public class SecurityConfig {
         csrfConfig
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             .csrfTokenRequestHandler(csrfTokenRequestHandler)
-            .ignoringRequestMatchers("/api/auth/sign-in")
+            .ignoringRequestMatchers("/api/auth/sign-in", "/api/users")
         );
 
     http.securityContext(contextConfig -> contextConfig.requireExplicitSave(false))

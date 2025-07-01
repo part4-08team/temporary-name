@@ -21,7 +21,7 @@ import project.closet.global.config.security.JWTConfigProperties;
 import project.closet.global.config.security.TokenType;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("auth")
 @RequiredArgsConstructor
 public class AuthController {
 

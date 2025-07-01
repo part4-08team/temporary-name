@@ -50,9 +50,6 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
     if (jwtBlackList.isBlackListed(jwtUtils.getUserId(accessToken))){
       throw new BadCredentialsException("You are Black");
     }
-    /**
-     * todo : 블랙리스트인지 확인
-     */
 
     try {
       String username = jwtUtils.getUsername(accessToken);

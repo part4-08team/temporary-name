@@ -1,5 +1,9 @@
+server:
+  servlet:
+    context-path: ${SPRING_APP_NAME:/api}
+
 spring:
-#  config:
+  #  config:
 #    import: optional:file:.env[.properties]
   application:
     name: ${SPRING_APP_NAME:closet}

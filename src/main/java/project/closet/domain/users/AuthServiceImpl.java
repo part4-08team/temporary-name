@@ -74,7 +74,7 @@ public class AuthServiceImpl implements AuthService {
     Authentication authenticate = authenticationManager.authenticate(authentication);
 
     if (authenticate == null || !authenticate.isAuthenticated()) {
-      throw new BadCredentialsException("Bad credentials");
+      throw new BadCredentialsException("Failed to authenticate");
     }
 
     ClosetUserDetails userDetails = (ClosetUserDetails) authenticate.getPrincipal();
@@ -100,7 +100,7 @@ public class AuthServiceImpl implements AuthService {
 
       return new SignInResponse(accessToken, refreshToken);
     } catch (Exception e) {
-      throw new BadCredentialsException("Authorization is failed");
+      throw new BadCredentialsException("Failed to create token");
     }
   }
 

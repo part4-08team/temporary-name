@@ -22,7 +22,7 @@ import project.closet.domain.users.dto.UserLockUpdateRequest;
 import project.closet.domain.users.dto.UserRoleUpdateRequest;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
 
