@@ -81,6 +81,7 @@ public class UserController {
     return ResponseEntity.status(HttpStatus.OK).build();
   }
 
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
   @PatchMapping("/{userId}/lock")
   public ResponseEntity<UUID> lockUser(
       @PathVariable("userId") UUID userId,
