@@ -1,5 +1,9 @@
+server:
+  servlet:
+    context-path: ${SPRING_APP_NAME:/api}
+
 spring:
-#  config:
+  #  config:
 #    import: optional:file:.env[.properties]
   application:
     name: ${SPRING_APP_NAME:closet}
@@ -21,7 +25,44 @@ spring:
     jdbc:
       initialize-schema: never
 
+  # 임시 비밀번호 메일 전송
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:carer3759@gmail.com} # 임시 이메일
+    password: ${MAIL_PASSWORD} # gamil 비번 아니 아니라 '앱 비밀번호' 발급 받고 ㄱ
+    properties:
+      mail:
+        debug: true # dev
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connection-timeout: 5000  # 나중에 recilence 도입하면 그거보다는 길게
+        location: ${MAIL_LOCATION:localhost}
+        from: ${MAIL_FROM:carer3759@gmail.com}  # 헤더에 한글 들어가는 것 때문
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+jwt:
+  secret: ${JWT_SECRET:44a81d8d4c44e07f56c9019fabb29194bd524d3018f79562d625749f7c709b5f} # 나중에 바꾸기
+  header: ${JWT_HEADER:Authorization}
+  expiration: ${JWT_EXPIRATION:3600}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION:259200} # 3일
+  refresh-header: ${JWT_REFRESH_HEADER:refresh_token}
+
+admin:
+  username: ${ADMIN_USERNAME:CLOSET-ADMIN}
+  email: ${ADMIN_EMAIL:admin2342@gmail.com}
+  password: ${ADMIN_PASSWORD:adminwudqbddfqwlmelki}
+
 logging:
   pattern:
     console: ${LOGPATTERN_CONSOLE:%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread]) %yellow(%logger{15}) - %msg%n}
+
+
 
