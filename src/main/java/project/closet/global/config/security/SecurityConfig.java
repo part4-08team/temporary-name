@@ -12,9 +12,8 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -112,8 +111,8 @@ public class SecurityConfig {
   }
 
   @Bean
-  public GrantedAuthority grantedAuthority() {
-    return new SimpleGrantedAuthority("ROLE_");
+  static GrantedAuthorityDefaults grantedAuthority() {
+    return new GrantedAuthorityDefaults("ROLE_");
   }
 
   @Bean
