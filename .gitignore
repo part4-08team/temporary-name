@@ -212,3 +212,4 @@ gradle-app.setting
 
 .env*
 .idea/
+/src/main/resources/static/

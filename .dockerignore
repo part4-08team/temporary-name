@@ -1,0 +1,30 @@
+# Gradle build output
+/build
+/.gradle
+
+# IntelliJ / IDE
+.idea
+*.iml
+
+# OS / editor temp files
+.DS_Store
+*.log
+*.swp
+
+# Git
+.git
+.gitignore
+
+# Docker-related files (optional)
+docker-compose.yml
+Dockerfile
+
+# 환경 변수 파일 (민감정보)
+.env
+
+# test output (optional)
+test-results/
+test-output/
+
+# Java target (if any)
+target/
