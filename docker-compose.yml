@@ -11,6 +11,7 @@ services:
       - "8080:8080"
     depends_on:
       - db
+      - redis
     networks:
       - closet-network
 
@@ -29,19 +30,24 @@ services:
     networks:
       - closet-network
 
-#
-#  cache-server:
-#    container_name: closet-cache-server
-#    image: redis:latest
-#    ports:
-#      - 6379:6379
-#    healthcheck:
-#      test: ["CMD", "redis-cli", "ping"]
-#      interval: 5s
-#      timeout: 30s
+
+  redis:
+    container_name: closet-redis
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - closet-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 30s
 
 volumes:
   postgres-data:
+  redis-data:
 
 networks:
   closet-network:

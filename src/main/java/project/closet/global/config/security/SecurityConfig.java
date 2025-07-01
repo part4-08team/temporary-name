@@ -43,10 +43,7 @@ public class SecurityConfig {
   };
 
   /**
-   어드민 기능 - 초기화, 권환 관리, 계정 잠금
-   회원 가입
-   로그인 : jwt 기반
-   비밀본호 초기화
+   * 어드민 기능 - 초기화, 권환 관리, 계정 잠금 회원 가입 로그인 : jwt 기반 비밀본호 초기화
    */
 
   // 임시
@@ -55,7 +52,8 @@ public class SecurityConfig {
 
     CsrfTokenRequestHandler csrfTokenRequestHandler = new CsrfTokenRequestAttributeHandler();
 
-    http.cors(corsConfig -> corsConfig.configurationSource(new CorsConfigurationSource() {
+    http.cors(corsConfig -> corsConfig.configurationSource(
+        new CorsConfigurationSource() {
           @Override
           public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
             CorsConfiguration config = new CorsConfiguration();
@@ -70,27 +68,28 @@ public class SecurityConfig {
         }
     ));
 
-    http.csrf( csrfConfig ->
+    http.csrf(csrfConfig ->
         csrfConfig
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             .csrfTokenRequestHandler(csrfTokenRequestHandler)
             .ignoringRequestMatchers("/api/auth/sign-in", "/api/users")
-        );
+    );
 
     http.securityContext(contextConfig -> contextConfig.requireExplicitSave(false))
         .sessionManagement(smc -> smc.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
     http.authorizeHttpRequests(request -> request
-        .requestMatchers("/api/auth/sign-in").permitAll()
-        .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
-        .requestMatchers(HttpMethod.PATCH,"/api/users/*/password").hasAnyRole("TEMP", "USER") // 임시비밀번호 로그인 시 URL
-        .requestMatchers(HttpMethod.GET,"/api/users").hasRole("ADMIN")
-        .requestMatchers(HttpMethod.PATCH, "/api/users/*/role").hasRole("ADMIN")
-        .requestMatchers(HttpMethod.PATCH, "/api/users/*/lock").hasRole("ADMIN")
-        .requestMatchers("/api/**").hasRole("USER")
+            .requestMatchers(SecurityMatchers.PUBLIC_MATCHERS).permitAll()
+//        .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
+            .requestMatchers(HttpMethod.PATCH, "/api/users/*/password")
+            .hasAnyRole("TEMP", "USER") // 임시비밀번호 로그인 시 URL
+            .requestMatchers(HttpMethod.GET, "/api/users").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.PATCH, "/api/users/*/role").hasRole("ADMIN")
+            .requestMatchers(HttpMethod.PATCH, "/api/users/*/lock").hasRole("ADMIN")
+            .requestMatchers("/api/**").hasRole("USER")
     );
 
-    http.addFilterBefore(new JWTTokenValidatorFilter(jwtProperties, jwtUtils, redisRepository, jwtBlackList), UsernamePasswordAuthenticationFilter.class);
+//    http.addFilterBefore(new JWTTokenValidatorFilter(jwtProperties, jwtUtils, redisRepository, jwtBlackList), UsernamePasswordAuthenticationFilter.class);
     http.addFilterBefore(new CsrfCookieFilter(), UsernamePasswordAuthenticationFilter.class);
 
     http.formLogin(AbstractHttpConfigurer::disable);
@@ -124,11 +123,4 @@ public class SecurityConfig {
     return providerManager;
   }
 
-  /**
-   * password 강력하게 통제한다면 사용
-   */
-//  @Bean
-//  public CompromisedPasswordChecker compromisedPasswordChecker() {
-//    return new HaveIBeenPwnedRestApiPasswordChecker();
-//  }
 }

@@ -1,7 +1,3 @@
-server:
-  servlet:
-    context-path: ${SPRING_APP_NAME:/api}
-
 spring:
   profiles:
     active:
