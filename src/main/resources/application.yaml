@@ -53,7 +53,7 @@ jwt:
   header: ${JWT_HEADER:Authorization}
   expiration: ${JWT_EXPIRATION:3600}
   refresh-expiration: ${JWT_REFRESH_EXPIRATION:259200} # 3일
-  refresh-header: ${JWT_REFRESH_HEADER:Cookie}
+  refresh-header: ${JWT_REFRESH_HEADER:refresh_token}
 
 admin:
   username: ${ADMIN_USERNAME:CLOSET-ADMIN}
