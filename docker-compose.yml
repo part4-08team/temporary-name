@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  app:
+    image: closet:local
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: closet
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+      - redis
+    networks:
+      - closet-network
+
+  db:
+    container_name: closet-postgres
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: closet
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./src/main/resources/sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - closet-network
+
+
+  redis:
+    container_name: closet-redis
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - closet-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 30s
+
+volumes:
+  postgres-data:
+  redis-data:
+
+networks:
+  closet-network:
+    driver: bridge

@@ -1,4 +1,8 @@
 server:
   port: 8080
 
-
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/closet
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}

@@ -209,3 +209,7 @@ gradle-app.setting
 *.hprof
 
 # End of https://www.toptal.com/developers/gitignore/api/java,gradle,linux,windows,intellij
+
+.env*
+.idea/
+/src/main/resources/static/

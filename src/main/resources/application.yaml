@@ -1,18 +1,12 @@
-server:
-  servlet:
-    context-path: ${SPRING_APP_NAME:/api}
-
 spring:
-  #  config:
-#    import: optional:file:.env[.properties]
+  profiles:
+    active:
+      - dev
+  config:
+    import: optional:file:.env[.properties]
   application:
     name: ${SPRING_APP_NAME:closet}
-
-  # 임시
   datasource:
-    url: jdbc:postgresql://${DATABASE_HOST:localhost}:${DATABASE_PORT:5433}/${DATABASE_NAME:postgres}
-    username: ${DATABASE_USERNAME:postgres}
-    password: ${DATABASE_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -59,10 +53,3 @@ admin:
   username: ${ADMIN_USERNAME:CLOSET-ADMIN}
   email: ${ADMIN_EMAIL:admin2342@gmail.com}
   password: ${ADMIN_PASSWORD:adminwudqbddfqwlmelki}
-
-logging:
-  pattern:
-    console: ${LOGPATTERN_CONSOLE:%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread]) %yellow(%logger{15}) - %msg%n}
-
-
-
