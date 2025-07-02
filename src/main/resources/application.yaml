@@ -53,3 +53,11 @@ admin:
   username: ${ADMIN_USERNAME:CLOSET-ADMIN}
   email: ${ADMIN_EMAIL:admin2342@gmail.com}
   password: ${ADMIN_PASSWORD:adminwudqbddfqwlmelki}
+
+# Logging
+logging:
+  level:
+    project.closet: debug
+    org.hibernate.sql: debug
+    org.hibernate.orm.jdbc.bind: trace
+    org.springframework.security: trace
