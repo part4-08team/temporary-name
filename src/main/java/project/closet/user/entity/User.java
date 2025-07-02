@@ -2,6 +2,8 @@ package project.closet.user.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -19,4 +21,14 @@ public class User extends BaseUpdatableEntity {
 
     @Column(nullable = false)
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role = Role.USER;
+
+    public void updateRole(Role newRole) {
+        if (this.role != newRole) {
+            this.role = newRole;
+        }
+    }
 }
