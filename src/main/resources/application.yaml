@@ -49,10 +49,11 @@ jwt:
   refresh-expiration: ${JWT_REFRESH_EXPIRATION:259200} # 3일
   refresh-header: ${JWT_REFRESH_HEADER:refresh_token}
 
+# 어드민 초기화 설정정보
 admin:
-  username: ${ADMIN_USERNAME:CLOSET-ADMIN}
-  email: ${ADMIN_EMAIL:admin2342@gmail.com}
-  password: ${ADMIN_PASSWORD:adminwudqbddfqwlmelki}
+  username: ${ADMIN_USERNAME}
+  email: ${ADMIN_EMAIL}
+  password: ${ADMIN_PASSWORD}
 
 # Logging
 logging:
