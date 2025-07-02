@@ -14,9 +14,12 @@ public abstract class SecurityMatchers {
             new AntPathRequestMatcher("/api/auth/csrf-token", HttpMethod.GET.name());
 
     public static final RequestMatcher SIGN_UP =
-            new AntPathRequestMatcher("/api/users", HttpMethod.PATCH.name());
+            new AntPathRequestMatcher("/api/users", HttpMethod.POST.name());
+
+    public static final RequestMatcher LOGIN =
+            new AntPathRequestMatcher("/api/auth/sign-in", HttpMethod.POST.name());
 
     public static final RequestMatcher[] PUBLIC_MATCHERS = new RequestMatcher[]{
-            NON_API, GET_CSRF_TOKEN, SIGN_UP
+            NON_API, GET_CSRF_TOKEN, SIGN_UP, LOGIN
     };
 }

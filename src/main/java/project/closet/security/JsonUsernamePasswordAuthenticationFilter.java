@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import project.closet.dto.request.LoginRequest;
+import project.closet.global.config.security.SecurityMatchers;
 
 @RequiredArgsConstructor
 public class JsonUsernamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -41,5 +42,16 @@ public class JsonUsernamePasswordAuthenticationFilter extends UsernamePasswordAu
         } catch (IOException e) {
             throw new AuthenticationServiceException("Request parsing failed", e);
         }
+    }
+
+    // 정적 생성자 메소드로 시큐리티 설정에서 간편하게 필터 생성 등록
+    public static JsonUsernamePasswordAuthenticationFilter createDefault(
+            ObjectMapper objectMapper
+    ) {
+        JsonUsernamePasswordAuthenticationFilter filter =
+                new JsonUsernamePasswordAuthenticationFilter(objectMapper);
+        // Login URI Custom
+        filter.setRequiresAuthenticationRequestMatcher(SecurityMatchers.LOGIN);
+        return filter;
     }
 }
