@@ -42,6 +42,12 @@ spring:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
 
+closet:
+  admin:
+    username: ${ADMIN_USERNAME}
+    email: ${ADMIN_EMAIL}
+    password: ${ADMIN_PASSWORD}
+
 jwt:
   secret: ${JWT_SECRET:44a81d8d4c44e07f56c9019fabb29194bd524d3018f79562d625749f7c709b5f} # 나중에 바꾸기
   header: ${JWT_HEADER:Authorization}
@@ -49,11 +55,7 @@ jwt:
   refresh-expiration: ${JWT_REFRESH_EXPIRATION:259200} # 3일
   refresh-header: ${JWT_REFRESH_HEADER:refresh_token}
 
-# 어드민 초기화 설정정보
-admin:
-  username: ${ADMIN_USERNAME}
-  email: ${ADMIN_EMAIL}
-  password: ${ADMIN_PASSWORD}
+
 
 # Logging
 logging:
