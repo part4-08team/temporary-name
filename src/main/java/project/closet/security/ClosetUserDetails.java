@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import project.closet.dto.response.UserDto;
 
@@ -15,12 +16,13 @@ import project.closet.dto.response.UserDto;
 @RequiredArgsConstructor
 public class ClosetUserDetails implements UserDetails {
 
+    @Getter
     private final UserDto userDto;
     private final String password;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return List.of(new SimpleGrantedAuthority("ROLE_".concat(userDto.role().name())));
     }
 
     @Override
@@ -32,4 +34,5 @@ public class ClosetUserDetails implements UserDetails {
     public String getUsername() {
         return userDto.username();
     }
+
 }
