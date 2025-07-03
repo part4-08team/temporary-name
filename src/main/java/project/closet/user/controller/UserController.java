@@ -37,6 +37,7 @@ public class UserController implements UserApi {
     @GetMapping
     @Override
     public ResponseEntity<PageResponse<UserDto>> findAll() {
+        new UnsupportedOperationException("Not yet implemented");
         return null;
     }
 
