@@ -1,10 +1,16 @@
 package project.closet.user.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import java.time.LocalDate;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.AccessLevel;
-import java.time.LocalDate;
 import project.closet.domain.base.BaseUpdatableEntity;
 
 @Getter
@@ -38,6 +44,7 @@ public class Profile extends BaseUpdatableEntity {
     @Column(name = "location_name", length = 50)
     private String locationName;
 
+    @Builder
     public Profile(User user,
             String gender,
             LocalDate birthDate,
@@ -56,6 +63,12 @@ public class Profile extends BaseUpdatableEntity {
         this.locationName = locationName;
     }
 
+    public static Profile createDefault(User user) {
+        return Profile.builder()
+                .user(user)
+                .build();
+    }
+
     public void updateProfile(String newGender,
             LocalDate newBirthDate,
             String newProfileImageUrl,
@@ -72,7 +85,8 @@ public class Profile extends BaseUpdatableEntity {
         if (newProfileImageUrl != null && !newProfileImageUrl.equals(this.profileImageUrl)) {
             this.profileImageUrl = newProfileImageUrl;
         }
-        if (newTemperatureSensitivity != null && !newTemperatureSensitivity.equals(this.temperatureSensitivity)) {
+        if (newTemperatureSensitivity != null && !newTemperatureSensitivity.equals(
+                this.temperatureSensitivity)) {
             this.temperatureSensitivity = newTemperatureSensitivity;
         }
         if (newLatitude != null && !newLatitude.equals(this.latitude)) {
@@ -87,4 +101,3 @@ public class Profile extends BaseUpdatableEntity {
     }
 
 }
-

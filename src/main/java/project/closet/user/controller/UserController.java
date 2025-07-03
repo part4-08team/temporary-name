@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import project.closet.dto.request.UserCreateRequest;
 import project.closet.user.controller.api.UserApi;
 import project.closet.dto.response.UserDto;
 
@@ -17,7 +19,9 @@ public class UserController implements UserApi {
 
     @Override
     @PostMapping
-    public ResponseEntity<UserDto> create() {
+    public ResponseEntity<UserDto> create(@RequestBody UserCreateRequest userCreateRequest) {
         return null;
     }
+
+
 }
