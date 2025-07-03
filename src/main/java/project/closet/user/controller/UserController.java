@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import project.closet.dto.request.UserCreateRequest;
+import project.closet.dto.response.ProfileDto;
 import project.closet.user.controller.api.UserApi;
 import project.closet.dto.response.UserDto;
 
@@ -23,5 +24,8 @@ public class UserController implements UserApi {
         return null;
     }
 
-
+    @Override
+    public ResponseEntity<ProfileDto> updateProfile() {
+        return null;
+    }
 }

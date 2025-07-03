@@ -35,5 +35,5 @@ public interface UserApi {
             ) UserCreateRequest userCreateRequest
     );
 
-    ResponseEntity<ProfileDto>
+    ResponseEntity<ProfileDto> updateProfile();
 }
