@@ -81,7 +81,7 @@ public class UserController implements UserApi {
 
     @PatchMapping("/{userId}/lock")
     @Override
-    public ResponseEntity<String> changeAccoutLockStatus(
+    public ResponseEntity<String> changeAccountLockStatus(
             @PathVariable("userId") UUID userId,
             @RequestBody @Valid UserLockUpdateRequest request
     ) {
