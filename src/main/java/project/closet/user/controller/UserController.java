@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +24,7 @@ import project.closet.dto.response.PageResponse;
 import project.closet.dto.response.ProfileDto;
 import project.closet.dto.response.UserDto;
 import project.closet.user.controller.api.UserApi;
+import project.closet.user.service.UserService;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,9 +32,12 @@ import project.closet.user.controller.api.UserApi;
 @RequestMapping("/api/users")
 public class UserController implements UserApi {
 
+    private final UserService userService;
+
     @GetMapping
     @Override
     public ResponseEntity<PageResponse<UserDto>> findAll() {
+        new UnsupportedOperationException("Not yet implemented");
         return null;
     }
 
@@ -41,13 +46,19 @@ public class UserController implements UserApi {
     public ResponseEntity<UserDto> create(
             @RequestBody @Valid UserCreateRequest userCreateRequest
     ) {
-        return null;
+        log.info("사용자 생성 요청: {}", userCreateRequest);
+        UserDto createdUser = userService.create(userCreateRequest);
+        log.debug("사용자 생성 응답: {}", createdUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
-    @GetMapping("/{userId}/profile")
+    @GetMapping("/{userId}/profiles")
     @Override
     public ResponseEntity<ProfileDto> getProfile(@PathVariable("userId") UUID userId) {
-        return null;
+        log.info("사용자 프로필 조회 요청: userId={}", userId);
+        ProfileDto profile = userService.getProfile(userId);
+        log.debug("사용자 프로필 조회 응답: {}", profile);
+        return ResponseEntity.ok(profile);
     }
 
     @PatchMapping(
@@ -74,7 +85,7 @@ public class UserController implements UserApi {
 
     @PatchMapping("/{userId}/lock")
     @Override
-    public ResponseEntity<String> changeAccoutLockStatus(
+    public ResponseEntity<String> changeAccountLockStatus(
             @PathVariable("userId") UUID userId,
             @RequestBody @Valid UserLockUpdateRequest request
     ) {

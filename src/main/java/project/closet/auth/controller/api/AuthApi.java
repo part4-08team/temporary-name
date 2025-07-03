@@ -49,4 +49,5 @@ public interface AuthApi {
             @Parameter(hidden = true) String refreshToken,
             @Parameter(hidden = true) HttpServletResponse response
     );
+
 }

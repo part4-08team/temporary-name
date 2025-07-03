@@ -140,6 +140,7 @@ public class JwtService {
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                 .subject(userDto.username())
                 .claim("userDto", userDto)
+                .claim("userId", userDto.id().toString())
                 .issueTime(new Date(issueTime.toEpochMilli()))
                 .expirationTime(new Date(expirationTime.toEpochMilli()))
                 .build();
