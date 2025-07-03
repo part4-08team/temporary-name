@@ -9,4 +9,6 @@ public interface AttributeService {
     ClothesAttributeDefDto create(ClothesAttributeDefCreateRequest req);
 
     ClothesAttributeDefDto update(UUID id, ClothesAttributeDefCreateRequest req);
+
+    void delete(UUID id);
 }

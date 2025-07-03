@@ -45,4 +45,13 @@ public class AttributeServiceImpl implements AttributeService {
 
         return ClothesAttributeDefDto.of(e);
     }
+
+    @Override
+    @Transactional
+    public void delete(UUID id) {
+        Attribute e = repo.findById(id)
+                .orElseThrow(() -> new AttributeNotFoundException(id.toString()));
+        repo.delete(e);
+    }
+
 }
