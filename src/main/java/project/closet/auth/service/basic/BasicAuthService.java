@@ -63,15 +63,7 @@ public class BasicAuthService implements AuthService {
         user.updateRole(request.newRole());
 
         // 세션 만료 처리
-        sessionRegistry.getAllPrincipals().stream()
-                .filter(principal -> ((ClosetUserDetails) principal).getUserDto().id().equals(userId))
-                .findFirst()
-                .ifPresent(principal -> {
-                    List<SessionInformation> activeSessions =
-                            sessionRegistry.getAllSessions(principal, false);
-                    log.debug("Active sessions: {}", activeSessions.size());
-                    activeSessions.forEach(SessionInformation::expireNow);
-                });
+
         return userMapper.toDto(user);
     }
 }
