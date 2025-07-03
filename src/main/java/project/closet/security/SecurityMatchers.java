@@ -25,7 +25,7 @@ public abstract class SecurityMatchers {
     public static final String LOGIN_URL = "/api/auth/sign-in";
 
     public static final RequestMatcher ME =
-            new AntPathRequestMatcher("/api/aut/me", HttpMethod.GET.name());
+            new AntPathRequestMatcher("/api/auth/me", HttpMethod.GET.name());
 
     public static final RequestMatcher REFRESH =
             new AntPathRequestMatcher("/api/auth/refresh", HttpMethod.POST.name());
