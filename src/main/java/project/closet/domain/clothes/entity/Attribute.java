@@ -34,9 +34,12 @@ public class Attribute extends BaseEntity {
         this.selectableValues  = new ArrayList<>(selectableValues);
     }
 
-    // 선택값 추가 편의 메서드
-    public void addSelectableValue(String value) {
-        this.selectableValues.add(value);
+    public void setDefinitionName(String definitionName) {
+        this.definitionName = definitionName;
+    }
+
+    public void setSelectableValues(List<String> values) {
+        this.selectableValues = new ArrayList<>(values);
     }
 
 }
