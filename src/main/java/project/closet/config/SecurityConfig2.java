@@ -13,7 +13,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -28,10 +27,11 @@ import org.springframework.security.web.authentication.session.NullAuthenticated
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import project.closet.security.CustomLoginFailureHandler;
-import project.closet.security.CustomSessionInformationExpiredStrategy;
 import project.closet.security.JsonUsernamePasswordAuthenticationFilter;
 import project.closet.security.SecurityMatchers;
+import project.closet.security.jwt.JwtAuthenticationFilter;
 import project.closet.security.jwt.JwtLoginSuccessHandler;
+import project.closet.security.jwt.JwtLogoutHandler;
 import project.closet.security.jwt.JwtService;
 import project.closet.user.entity.Role;
 
@@ -48,10 +48,9 @@ public class SecurityConfig2 {
             JwtService jwtService) throws Exception {
         http
                 .authenticationProvider(daoAuthenticationProvider)
-                // filter 검사할 URL
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(SecurityMatchers.PUBLIC_MATCHERS).permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().hasRole(Role.USER.name())
                 )
                 .csrf(csrf ->
                         csrf
@@ -64,15 +63,21 @@ public class SecurityConfig2 {
                 .logout(logout -> logout
                         .logoutRequestMatcher(SecurityMatchers.LOGOUT)
                         .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler())
+                        .addLogoutHandler(new JwtLogoutHandler(jwtService))
                 )
                 .with(new JsonUsernamePasswordAuthenticationFilter.Configurer(objectMapper),
                         configurer ->
                                 configurer
-                                        .successHandler(new JwtLoginSuccessHandler(objectMapper, jwtService))
+                                        .successHandler(new JwtLoginSuccessHandler(objectMapper,
+                                                jwtService))
                                         .failureHandler(new CustomLoginFailureHandler(objectMapper))
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .addFilterBefore(
+                        new JwtAuthenticationFilter(jwtService, objectMapper),
+                        JsonUsernamePasswordAuthenticationFilter.class
                 )
         ;
 

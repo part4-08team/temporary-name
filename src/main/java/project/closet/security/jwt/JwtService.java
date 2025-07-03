@@ -5,6 +5,7 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSObject;
+import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.Payload;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -19,7 +20,6 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.closet.dto.response.UserDto;
@@ -63,13 +63,13 @@ public class JwtService {
         boolean verified;
 
         try {
-            MACVerifier verifier = new MACVerifier(secret);
+            JWSVerifier verifier = new MACVerifier(secret);
             JWSObject jwsObject = JWSObject.parse(token);
             verified = jwsObject.verify(verifier);
 
             if (verified) {
                 JwtObject jwtObject = parse(token);
-                verified = jwtObject.isExpired();
+                verified = !jwtObject.isExpired();
             }
         } catch (JOSEException | ParseException exception) {
             log.error(exception.getMessage());
@@ -128,6 +128,11 @@ public class JwtService {
         jwtSessionRepository.deleteByRefreshToken(refreshToken);
     }
 
+    @Transactional
+    public void invalidateJwtSession(UUID userId) {
+        jwtSessionRepository.deleteByUserId(userId);
+    }
+
     private JwtObject generateJwtObject(UserDto userDto, long tokenValiditySeconds) {
         Instant issueTime = Instant.now();
         Instant expirationTime = issueTime.plus(Duration.ofSeconds(tokenValiditySeconds));
@@ -152,5 +157,11 @@ public class JwtService {
         String token = signedJWT.serialize();
 
         return new JwtObject(issueTime, expirationTime, userDto, token);
+    }
+
+    public JwtSession getSwtSession(String refreshToken) {
+        return jwtSessionRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new JwtException(ErrorCode.TOKEN_NOT_FOUND,
+                        Map.of("refreshToken", refreshToken)));
     }
 }

@@ -1,12 +1,10 @@
 package project.closet.auth.service.basic;
 
-import java.security.Principal;
-import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,7 +13,7 @@ import project.closet.auth.service.AuthService;
 import project.closet.dto.request.RoleUpdateRequest;
 import project.closet.dto.response.UserDto;
 import project.closet.exception.user.UserNotFoundException;
-import project.closet.security.ClosetUserDetails;
+import project.closet.security.jwt.JwtService;
 import project.closet.user.entity.Role;
 import project.closet.user.entity.User;
 import project.closet.user.mapper.UserMapper;
@@ -36,7 +34,7 @@ public class BasicAuthService implements AuthService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-    private final SessionRegistry sessionRegistry;
+    private final JwtService jwtService;
 
     @Override
     public void initAdmin() {
@@ -54,6 +52,7 @@ public class BasicAuthService implements AuthService {
         log.info("어드민 계정이 생성되었습니다: {}", adminDto);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     @Override
     public UserDto updateRole(RoleUpdateRequest request) {
@@ -62,8 +61,7 @@ public class BasicAuthService implements AuthService {
                 .orElseThrow(() -> UserNotFoundException.withId(userId));
         user.updateRole(request.newRole());
 
-        // 세션 만료 처리
-
+        jwtService.invalidateJwtSession(user.getId());
         return userMapper.toDto(user);
     }
 }
