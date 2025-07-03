@@ -16,12 +16,16 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
+import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import project.closet.security.CustomLogoutFilter;
 import project.closet.security.SecurityMatchers;
 import project.closet.security.JsonUsernamePasswordAuthenticationFilter;
@@ -36,7 +40,8 @@ public class SecurityConfig2 {
     public SecurityFilterChain filterChain(
             HttpSecurity http,
             ObjectMapper objectMapper,
-            AuthenticationManager authenticationManager
+            AuthenticationManager authenticationManager,
+            SessionAuthenticationStrategy sessionAuthenticationStrategy
     ) throws Exception {
         http
                 // filter 검사할 URL
@@ -50,7 +55,8 @@ public class SecurityConfig2 {
                 .addFilterAt(
                         JsonUsernamePasswordAuthenticationFilter.createDefault(
                                 objectMapper,
-                                authenticationManager
+                                authenticationManager,
+                                sessionAuthenticationStrategy
                         ),
                         UsernamePasswordAuthenticationFilter.class
                 )
@@ -110,4 +116,15 @@ public class SecurityConfig2 {
                 .build();
     }
 
+    @Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
+    }
+
+    @Bean
+    public SessionAuthenticationStrategy sessionAuthenticationStrategy(
+            SessionRegistry sessionRegistry
+    ) {
+        return new RegisterSessionAuthenticationStrategy(sessionRegistry);
+    }
 }

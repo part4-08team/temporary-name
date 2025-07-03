@@ -1,9 +1,13 @@
 package project.closet.auth.service.basic;
 
+import java.security.Principal;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.session.SessionInformation;
+import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +15,7 @@ import project.closet.auth.service.AuthService;
 import project.closet.dto.request.RoleUpdateRequest;
 import project.closet.dto.response.UserDto;
 import project.closet.exception.user.UserNotFoundException;
+import project.closet.security.ClosetUserDetails;
 import project.closet.user.entity.Role;
 import project.closet.user.entity.User;
 import project.closet.user.mapper.UserMapper;
@@ -31,6 +36,7 @@ public class BasicAuthService implements AuthService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final SessionRegistry sessionRegistry;
 
     @Override
     public void initAdmin() {
@@ -55,6 +61,17 @@ public class BasicAuthService implements AuthService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> UserNotFoundException.withId(userId));
         user.updateRole(request.newRole());
+
+        // 세션 만료 처리
+        sessionRegistry.getAllPrincipals().stream()
+                .filter(principal -> ((ClosetUserDetails) principal).getUserDto().id().equals(userId))
+                .findFirst()
+                .ifPresent(principal -> {
+                    List<SessionInformation> activeSessions =
+                            sessionRegistry.getAllSessions(principal, false);
+                    log.debug("Active sessions: {}", activeSessions.size());
+                    activeSessions.forEach(SessionInformation::expireNow);
+                });
         return userMapper.toDto(user);
     }
 }
