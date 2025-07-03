@@ -16,6 +16,10 @@ import project.closet.domain.base.BaseUpdatableEntity;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseUpdatableEntity {
 
+    // UNIQUE 제약조건으로 갈 것인지 논의하기
+    @Column(nullable = false, length = 50, unique = true)
+    private String username;
+
     @Column(nullable = false)
     private String email;
 
@@ -25,6 +29,12 @@ public class User extends BaseUpdatableEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role = Role.USER;
+
+    public User(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
 
     public void updateRole(Role newRole) {
         if (this.role != newRole) {

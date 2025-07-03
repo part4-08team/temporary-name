@@ -42,6 +42,12 @@ spring:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
 
+closet:
+  admin:
+    username: ${ADMIN_USERNAME}
+    email: ${ADMIN_EMAIL}
+    password: ${ADMIN_PASSWORD}
+
 jwt:
   secret: ${JWT_SECRET:44a81d8d4c44e07f56c9019fabb29194bd524d3018f79562d625749f7c709b5f} # 나중에 바꾸기
   header: ${JWT_HEADER:Authorization}
@@ -49,10 +55,11 @@ jwt:
   refresh-expiration: ${JWT_REFRESH_EXPIRATION:259200} # 3일
   refresh-header: ${JWT_REFRESH_HEADER:refresh_token}
 
-admin:
-  username: ${ADMIN_USERNAME:CLOSET-ADMIN}
-  email: ${ADMIN_EMAIL:admin2342@gmail.com}
-  password: ${ADMIN_PASSWORD:adminwudqbddfqwlmelki}
+security:
+  jwt:
+    secret: ${SECURITY_JWT_SECRET}
+    access-token-validity-seconds: ${SECURITY_JWT_ACCESS_TOKEN_VALIDITY_SECONDS}
+    refresh-token-validity-seconds: ${SECURITY_JWT_REFRESH_TOKEN_VALIDITY_SECONDS}
 
 # Logging
 logging:

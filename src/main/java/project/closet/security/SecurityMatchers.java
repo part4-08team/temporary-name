@@ -22,7 +22,15 @@ public abstract class SecurityMatchers {
     public static final RequestMatcher LOGOUT = new AntPathRequestMatcher(
             "/api/auth/logout", HttpMethod.POST.name());
 
+    public static final String LOGIN_URL = "/api/auth/sign-in";
+
+    public static final RequestMatcher ME =
+            new AntPathRequestMatcher("/api/aut/me", HttpMethod.GET.name());
+
+    public static final RequestMatcher REFRESH =
+            new AntPathRequestMatcher("/api/auth/refresh", HttpMethod.POST.name());
+
     public static final RequestMatcher[] PUBLIC_MATCHERS = new RequestMatcher[]{
-            NON_API, GET_CSRF_TOKEN, SIGN_UP, LOGIN
+            NON_API, GET_CSRF_TOKEN, SIGN_UP, LOGIN, ME, REFRESH, LOGOUT
     };
 }
