@@ -3,6 +3,7 @@ package project.closet.domain.clothes.service;
 import java.util.UUID;
 import project.closet.domain.clothes.dto.request.ClothesAttributeDefCreateRequest;
 import project.closet.domain.clothes.dto.response.ClothesAttributeDefDto;
+import project.closet.domain.clothes.dto.response.ClothesAttributeDefDtoCursorResponse;
 
 public interface AttributeService {
 
@@ -11,4 +12,13 @@ public interface AttributeService {
     ClothesAttributeDefDto update(UUID id, ClothesAttributeDefCreateRequest req);
 
     void delete(UUID id);
+
+    ClothesAttributeDefDtoCursorResponse findAll(
+            String cursor,
+            UUID idAfter,
+            int limit,
+            String sortBy,
+            String sortDirection,
+            String keywordLike
+    );
 }
