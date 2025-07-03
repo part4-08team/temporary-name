@@ -52,10 +52,13 @@ public class UserController implements UserApi {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
-    @GetMapping("/{userId}/profile")
+    @GetMapping("/{userId}/profiles")
     @Override
     public ResponseEntity<ProfileDto> getProfile(@PathVariable("userId") UUID userId) {
-        return null;
+        log.info("사용자 프로필 조회 요청: userId={}", userId);
+        ProfileDto profile = userService.getProfile(userId);
+        log.debug("사용자 프로필 조회 응답: {}", profile);
+        return ResponseEntity.ok(profile);
     }
 
     @PatchMapping(

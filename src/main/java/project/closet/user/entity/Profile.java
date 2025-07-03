@@ -2,6 +2,8 @@ package project.closet.user.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
@@ -23,8 +25,9 @@ public class Profile extends BaseUpdatableEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "gender", length = 50)
-    private String gender;
+    private Gender gender;
 
     @Column(name = "birth_date")
     private LocalDate birthDate;
@@ -46,7 +49,7 @@ public class Profile extends BaseUpdatableEntity {
 
     @Builder
     public Profile(User user,
-            String gender,
+            Gender gender,
             LocalDate birthDate,
             String profileImageUrl,
             Integer temperatureSensitivity,
@@ -69,7 +72,7 @@ public class Profile extends BaseUpdatableEntity {
         return profile;
     }
 
-    public void updateProfile(String newGender,
+    public void updateProfile(Gender newGender,
             LocalDate newBirthDate,
             String newProfileImageUrl,
             Integer newTemperatureSensitivity,

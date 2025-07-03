@@ -1,13 +1,18 @@
 package project.closet.user.service.basic;
 
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.closet.dto.request.UserCreateRequest;
+import project.closet.dto.response.ProfileDto;
 import project.closet.dto.response.UserDto;
+import project.closet.dto.response.WeatherAPILocation;
 import project.closet.exception.user.UserAlreadyExistsException;
+import project.closet.exception.user.UserNotFoundException;
 import project.closet.user.entity.Profile;
 import project.closet.user.entity.User;
 import project.closet.user.repository.UserRepository;
@@ -36,13 +41,30 @@ public class BasicUserService implements UserService {
             throw UserAlreadyExistsException.withName(name);
         }
 
-        // User Entity 생성
         String hashedPassword = passwordEncoder.encode(userCreateRequest.password());
         User user = new User(name, email, hashedPassword);
-        // Profile Entity 생성
         Profile.createDefault(user);
-        // User Entity 저장
         userRepository.save(user);
         return UserDto.from(user);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public ProfileDto getProfile(UUID userId) {
+        User user = userRepository.findByIdWithProfile(userId)
+                .orElseThrow(() -> UserNotFoundException.withId(userId));
+        // User -> ProfileDto 변환
+        Profile profile = user.getProfile();
+        //TODO x,y 좌표 구하는 로직 추가 필요
+        WeatherAPILocation location =
+                new WeatherAPILocation(
+                        profile.getLatitude(),
+                        profile.getLongitude(),
+                        null,
+                        null,
+                        List.of()
+                );
+
+        return ProfileDto.of(user, location, profile);
     }
 }
