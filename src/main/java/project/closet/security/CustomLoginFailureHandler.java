@@ -24,6 +24,5 @@ public class CustomLoginFailureHandler implements AuthenticationFailureHandler {
         ErrorResponse errorResponse =
                 new ErrorResponse(exception, HttpServletResponse.SC_UNAUTHORIZED);
         response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
-
     }
 }

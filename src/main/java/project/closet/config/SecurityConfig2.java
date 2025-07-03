@@ -16,6 +16,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -26,9 +27,12 @@ import org.springframework.security.web.authentication.logout.HttpStatusReturnin
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import project.closet.security.CustomLoginFailureHandler;
 import project.closet.security.CustomSessionInformationExpiredStrategy;
 import project.closet.security.JsonUsernamePasswordAuthenticationFilter;
 import project.closet.security.SecurityMatchers;
+import project.closet.security.jwt.JwtLoginSuccessHandler;
+import project.closet.security.jwt.JwtService;
 import project.closet.user.entity.Role;
 
 @Slf4j
@@ -41,8 +45,7 @@ public class SecurityConfig2 {
             HttpSecurity http,
             ObjectMapper objectMapper,
             DaoAuthenticationProvider daoAuthenticationProvider,
-            SessionRegistry sessionRegistry
-    ) throws Exception {
+            JwtService jwtService) throws Exception {
         http
                 .authenticationProvider(daoAuthenticationProvider)
                 // filter 검사할 URL
@@ -63,15 +66,13 @@ public class SecurityConfig2 {
                         .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler())
                 )
                 .with(new JsonUsernamePasswordAuthenticationFilter.Configurer(objectMapper),
-                        Customizer.withDefaults()
+                        configurer ->
+                                configurer
+                                        .successHandler(new JwtLoginSuccessHandler(objectMapper, jwtService))
+                                        .failureHandler(new CustomLoginFailureHandler(objectMapper))
                 )
                 .sessionManagement(session -> session
-                        .sessionFixation().migrateSession()
-                        .maximumSessions(-1)
-                        .sessionRegistry(sessionRegistry)
-                        .expiredSessionStrategy(
-                                new CustomSessionInformationExpiredStrategy(objectMapper)
-                        )
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
         ;
 

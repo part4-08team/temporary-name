@@ -74,11 +74,8 @@ public class JsonUsernamePasswordAuthenticationFilter extends UsernamePasswordAu
     public static class Configurer extends
             AbstractAuthenticationFilterConfigurer<HttpSecurity, Configurer, JsonUsernamePasswordAuthenticationFilter> {
 
-        private final ObjectMapper objectMapper;
-
         public Configurer(ObjectMapper objectMapper) {
             super(new JsonUsernamePasswordAuthenticationFilter(objectMapper), SecurityMatchers.LOGIN_URL);
-            this.objectMapper = objectMapper;
         }
 
         @Override
@@ -89,8 +86,6 @@ public class JsonUsernamePasswordAuthenticationFilter extends UsernamePasswordAu
         @Override
         public void init(HttpSecurity http) throws Exception {
             loginProcessingUrl(SecurityMatchers.LOGIN_URL);
-            successHandler(new CustomLoginSuccessHandler(objectMapper));
-            failureHandler(new CustomLoginFailureHandler(objectMapper));
         }
     }
 }
