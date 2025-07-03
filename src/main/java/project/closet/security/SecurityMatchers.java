@@ -22,6 +22,8 @@ public abstract class SecurityMatchers {
     public static final RequestMatcher LOGOUT = new AntPathRequestMatcher(
             "/api/auth/logout", HttpMethod.POST.name());
 
+    public static final String LOGIN_URL = "/api/auth/sign-in";
+
     public static final RequestMatcher[] PUBLIC_MATCHERS = new RequestMatcher[]{
             NON_API, GET_CSRF_TOKEN, SIGN_UP, LOGIN
     };

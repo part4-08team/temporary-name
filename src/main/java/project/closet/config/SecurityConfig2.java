@@ -13,22 +13,22 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
-import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
-import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
-import project.closet.security.CustomLogoutFilter;
-import project.closet.security.SecurityMatchers;
+import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
+import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import project.closet.security.CustomSessionInformationExpiredStrategy;
 import project.closet.security.JsonUsernamePasswordAuthenticationFilter;
+import project.closet.security.SecurityMatchers;
 import project.closet.user.entity.Role;
 
 @Slf4j
@@ -40,29 +40,38 @@ public class SecurityConfig2 {
     public SecurityFilterChain filterChain(
             HttpSecurity http,
             ObjectMapper objectMapper,
-            AuthenticationManager authenticationManager,
-            SessionAuthenticationStrategy sessionAuthenticationStrategy
+            DaoAuthenticationProvider daoAuthenticationProvider,
+            SessionRegistry sessionRegistry
     ) throws Exception {
         http
+                .authenticationProvider(daoAuthenticationProvider)
                 // filter 검사할 URL
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(SecurityMatchers.PUBLIC_MATCHERS).permitAll()
                         .anyRequest().authenticated()
                 )
-                .csrf(csrf -> csrf.ignoringRequestMatchers(SecurityMatchers.LOGOUT))
-                .logout(AbstractHttpConfigurer::disable)
-                // 로그인 필터 등록
-                .addFilterAt(
-                        JsonUsernamePasswordAuthenticationFilter.createDefault(
-                                objectMapper,
-                                authenticationManager,
-                                sessionAuthenticationStrategy
-                        ),
-                        UsernamePasswordAuthenticationFilter.class
+                .csrf(csrf ->
+                        csrf
+                                .ignoringRequestMatchers(SecurityMatchers.LOGOUT)
+                                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                                .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
+                                .sessionAuthenticationStrategy(
+                                        new NullAuthenticatedSessionStrategy())
                 )
-                .addFilterAt(
-                        CustomLogoutFilter.createDefault(),
-                        LogoutFilter.class
+                .logout(logout -> logout
+                        .logoutRequestMatcher(SecurityMatchers.LOGOUT)
+                        .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler())
+                )
+                .with(new JsonUsernamePasswordAuthenticationFilter.Configurer(objectMapper),
+                        Customizer.withDefaults()
+                )
+                .sessionManagement(session -> session
+                        .sessionFixation().migrateSession()
+                        .maximumSessions(-1)
+                        .sessionRegistry(sessionRegistry)
+                        .expiredSessionStrategy(
+                                new CustomSessionInformationExpiredStrategy(objectMapper)
+                        )
                 )
         ;
 
@@ -121,10 +130,4 @@ public class SecurityConfig2 {
         return new SessionRegistryImpl();
     }
 
-    @Bean
-    public SessionAuthenticationStrategy sessionAuthenticationStrategy(
-            SessionRegistry sessionRegistry
-    ) {
-        return new RegisterSessionAuthenticationStrategy(sessionRegistry);
-    }
 }
