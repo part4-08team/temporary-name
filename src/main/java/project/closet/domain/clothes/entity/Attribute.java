@@ -29,8 +29,9 @@ public class Attribute extends BaseEntity {
     @Column(name = "value", nullable = false, length = 100)
     private List<String> selectableValues = new ArrayList<>();
 
-    public Attribute(String definitionName) {
-        this.definitionName = definitionName;
+    public Attribute(String definitionName, List<String> selectableValues) {
+        this.definitionName    = definitionName;
+        this.selectableValues  = new ArrayList<>(selectableValues);
     }
 
     // 선택값 추가 편의 메서드
@@ -38,8 +39,4 @@ public class Attribute extends BaseEntity {
         this.selectableValues.add(value);
     }
 
-    // 선택값 전체 교체나 제거가 필요하면 아래 메서드도 추가할 수 있습니다.
-    public void setSelectableValues(List<String> values) {
-        this.selectableValues = new ArrayList<>(values);
-    }
 }
