@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import lombok.AccessLevel;
@@ -19,8 +20,8 @@ import project.closet.domain.base.BaseUpdatableEntity;
 @Table(name = "profiles")
 public class Profile extends BaseUpdatableEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "user_id", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Column(name = "gender", length = 50)
@@ -64,9 +65,9 @@ public class Profile extends BaseUpdatableEntity {
     }
 
     public static Profile createDefault(User user) {
-        return Profile.builder()
-                .user(user)
-                .build();
+        Profile profile = Profile.builder().user(user).build();
+        user.setProfileInternal(profile);
+        return profile;
     }
 
     public void updateProfile(String newGender,

@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,12 +24,15 @@ import project.closet.dto.response.PageResponse;
 import project.closet.dto.response.ProfileDto;
 import project.closet.dto.response.UserDto;
 import project.closet.user.controller.api.UserApi;
+import project.closet.user.service.UserService;
 
 @Slf4j
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/users")
 public class UserController implements UserApi {
+
+    private final UserService userService;
 
     @GetMapping
     @Override
@@ -41,7 +45,10 @@ public class UserController implements UserApi {
     public ResponseEntity<UserDto> create(
             @RequestBody @Valid UserCreateRequest userCreateRequest
     ) {
-        return null;
+        log.info("사용자 생성 요청: {}", userCreateRequest);
+        UserDto createdUser = userService.create(userCreateRequest);
+        log.debug("사용자 생성 응답: {}", createdUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
     @GetMapping("/{userId}/profile")
