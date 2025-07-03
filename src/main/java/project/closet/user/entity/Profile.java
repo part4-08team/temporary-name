@@ -33,7 +33,7 @@ public class Profile extends BaseUpdatableEntity {
     private String profileImageUrl;
 
     @Column(name = "temperature_sensitivity", length = 50)
-    private String temperatureSensitivity;
+    private Integer temperatureSensitivity;
 
     @Column(name = "latitude")
     private Double latitude;
@@ -49,7 +49,7 @@ public class Profile extends BaseUpdatableEntity {
             String gender,
             LocalDate birthDate,
             String profileImageUrl,
-            String temperatureSensitivity,
+            Integer temperatureSensitivity,
             Double latitude,
             Double longitude,
             String locationName) {
@@ -72,7 +72,7 @@ public class Profile extends BaseUpdatableEntity {
     public void updateProfile(String newGender,
             LocalDate newBirthDate,
             String newProfileImageUrl,
-            String newTemperatureSensitivity,
+            Integer newTemperatureSensitivity,
             Double newLatitude,
             Double newLongitude,
             String newLocationName) {

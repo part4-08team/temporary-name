@@ -42,7 +42,7 @@ CREATE TABLE profiles
     gender                  VARCHAR(50),
     birth_date              DATE,
     profile_image_url       VARCHAR(1024),
-    temperature_sensitivity VARCHAR(50),
+    temperature_sensitivity INTEGER,
     latitude                DOUBLE PRECISION,
     longitude               DOUBLE PRECISION,
     location_name           VARCHAR(50)

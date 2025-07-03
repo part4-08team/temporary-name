@@ -8,7 +8,7 @@ public record ProfileDto(
         String name,
         String gender,
         LocalDate birthDate,
-        String location,
+        WeatherAPILocation location,
         Integer temperatureSensitivity,
         String profileImageUrl
 ) {
