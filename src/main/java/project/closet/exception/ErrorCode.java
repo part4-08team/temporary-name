@@ -7,6 +7,8 @@ public enum ErrorCode {
     DM_NOT_FOUND("DM을 찾을 수 없습니다."),
     //FEED
     FEED_NOT_FOUND("피드를 찾을 수 없습니다."),
+    // USER
+    USER_NOT_FOUND("사용자를 찾을 수 없습니다."),
 
     INVALID_REQUEST("잘못된 요청입니다."),
     INTERNAL_ERROR("서버 내부 오류입니다.");

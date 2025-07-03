@@ -6,6 +6,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import project.closet.exception.user.UserNotFoundException;
+import project.closet.user.entity.User;
+import project.closet.user.mapper.UserMapper;
+import project.closet.user.repository.UserRepository;
 
 /*
     DaoAuthenticationProvider
@@ -16,9 +20,15 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ClosetUserDetailsService implements UserDetailsService {
 
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
+
     @Transactional(readOnly = true)
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return null;
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> UserNotFoundException.withEmail(email));
+
+        return new ClosetUserDetails(userMapper.toDto(user), user.getPassword());
     }
 }

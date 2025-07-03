@@ -5,13 +5,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import project.closet.dto.request.LoginRequest;
-import project.closet.global.config.security.SecurityMatchers;
 
 @RequiredArgsConstructor
 public class JsonUsernamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -46,12 +47,19 @@ public class JsonUsernamePasswordAuthenticationFilter extends UsernamePasswordAu
 
     // 정적 생성자 메소드로 시큐리티 설정에서 간편하게 필터 생성 등록
     public static JsonUsernamePasswordAuthenticationFilter createDefault(
-            ObjectMapper objectMapper
+            ObjectMapper objectMapper,
+            AuthenticationManager authenticationManager
     ) {
         JsonUsernamePasswordAuthenticationFilter filter =
                 new JsonUsernamePasswordAuthenticationFilter(objectMapper);
         // Login URI Custom
         filter.setRequiresAuthenticationRequestMatcher(SecurityMatchers.LOGIN);
+        // Login 처리를 해주는 Manager(DaoAuthentication)
+        filter.setAuthenticationManager(authenticationManager);
+        // 로그인 처리 성공, 실패 핸들러
+        filter.setAuthenticationSuccessHandler(new CustomLoginSuccessHandler(objectMapper));
+        filter.setAuthenticationFailureHandler(new CustomLoginFailureHandler(objectMapper));
+        filter.setSecurityContextRepository(new HttpSessionSecurityContextRepository());
         return filter;
     }
 }

@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
 
     private HttpStatus mapToHttpStatus(ErrorCode code) {
         return switch (code) {
-            case DM_NOT_FOUND, FEED_NOT_FOUND -> HttpStatus.NOT_FOUND;
+            case DM_NOT_FOUND, FEED_NOT_FOUND, USER_NOT_FOUND -> HttpStatus.NOT_FOUND;
             case INVALID_REQUEST -> HttpStatus.BAD_REQUEST;
             case INTERNAL_ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
         };
