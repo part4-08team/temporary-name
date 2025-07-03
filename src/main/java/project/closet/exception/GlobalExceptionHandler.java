@@ -2,6 +2,7 @@ package project.closet.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -19,6 +20,15 @@ public class GlobalExceptionHandler {
                 status.value()
         );
         return ResponseEntity.status(status).body(response);
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAuthorizationDeniedException(
+            AuthorizationDeniedException exception) {
+        ErrorResponse errorResponse = new ErrorResponse(exception, HttpStatus.FORBIDDEN.value());
+        return ResponseEntity
+                .status(errorResponse.getStatus())
+                .body(errorResponse);
     }
 
     //모든 예상하지 못한 예외

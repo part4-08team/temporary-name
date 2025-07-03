@@ -1,3 +1,4 @@
+/*
 package project.closet.global.config.security;
 
 
@@ -17,3 +18,4 @@ public record AdminProperties(
     @NotBlank(message = "admin.email is required")
     String email){
 }
+*/
