@@ -21,7 +21,7 @@ import project.closet.dto.response.PageResponse;
 import project.closet.dto.response.ProfileDto;
 import project.closet.dto.response.UserDto;
 
-@Tag(name = "User", description = "User API")
+@Tag(name = "프로필 관리", description = "프로필 관리 API")
 public interface UserApi {
 
     @Operation(summary = "계정 목록 조회")

@@ -80,6 +80,7 @@ public class UserController implements UserApi {
             @PathVariable("userId") UUID userId,
             @RequestBody @Valid ChangePasswordRequest changePasswordRequest
     ) {
+        new UnsupportedOperationException("Not yet implemented");
         return null;
     }
 
@@ -89,6 +90,7 @@ public class UserController implements UserApi {
             @PathVariable("userId") UUID userId,
             @RequestBody @Valid UserLockUpdateRequest request
     ) {
+        new UnsupportedOperationException("Not yet implemented");
         return null;
     }
 }
