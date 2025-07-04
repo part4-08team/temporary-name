@@ -13,6 +13,7 @@ import project.closet.dto.request.RoleUpdateRequest;
 import project.closet.dto.response.UserDto;
 import project.closet.exception.user.UserNotFoundException;
 import project.closet.security.jwt.JwtService;
+import project.closet.user.entity.Profile;
 import project.closet.user.entity.Role;
 import project.closet.user.entity.User;
 import project.closet.user.repository.UserRepository;
@@ -42,6 +43,7 @@ public class BasicAuthService implements AuthService {
 
         String encodedPassword = passwordEncoder.encode(password);
         User admin = new User(username, email, encodedPassword);
+        Profile.createDefault(admin);
         admin.updateRole(Role.ADMIN);
         userRepository.save(admin);
 
