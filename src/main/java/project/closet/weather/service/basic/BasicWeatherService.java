@@ -1,0 +1,25 @@
+package project.closet.weather.service.basic;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import project.closet.dto.response.KakaoAddressResponse;
+import project.closet.dto.response.WeatherAPILocation;
+import project.closet.weather.service.AddressClient;
+import project.closet.weather.service.WeatherService;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class BasicWeatherService implements WeatherService {
+
+    private final AddressClient addressClient;
+
+    @Override
+    public WeatherAPILocation getLocation(Double longitude, Double latitude) {
+        log.info("위도 경도로 행정구역 반환 요청: longitude={}, latitude={}", longitude, latitude);
+        KakaoAddressResponse kakaoAddressResponse =
+                addressClient.requestAddressFromKakao(longitude, latitude);
+        return null;
+    }
+}

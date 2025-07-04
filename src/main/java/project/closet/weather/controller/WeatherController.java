@@ -6,9 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import project.closet.dto.response.WeatherAPILocation;
 import project.closet.weather.controller.api.WeatherApi;
+import project.closet.weather.service.WeatherService;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -16,11 +18,13 @@ import project.closet.weather.controller.api.WeatherApi;
 @RequestMapping("/api/weathers")
 public class WeatherController implements WeatherApi {
 
+    private final WeatherService weatherService;
+
     @GetMapping
     @Override
     public ResponseEntity<List<String>> getWeatherInfo(
-            Double longitude,
-            Double latitude
+            @RequestParam Double longitude,
+            @RequestParam Double latitude
     ) {
         return null;
     }
@@ -28,9 +32,11 @@ public class WeatherController implements WeatherApi {
     @GetMapping("/location")
     @Override
     public ResponseEntity<WeatherAPILocation> getWeatherLocation(
-            Double longitude,
-            Double latitude
+            @RequestParam Double longitude,
+            @RequestParam Double latitude
     ) {
-        return null;
+        log.info("날씨 위치 정보 조회 요청: longitude={}, latitude={}", longitude, latitude);
+        WeatherAPILocation location = weatherService.getLocation(longitude, latitude);
+        return ResponseEntity.ok(location);
     }
 }

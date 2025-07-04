@@ -47,6 +47,9 @@ closet:
     username: ${ADMIN_USERNAME}
     email: ${ADMIN_EMAIL}
     password: ${ADMIN_PASSWORD}
+  kakao:
+    api:
+      key: ${KAKAO_API_KEY}
 
 jwt:
   secret: ${JWT_SECRET:44a81d8d4c44e07f56c9019fabb29194bd524d3018f79562d625749f7c709b5f} # 나중에 바꾸기
