@@ -1,6 +1,8 @@
 package project.closet.user.entity;
 
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -9,6 +11,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,8 +48,13 @@ public class Profile extends BaseUpdatableEntity {
     @Column(name = "longitude")
     private Double longitude;
 
+    @ElementCollection
+    @CollectionTable(
+            name = "profile_location_names",
+            joinColumns = @JoinColumn(name = "profile_id")
+    )
     @Column(name = "location_name", length = 50)
-    private String locationName;
+    private List<String> locationNames = new ArrayList<>();
 
     @Builder
     public Profile(User user,
@@ -55,7 +64,7 @@ public class Profile extends BaseUpdatableEntity {
             Integer temperatureSensitivity,
             Double latitude,
             Double longitude,
-            String locationName) {
+            List<String> locationName) {
         this.user = user;
         this.gender = gender;
         this.birthDate = birthDate;
@@ -63,7 +72,7 @@ public class Profile extends BaseUpdatableEntity {
         this.temperatureSensitivity = temperatureSensitivity;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.locationName = locationName;
+        this.locationNames = locationName;
     }
 
     public static Profile createDefault(User user) {
@@ -79,7 +88,7 @@ public class Profile extends BaseUpdatableEntity {
             Integer newTemperatureSensitivity,
             Double newLatitude,
             Double newLongitude,
-            String newLocationName
+            List<String> newLocationName
     ) {
         if (newGender != null && !newGender.equals(this.gender)) {
             this.gender = newGender;
@@ -100,8 +109,8 @@ public class Profile extends BaseUpdatableEntity {
         if (newLongitude != null && !newLongitude.equals(this.longitude)) {
             this.longitude = newLongitude;
         }
-        if (newLocationName != null && !newLocationName.equals(this.locationName)) {
-            this.locationName = newLocationName;
+        if (newLocationName != null && !newLocationName.equals(this.locationNames)) {
+            this.locationNames = newLocationName;
         }
     }
 
