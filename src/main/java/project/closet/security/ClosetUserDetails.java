@@ -2,6 +2,7 @@ package project.closet.security;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -35,4 +36,7 @@ public class ClosetUserDetails implements UserDetails {
         return userDto.username();
     }
 
+    public UUID getUserId() {
+        return userDto.id();
+    }
 }

@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.web.csrf.CsrfToken;
 
-@Tag(name = "Auth", description = "인증 API")
+@Tag(name = "인증 관리", description = "인증 관련 API")
 public interface AuthApi {
 
     @Operation(summary = "CSRF 토큰 발급")
@@ -49,4 +49,5 @@ public interface AuthApi {
             @Parameter(hidden = true) String refreshToken,
             @Parameter(hidden = true) HttpServletResponse response
     );
+
 }

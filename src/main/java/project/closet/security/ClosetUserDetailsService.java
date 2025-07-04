@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import project.closet.dto.response.UserDto;
 import project.closet.exception.user.UserNotFoundException;
 import project.closet.user.entity.User;
-import project.closet.user.mapper.UserMapper;
 import project.closet.user.repository.UserRepository;
 
 /*
@@ -22,7 +21,6 @@ import project.closet.user.repository.UserRepository;
 public class ClosetUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
 
     @Transactional(readOnly = true)
     @Override

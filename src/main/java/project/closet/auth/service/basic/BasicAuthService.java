@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,9 +13,9 @@ import project.closet.dto.request.RoleUpdateRequest;
 import project.closet.dto.response.UserDto;
 import project.closet.exception.user.UserNotFoundException;
 import project.closet.security.jwt.JwtService;
+import project.closet.user.entity.Profile;
 import project.closet.user.entity.Role;
 import project.closet.user.entity.User;
-import project.closet.user.mapper.UserMapper;
 import project.closet.user.repository.UserRepository;
 
 @Slf4j
@@ -32,23 +31,23 @@ public class BasicAuthService implements AuthService {
     private String password;
 
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
     @Override
     public void initAdmin() {
-        if (userRepository.existsByEmail(email) || userRepository.existsByUsername(username)) {
+        if (userRepository.existsByEmail(email) || userRepository.existsByName(username)) {
             log.warn("이미 어드민이 존재합니다.");
             return;
         }
 
         String encodedPassword = passwordEncoder.encode(password);
         User admin = new User(username, email, encodedPassword);
+        Profile.createDefault(admin);
         admin.updateRole(Role.ADMIN);
         userRepository.save(admin);
 
-        UserDto adminDto = userMapper.toDto(admin);
+        UserDto adminDto = UserDto.from(admin);
         log.info("어드민 계정이 생성되었습니다: {}", adminDto);
     }
 
@@ -62,6 +61,6 @@ public class BasicAuthService implements AuthService {
         user.updateRole(request.newRole());
 
         jwtService.invalidateJwtSession(user.getId());
-        return userMapper.toDto(user);
+        return UserDto.from(user);
     }
 }

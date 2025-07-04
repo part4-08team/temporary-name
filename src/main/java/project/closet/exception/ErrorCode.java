@@ -9,6 +9,7 @@ public enum ErrorCode {
     FEED_NOT_FOUND("피드를 찾을 수 없습니다."),
     // USER
     USER_NOT_FOUND("사용자를 찾을 수 없습니다."),
+    DUPLICATE_USER("이미 존재하는 사용자입니다."),
 
     INVALID_REQUEST("잘못된 요청입니다."),
     INTERNAL_ERROR("서버 내부 오류입니다."),
