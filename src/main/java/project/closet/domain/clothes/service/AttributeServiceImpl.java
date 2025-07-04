@@ -3,8 +3,8 @@ package project.closet.domain.clothes.service;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,47 +69,42 @@ public class AttributeServiceImpl implements AttributeService {
             String sortDirection,
             String keywordLike
     ) {
-        // 1) cursor(String)를 page 번호로 파싱
-        int page = 0;
+        String lastName = null;
+        UUID lastId = null;
         if (cursor != null && !cursor.isBlank()) {
-            try { page = Integer.parseInt(cursor); }
-            catch (NumberFormatException ignored) {}
+            try {
+                String[] parts = cursor.split("::");
+                if (parts.length == 2) {
+                    lastName = parts[0];
+                    lastId = UUID.fromString(parts[1]);
+                }
+            } catch (Exception ignored) {}
         }
 
-        // 2) Pageable 생성
-        var pageable = PageRequest.of(
-                page,
-                limit,
-                Sort.by(Sort.Direction.fromString(sortDirection), sortBy)
-        );
+        Pageable pageable = PageRequest.of(0, limit, Sort.by("definitionName").ascending().and(Sort.by("id")));
 
-        // 3) Repository 호출
-        Page<Attribute> pageResult =
-                repo.searchAttributes(keywordLike, idAfter, pageable);
+        var pageResult = repo.searchAttributesByCompositeCursor(keywordLike, lastName, lastId, pageable);
 
-        // 4) DTO 변환
         var data = pageResult.stream()
                 .map(ClothesAttributeDefDto::of)
                 .collect(Collectors.toList());
 
-        // 5) 다음 커서 계산
-        String nextCursor = pageResult.hasNext()
-                ? String.valueOf(pageResult.getNumber() + 1)
+        String nextCursor = pageResult.hasNext() && !data.isEmpty()
+                ? data.get(data.size() - 1).name() + "::" + data.get(data.size() - 1).id()
                 : null;
+
         UUID nextIdAfter = pageResult.hasNext() && !data.isEmpty()
                 ? data.get(data.size() - 1).id()
                 : null;
 
-        // 6) 응답 조립
         return new ClothesAttributeDefDtoCursorResponse(
                 data,
                 nextCursor,
                 nextIdAfter,
                 pageResult.hasNext(),
                 pageResult.getTotalElements(),
-                sortBy,
-                sortDirection
+                "definitionName",
+                "ASCENDING"
         );
     }
-
 }

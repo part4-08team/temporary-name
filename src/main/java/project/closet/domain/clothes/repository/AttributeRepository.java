@@ -13,14 +13,20 @@ public interface AttributeRepository extends JpaRepository<Attribute, UUID> {
     boolean existsByDefinitionName(String definitionName);
 
     @Query("""
-      SELECT a
-        FROM Attribute a
-       WHERE (:keywordLike IS NULL OR a.definitionName LIKE %:keywordLike%)
-         AND (:idAfter IS NULL OR a.id > :idAfter)
-    """)
-    Page<Attribute> searchAttributes(
+    SELECT a
+      FROM Attribute a
+     WHERE (:keywordLike IS NULL OR a.definitionName ILIKE %:keywordLike%)
+       AND (
+            (:lastName IS NULL AND :lastId IS NULL) OR
+            (a.definitionName > :lastName) OR
+            (a.definitionName = :lastName AND a.id > :lastId)
+       )
+     ORDER BY a.definitionName ASC, a.id ASC
+""")
+    Page<Attribute> searchAttributesByCompositeCursor(
             @Param("keywordLike") String keywordLike,
-            @Param("idAfter") UUID idAfter,
+            @Param("lastName") String lastName,
+            @Param("lastId") UUID lastId,
             Pageable pageable
     );
 }
