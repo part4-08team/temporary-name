@@ -61,17 +61,23 @@ public class UserController implements UserApi {
         return ResponseEntity.ok(profile);
     }
 
+    // TODO : 프로필 업데이트 이미지 처리 로직 작업해야함
     @PatchMapping(
-            value = "/{userId}/profile",
+            value = "/{userId}/profiles",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
     @Override
     public ResponseEntity<ProfileDto> updateProfile(
-            @PathVariable("userId") UUID userId,
-            @RequestPart("request") @Valid ProfileUpdateRequest profileUpdateRequest,
+            @PathVariable(value = "userId") UUID userId,
+            @RequestPart(value = "request") @Valid ProfileUpdateRequest profileUpdateRequest,
             @RequestPart(value = "image", required = false) MultipartFile profile
     ) {
-        return null;
+        log.info("사용자 프로필 업데이트 요청: userId={}, request={}, image={}",
+                userId, profileUpdateRequest,
+                profile != null ? profile.getOriginalFilename() : "없음");
+        ProfileDto profileDto = userService.updateProfile(userId, profileUpdateRequest, profile);
+        log.debug("사용자 프로필 업데이트 응답: {}", profileDto);
+        return ResponseEntity.ok(profileDto);
     }
 
     @PatchMapping("/{userId}/password")

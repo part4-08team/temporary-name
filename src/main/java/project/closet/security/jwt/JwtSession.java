@@ -25,7 +25,8 @@ public class JwtSession extends BaseUpdatableEntity {
     @Column(columnDefinition = "timestamp with time zone", nullable = false)
     private Instant expirationTime;
 
-    public JwtSession(UUID userId, String accessToken, String refreshToken, Instant expirationTime) {
+    public JwtSession(UUID userId, String accessToken, String refreshToken,
+            Instant expirationTime) {
         this.userId = userId;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;

@@ -72,13 +72,15 @@ public class Profile extends BaseUpdatableEntity {
         return profile;
     }
 
-    public void updateProfile(Gender newGender,
+    public void updateProfile(
+            Gender newGender,
             LocalDate newBirthDate,
             String newProfileImageUrl,
             Integer newTemperatureSensitivity,
             Double newLatitude,
             Double newLongitude,
-            String newLocationName) {
+            String newLocationName
+    ) {
         if (newGender != null && !newGender.equals(this.gender)) {
             this.gender = newGender;
         }
