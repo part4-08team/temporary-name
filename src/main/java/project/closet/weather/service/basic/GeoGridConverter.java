@@ -36,16 +36,22 @@ public class GeoGridConverter {
         ra = re * sf / Math.pow(ra, sn);
 
         double theta = lon * DEGRAD - olon;
-        if (theta > Math.PI) theta -= 2.0 * Math.PI;
-        if (theta < -Math.PI) theta += 2.0 * Math.PI;
+        if (theta > Math.PI) {
+            theta -= 2.0 * Math.PI;
+        }
+        if (theta < -Math.PI) {
+            theta += 2.0 * Math.PI;
+        }
         theta *= sn;
 
-        int x = (int)(ra * Math.sin(theta) + XO + 0.5);
-        int y = (int)(ro - ra * Math.cos(theta) + YO + 0.5);
+        int x = (int) (ra * Math.sin(theta) + XO + 0.5);
+        int y = (int) (ro - ra * Math.cos(theta) + YO + 0.5);
 
         return new Grid(x, y);
     }
 
-    public record Grid(int x, int y) {}
+    public record Grid(int x, int y) {
+
+    }
 
 }
