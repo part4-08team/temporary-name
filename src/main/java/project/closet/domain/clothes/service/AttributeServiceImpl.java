@@ -2,13 +2,17 @@ package project.closet.domain.clothes.service;
 
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import project.closet.domain.clothes.dto.request.ClothesAttributeDefCreateRequest;
+import project.closet.domain.clothes.dto.request.ClothesAttributeDefUpdateRequest;
 import project.closet.domain.clothes.dto.response.ClothesAttributeDefDto;
 import project.closet.domain.clothes.dto.response.ClothesAttributeDefDtoCursorResponse;
 import project.closet.domain.clothes.entity.Attribute;
@@ -24,11 +28,16 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     @Transactional
-    public ClothesAttributeDefDto create(ClothesAttributeDefCreateRequest req) {
+    public ClothesAttributeDefDto create(
+            ClothesAttributeDefCreateRequest req
+    ) {
         if (repo.existsByDefinitionName(req.name())) {
             throw new AttributeDuplicateException();
         }
-        Attribute entity = new Attribute(req.name(), req.selectableValues());
+        Attribute entity = new Attribute(
+                req.name(),
+                req.selectableValues()
+        );
         repo.save(entity);
 
         return ClothesAttributeDefDto.of(entity);
@@ -36,12 +45,19 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     @Transactional
-    public ClothesAttributeDefDto update(UUID id, ClothesAttributeDefCreateRequest req) {
+    public ClothesAttributeDefDto update(
+            UUID id,
+            ClothesAttributeDefUpdateRequest req
+    ) {
         Attribute e = repo.findById(id)
-                .orElseThrow(() -> new AttributeNotFoundException(id.toString()));
+                .orElseThrow(
+                        () -> new AttributeNotFoundException(
+                                id.toString()
+                        )
+                );
 
-        if (!e.getDefinitionName().equals(req.name()) &&
-                repo.existsByDefinitionName(req.name())) {
+        if (!e.getDefinitionName().equals(req.name())
+                && repo.existsByDefinitionName(req.name())) {
             throw new AttributeDuplicateException();
         }
 
@@ -55,7 +71,11 @@ public class AttributeServiceImpl implements AttributeService {
     @Transactional
     public void delete(UUID id) {
         Attribute e = repo.findById(id)
-                .orElseThrow(() -> new AttributeNotFoundException(id.toString()));
+                .orElseThrow(
+                        () -> new AttributeNotFoundException(
+                                id.toString()
+                        )
+                );
         repo.delete(e);
     }
 
@@ -78,19 +98,31 @@ public class AttributeServiceImpl implements AttributeService {
                     lastName = parts[0];
                     lastId = UUID.fromString(parts[1]);
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
 
-        Pageable pageable = PageRequest.of(0, limit, Sort.by("definitionName").ascending().and(Sort.by("id")));
+        Pageable pageable = PageRequest.of(
+                0,
+                limit,
+                Sort.by("definitionName").ascending()
+                        .and(Sort.by("id"))
+        );
 
-        var pageResult = repo.searchAttributesByCompositeCursor(keywordLike, lastName, lastId, pageable);
+        var pageResult = repo.searchAttributesByCompositeCursor(
+                keywordLike,
+                lastName,
+                lastId,
+                pageable
+        );
 
         var data = pageResult.stream()
                 .map(ClothesAttributeDefDto::of)
                 .collect(Collectors.toList());
 
         String nextCursor = pageResult.hasNext() && !data.isEmpty()
-                ? data.get(data.size() - 1).name() + "::" + data.get(data.size() - 1).id()
+                ? data.get(data.size() - 1)
+                .name() + "::" + data.get(data.size() - 1).id()
                 : null;
 
         UUID nextIdAfter = pageResult.hasNext() && !data.isEmpty()

@@ -1,5 +1,7 @@
 package project.closet.domain.clothes.entity;
 
+import java.util.UUID;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,7 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.util.UUID;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +24,11 @@ public class AttributeSelectableValue {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(columnDefinition = "uuid", updatable = false, nullable = false)
+    @Column(
+            columnDefinition = "uuid",
+            updatable = false,
+            nullable = false
+    )
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -34,6 +40,6 @@ public class AttributeSelectableValue {
 
     public AttributeSelectableValue(Attribute attribute, String value) {
         this.attribute = attribute;
-        this.value     = value;
+        this.value = value;
     }
 }

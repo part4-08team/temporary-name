@@ -11,4 +11,5 @@ public record ClothesAttributeDefDtoCursorResponse(
         long totalCount,
         String sortBy,
         String sortDirection
-) {}
+) {
+}

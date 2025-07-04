@@ -1,11 +1,17 @@
 package project.closet.domain.clothes.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.AccessLevel;
-import project.closet.domain.base.BaseEntity;
 
+import project.closet.domain.base.BaseEntity;
 
 @Entity
 @Table(name = "clothes_attributes")
@@ -13,17 +19,14 @@ import project.closet.domain.base.BaseEntity;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ClothesAttribute extends BaseEntity {
 
-    // clothes_attributes.clothes_id → Clothes 엔티티와 연관
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "clothes_id", nullable = false)
     private Clothes clothes;
 
-    // clothes_attributes.definition_id → Attribute 엔티티와 연관
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "definition_id", nullable = false)
     private Attribute definition;
 
-    // clothes_attributes.value 컬럼
     @Column(nullable = false, length = 50)
     private String value;
 
@@ -32,7 +35,6 @@ public class ClothesAttribute extends BaseEntity {
         this.value = value;
     }
 
-    // 양방향 편의 메서드
     void setClothes(Clothes clothes) {
         this.clothes = clothes;
     }

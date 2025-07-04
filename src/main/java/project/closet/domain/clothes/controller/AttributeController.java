@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import project.closet.domain.clothes.dto.request.ClothesAttributeDefCreateRequest;
+import project.closet.domain.clothes.dto.request.ClothesAttributeDefUpdateRequest;
 import project.closet.domain.clothes.dto.response.ClothesAttributeDefDto;
 import project.closet.domain.clothes.dto.response.ClothesAttributeDefDtoCursorResponse;
 import project.closet.domain.clothes.service.AttributeService;
@@ -42,7 +43,7 @@ public class AttributeController {
     @PreAuthorize("hasRole('ADMIN')")
     public ClothesAttributeDefDto update(
             @PathVariable UUID definitionId,
-            @Valid @RequestBody ClothesAttributeDefCreateRequest req
+            @Valid @RequestBody ClothesAttributeDefUpdateRequest req
     ) {
         return attributeService.update(definitionId, req);
     }

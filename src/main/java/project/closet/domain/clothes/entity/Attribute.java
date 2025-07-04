@@ -1,14 +1,21 @@
 package project.closet.domain.clothes.entity;
 
-
-import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "attributes")
@@ -18,14 +25,21 @@ public class Attribute {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(columnDefinition = "uuid", updatable = false, nullable = false)
+    @Column(
+            columnDefinition = "uuid",
+            updatable = false,
+            nullable = false
+    )
     private UUID id;
 
-    // 속성 정의명 (attributes.definition_name)
-    @Column(name = "definition_name", nullable = false, unique = true, length = 50)
+    @Column(
+            name = "definition_name",
+            nullable = false,
+            unique = true,
+            length = 50
+    )
     private String definitionName;
 
-    // ElementCollection 대신 OneToMany로 변경
     @OneToMany(
             mappedBy = "attribute",
             cascade = CascadeType.ALL,
@@ -51,5 +65,4 @@ public class Attribute {
         this.selectableValues.clear();
         values.forEach(this::addSelectableValue);
     }
-
 }
