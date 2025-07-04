@@ -24,7 +24,7 @@ public class BasicWeatherService implements WeatherService {
         log.info("위도 경도로 행정구역 반환 요청: longitude={}, latitude={}", longitude, latitude);
         KakaoAddressResponse kakaoAddressResponse =
                 addressClient.requestAddressFromKakao(longitude, latitude);
-        Grid grid = geoGridConverter.convert(longitude, latitude);
+        Grid grid = geoGridConverter.convert(latitude, longitude);
         return new WeatherAPILocation(
                 longitude,
                 latitude,
