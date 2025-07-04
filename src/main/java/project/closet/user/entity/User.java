@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.closet.domain.base.BaseUpdatableEntity;
+import project.closet.dto.request.ProfileUpdateRequest;
 
 @Entity
 @Table(name = "users")
@@ -55,5 +56,20 @@ public class User extends BaseUpdatableEntity {
     // Profile 양방향 연관관계 설정을 위한 메서드
     public void setProfileInternal(Profile profile) {
         this.profile = profile;
+    }
+
+    public void updateProfile(ProfileUpdateRequest request) {
+        if (request.name() != null && !name.equals(request.name())) {
+            this.name = request.name();
+        }
+        this.profile.updateProfile(
+                request.gender(),
+                request.birthDate(),
+                null,
+                request.temperatureSensitivity(),
+                request.location().latitude(),
+                request.location().longitude(),
+                null
+        );
     }
 }

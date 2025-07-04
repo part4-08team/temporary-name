@@ -1,7 +1,7 @@
 package project.closet.user.entity;
 
 public enum Gender {
-    MAIL,
+    MALE,
     FEMALE,
     OTHER
 }
