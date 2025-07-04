@@ -15,7 +15,6 @@ import project.closet.exception.user.UserNotFoundException;
 import project.closet.security.jwt.JwtService;
 import project.closet.user.entity.Role;
 import project.closet.user.entity.User;
-import project.closet.user.mapper.UserMapper;
 import project.closet.user.repository.UserRepository;
 
 @Slf4j
@@ -31,7 +30,6 @@ public class BasicAuthService implements AuthService {
     private String password;
 
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
@@ -47,7 +45,7 @@ public class BasicAuthService implements AuthService {
         admin.updateRole(Role.ADMIN);
         userRepository.save(admin);
 
-        UserDto adminDto = userMapper.toDto(admin);
+        UserDto adminDto = UserDto.from(admin);
         log.info("어드민 계정이 생성되었습니다: {}", adminDto);
     }
 
@@ -61,6 +59,6 @@ public class BasicAuthService implements AuthService {
         user.updateRole(request.newRole());
 
         jwtService.invalidateJwtSession(user.getId());
-        return userMapper.toDto(user);
+        return UserDto.from(user);
     }
 }

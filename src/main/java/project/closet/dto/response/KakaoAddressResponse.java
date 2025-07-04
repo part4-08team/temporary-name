@@ -28,4 +28,17 @@ public class KakaoAddressResponse {
         private double x;
         private double y;
     }
+
+    public List<String> getLocationNames() {
+        if (documents == null || documents.isEmpty()) {
+            return List.of();
+        }
+        Document doc = documents.get(0);
+        return List.of(
+                doc.getRegion_1depth_name(),
+                doc.getRegion_2depth_name(),
+                doc.getRegion_3depth_name(),
+                doc.getRegion_4depth_name()
+        );
+    }
 }
