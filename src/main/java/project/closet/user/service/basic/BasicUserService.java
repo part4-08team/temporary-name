@@ -4,9 +4,12 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import project.closet.dto.request.ProfileUpdateRequest;
 import project.closet.dto.request.UserCreateRequest;
 import project.closet.dto.response.ProfileDto;
 import project.closet.dto.response.UserDto;
@@ -54,6 +57,36 @@ public class BasicUserService implements UserService {
         User user = userRepository.findByIdWithProfile(userId)
                 .orElseThrow(() -> UserNotFoundException.withId(userId));
         // User -> ProfileDto 변환
+        Profile profile = user.getProfile();
+        //TODO x,y 좌표 구하는 로직 추가 필요
+        WeatherAPILocation location =
+                new WeatherAPILocation(
+                        profile.getLatitude(),
+                        profile.getLongitude(),
+                        null,
+                        null,
+                        List.of()
+                );
+
+        return ProfileDto.of(user, location, profile);
+    }
+
+    @PreAuthorize("principal.userId == #userId")
+    @Transactional
+    @Override
+    public ProfileDto updateProfile(
+            UUID userId,
+            ProfileUpdateRequest profileUpdateRequest,
+            MultipartFile profileImage
+    ) {
+        log.debug("사용자 프로필 업데이트 시작: userId={}, request={}", userId, profileUpdateRequest);
+        User user = userRepository.findByIdWithProfile(userId)
+                .orElseThrow(() -> UserNotFoundException.withId(userId));
+        user.updateProfile(profileUpdateRequest);
+        return toProfileDto(user);
+    }
+
+    private ProfileDto toProfileDto(User user) {
         Profile profile = user.getProfile();
         //TODO x,y 좌표 구하는 로직 추가 필요
         WeatherAPILocation location =

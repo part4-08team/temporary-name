@@ -25,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import project.closet.dto.response.UserDto;
 import project.closet.exception.ErrorCode;
 import project.closet.exception.user.UserNotFoundException;
-import project.closet.user.mapper.UserMapper;
 import project.closet.user.repository.UserRepository;
 
 @Slf4j
@@ -44,7 +43,6 @@ public class JwtService {
 
     private final JwtSessionRepository jwtSessionRepository;
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
     private final ObjectMapper objectMapper;
 
     @Transactional
@@ -108,7 +106,7 @@ public class JwtService {
 
         UUID userId = parse(refreshToken).userDto().id();
         UserDto userDto = userRepository.findById(userId)
-                .map(userMapper::toDto)
+                .map(UserDto::from)
                 .orElseThrow(() -> UserNotFoundException.withId(userId));
 
         JwtObject accessJwtObject = generateJwtObject(userDto, accessTokenValiditySeconds);
