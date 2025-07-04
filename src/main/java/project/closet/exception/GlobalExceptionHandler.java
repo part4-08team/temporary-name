@@ -45,6 +45,7 @@ public class GlobalExceptionHandler {
             case INVALID_REQUEST ,  ATTRIBUTE_DEFINITION_DUPLICATE -> HttpStatus.BAD_REQUEST;
             case INVALID_TOKEN, TOKEN_NOT_FOUND, INVALID_TOKEN_SECRET -> HttpStatus.UNAUTHORIZED;
             case INTERNAL_ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
+            default -> HttpStatus.INTERNAL_SERVER_ERROR;
         };
     }
 }
