@@ -1,11 +1,9 @@
 package project.closet.weather.service.basic;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import project.closet.dto.response.KakaoAddressResponse;
-import project.closet.dto.response.KakaoAddressResponse.Document;
 import project.closet.dto.response.WeatherAPILocation;
 import project.closet.weather.service.AddressClient;
 import project.closet.weather.service.WeatherService;
@@ -26,8 +24,8 @@ public class BasicWeatherService implements WeatherService {
                 addressClient.requestAddressFromKakao(longitude, latitude);
         Grid grid = geoGridConverter.convert(latitude, longitude);
         return new WeatherAPILocation(
-                longitude,
                 latitude,
+                longitude,
                 grid.x(),
                 grid.y(),
                 kakaoAddressResponse.getLocationNames()

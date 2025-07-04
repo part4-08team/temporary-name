@@ -1,6 +1,5 @@
 package project.closet.user.service.basic;
 
-import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +19,8 @@ import project.closet.user.entity.Profile;
 import project.closet.user.entity.User;
 import project.closet.user.repository.UserRepository;
 import project.closet.user.service.UserService;
+import project.closet.weather.service.basic.GeoGridConverter;
+import project.closet.weather.service.basic.GeoGridConverter.Grid;
 
 @Slf4j
 @Service
@@ -28,6 +29,7 @@ public class BasicUserService implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final GeoGridConverter geoGridConverter;
 
     @Transactional
     @Override
@@ -57,18 +59,7 @@ public class BasicUserService implements UserService {
         User user = userRepository.findByIdWithProfile(userId)
                 .orElseThrow(() -> UserNotFoundException.withId(userId));
         // User -> ProfileDto 변환
-        Profile profile = user.getProfile();
-        //TODO x,y 좌표 구하는 로직 추가 필요
-        WeatherAPILocation location =
-                new WeatherAPILocation(
-                        profile.getLatitude(),
-                        profile.getLongitude(),
-                        null,
-                        null,
-                        List.of()
-                );
-
-        return ProfileDto.of(user, location, profile);
+        return toProfileDto(user);
     }
 
     @PreAuthorize("principal.userId == #userId")
@@ -88,15 +79,18 @@ public class BasicUserService implements UserService {
 
     private ProfileDto toProfileDto(User user) {
         Profile profile = user.getProfile();
-        //TODO x,y 좌표 구하는 로직 추가 필요
-        WeatherAPILocation location =
-                new WeatherAPILocation(
-                        profile.getLatitude(),
-                        profile.getLongitude(),
-                        null,
-                        null,
-                        List.of()
-                );
+        WeatherAPILocation location = null;
+
+        if (profile.getLatitude() != null && profile.getLongitude() != null) {
+            Grid grid = geoGridConverter.convert(profile.getLatitude(), profile.getLongitude());
+            location = new WeatherAPILocation(
+                    profile.getLatitude(),
+                    profile.getLongitude(),
+                    grid.x(),
+                    grid.y(),
+                    profile.getLocationNames()
+            );
+        }
 
         return ProfileDto.of(user, location, profile);
     }

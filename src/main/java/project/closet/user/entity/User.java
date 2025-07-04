@@ -69,7 +69,7 @@ public class User extends BaseUpdatableEntity {
                 request.temperatureSensitivity(),
                 request.location().latitude(),
                 request.location().longitude(),
-                null
+                request.location().locationNames()
         );
     }
 }

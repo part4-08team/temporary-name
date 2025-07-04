@@ -4,7 +4,7 @@ CREATE TABLE users
     id                    UUID                     NOT NULL PRIMARY KEY,
     created_at            TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at            TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    name                  VARCHAR(50)              NOT NULL UNIQUE ,
+    name                  VARCHAR(50)              NOT NULL UNIQUE,
     email                 VARCHAR(100)             NOT NULL UNIQUE,
     password              VARCHAR(255)             NOT NULL,
     locked                BOOLEAN                  NOT NULL,
@@ -46,6 +46,13 @@ CREATE TABLE profiles
     latitude                DOUBLE PRECISION,
     longitude               DOUBLE PRECISION,
     location_name           VARCHAR(50)
+);
+
+CREATE TABLE profile_location_names
+(
+    profile_id    UUID NOT NULL,
+    location_name VARCHAR(50),
+    CONSTRAINT fk_profile_location FOREIGN KEY (profile_id) REFERENCES profiles (id)
 );
 
 -- 4. Feeds
