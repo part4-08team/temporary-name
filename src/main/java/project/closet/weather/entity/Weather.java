@@ -48,13 +48,13 @@ public class Weather extends BaseEntity {
     private Double humidity; // 습도
 
     @Column(nullable = false)
-    private Double currentTemperature; // 현재 기온
+    private Double currentTemperature;
 
     @Column(nullable = false)
-    private Double maxTemperature; // 최고 기온
+    private Double maxTemperature;
 
     @Column(nullable = false)
-    private Double minTemperature; // 최저 기온
+    private Double minTemperature;
 
     @Column(nullable = false)
     private Integer x;
@@ -64,7 +64,8 @@ public class Weather extends BaseEntity {
 
     @Builder
     public Weather(Instant forecastedAt, Instant forecastAt, SkyStatus skyStatus, Double amount,
-            Integer probability, PrecipitationType precipitationType, Double windSpeed, AsWord asWord,
+            Integer probability, PrecipitationType precipitationType, Double windSpeed,
+            AsWord asWord,
             Double humidity, Double currentTemperature, Double maxTemperature,
             Double minTemperature,
             Integer x, Integer y) {

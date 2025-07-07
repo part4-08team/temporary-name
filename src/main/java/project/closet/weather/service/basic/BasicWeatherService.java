@@ -95,6 +95,7 @@ public class BasicWeatherService implements WeatherService {
         log.info("날씨 정보 처리 완료");
     }
 
+    // TODO 바로 전 날짜의 온도와 비교해서 온도 정보 반환
     @Transactional(readOnly = true)
     @Override
     public List<WeatherDto> getWeatherInfo(Double longitude, Double latitude) {
