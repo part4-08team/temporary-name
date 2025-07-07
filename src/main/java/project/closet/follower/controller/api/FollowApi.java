@@ -10,6 +10,9 @@ import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
 import project.closet.dto.request.FollowCreateRequest;
+import project.closet.dto.response.FollowDto;
+import project.closet.dto.response.FollowSummaryDto;
+import project.closet.security.ClosetUserDetails;
 
 @Tag(name = "팔로우 관리", description = "팔로우 관련 API")
 public interface FollowApi {
@@ -25,7 +28,7 @@ public interface FollowApi {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    ResponseEntity<Void> createFollow(FollowCreateRequest followCreateRequest);
+    ResponseEntity<FollowDto> createFollow(FollowCreateRequest followCreateRequest);
 
     // 팔로우 요약 정보 조회
     @Operation(summary = "팔로우 요약 정보 조회")
@@ -38,7 +41,7 @@ public interface FollowApi {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    ResponseEntity<Void> getFollowSummary(UUID userId);
+    ResponseEntity<FollowSummaryDto> getFollowSummary(UUID userId, ClosetUserDetails userDetails);
 
     // 팔로잉 목록 조회
     @Operation(summary = "팔로잉 목록 조회")
