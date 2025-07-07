@@ -1,4 +1,4 @@
-package project.closet.weather.response;
+package project.closet.weather.kakaoresponse;
 
 public record WeatherItem(
         String baseDate,   // 예보 발표 날짜

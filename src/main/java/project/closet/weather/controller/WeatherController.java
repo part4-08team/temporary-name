@@ -1,5 +1,7 @@
 package project.closet.weather.controller;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import project.closet.dto.response.WeatherAPILocation;
+import project.closet.dto.response.WeatherDto;
 import project.closet.weather.controller.api.WeatherApi;
 import project.closet.weather.service.WeatherService;
+import project.closet.weather.service.basic.WeatherAPIClient;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -20,14 +24,18 @@ import project.closet.weather.service.WeatherService;
 public class WeatherController implements WeatherApi {
 
     private final WeatherService weatherService;
+    private final WeatherAPIClient weatherAPIClient;
 
     @GetMapping
     @Override
-    public ResponseEntity<List<String>> getWeatherInfo(
+    public ResponseEntity<List<WeatherDto>> getWeatherInfo(
             @RequestParam Double longitude,
             @RequestParam Double latitude
     ) {
-        return ResponseEntity.ok(List.of());
+        // TODO 날씨 정보 조회 요청
+        log.info("날씨 정보 조회 요청: longitude={}, latitude={}", longitude, latitude);
+
+        return ResponseEntity.ok(weatherService.getWeatherInfo(longitude, latitude));
     }
 
     @GetMapping("/location")
@@ -39,5 +47,12 @@ public class WeatherController implements WeatherApi {
         log.info("날씨 위치 정보 조회 요청: longitude={}, latitude={}", longitude, latitude);
         WeatherAPILocation location = weatherService.getLocation(longitude, latitude);
         return ResponseEntity.ok(location);
+    }
+
+    @GetMapping("/test")
+    public ResponseEntity<Void> getWeatherTest() {
+        log.info("날씨 API 테스트 요청");
+        weatherAPIClient.getWeatherRawData(58,74, LocalDate.of(2025, 7, 4), LocalTime.of(14,0));
+        return ResponseEntity.ok().build();
     }
 }

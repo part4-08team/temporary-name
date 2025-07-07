@@ -1,4 +1,4 @@
-package project.closet.weather.response;
+package project.closet.weather.kakaoresponse;
 
 public record Header(String resultCode, String resultMsg) {
 
