@@ -6,12 +6,14 @@ import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.closet.dto.request.FollowCreateRequest;
 import project.closet.dto.response.FollowDto;
 import project.closet.dto.response.FollowListResponse;
 import project.closet.dto.response.FollowSummaryDto;
+import project.closet.exception.follow.FollowNotFoundException;
 import project.closet.exception.user.UserNotFoundException;
 import project.closet.follower.entity.Follow;
 import project.closet.follower.repository.FollowRepository;
@@ -144,5 +146,14 @@ public class BasicFollowService implements FollowService {
                 "createdAt",
                 "DESC"
         );
+    }
+
+    @Transactional
+    @Override
+    public void cancelFollowById(UUID followId) {
+        if (!followRepository.existsById(followId)) {
+            throw FollowNotFoundException.withId(followId);
+        }
+        followRepository.deleteById(followId);
     }
 }

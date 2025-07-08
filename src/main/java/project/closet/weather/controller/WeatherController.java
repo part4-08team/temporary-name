@@ -32,7 +32,7 @@ public class WeatherController implements WeatherApi {
             @RequestParam Double longitude,
             @RequestParam Double latitude
     ) {
-        // TODO 날씨 정보 조회 요청
+        // 날씨 정보 조회 요청
         log.info("날씨 정보 조회 요청: longitude={}, latitude={}", longitude, latitude);
 
         return ResponseEntity.ok(weatherService.getWeatherInfo(longitude, latitude));

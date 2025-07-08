@@ -13,6 +13,7 @@ public enum ErrorCode {
 
     // FOLLOW
     SELF_FOLLOW_NOT_ALLOWED("자기 자신을 팔로우할 수 없습니다."),
+    FOLLOW_NOT_FOUND("팔로우를 찾을 수 없습니다."),
 
     INVALID_REQUEST("잘못된 요청입니다."),
     INTERNAL_ERROR("서버 내부 오류입니다."),

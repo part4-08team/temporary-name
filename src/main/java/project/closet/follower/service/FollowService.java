@@ -31,4 +31,6 @@ public interface FollowService {
             int limit,
             String nameLike
     );
+
+    void cancelFollowById(UUID followId);
 }

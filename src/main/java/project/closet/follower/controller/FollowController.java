@@ -84,6 +84,7 @@ public class FollowController implements FollowApi {
     @DeleteMapping("{followId}")
     @Override
     public ResponseEntity<Void> cancelFollow(@PathVariable("followId") UUID followId) {
-        return null;
+        followService.cancelFollowById(followId);
+        return ResponseEntity.noContent().build(); // 204 No Content
     }
 }
