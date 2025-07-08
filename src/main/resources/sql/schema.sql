@@ -15,21 +15,30 @@ CREATE TABLE users
 -- 2. Weathers
 CREATE TABLE weathers
 (
-    id                  UUID             NOT NULL PRIMARY KEY,
-    forecasted_at       TIMESTAMP        NOT NULL,
-    forecast_at         TIMESTAMP        NOT NULL,
-    sky_status          VARCHAR(50)      NOT NULL,
-    amount              DOUBLE PRECISION NOT NULL,
-    probability         INTEGER          NOT NULL,
-    precipitation_type  VARCHAR(50)      NOT NULL,
-    wind_speed          DOUBLE PRECISION NOT NULL,
-    as_word             VARCHAR(50)      NOT NULL,
-    humidity            DOUBLE PRECISION NOT NULL,
-    current_temperature DOUBLE PRECISION NOT NULL,
-    max_temperature     DOUBLE PRECISION NOT NULL,
-    min_temperature     DOUBLE PRECISION NOT NULL,
-    x                   INTEGER          NOT NULL,
-    y                   INTEGER          NOT NULL
+    id                  UUID                     NOT NULL PRIMARY KEY,
+    forecasted_at       TIMESTAMP                NOT NULL,
+    forecast_at         TIMESTAMP                NOT NULL,
+    sky_status          VARCHAR(50)              NOT NULL,
+    amount              DOUBLE PRECISION         NOT NULL,
+    probability         INTEGER                  NOT NULL,
+    precipitation_type  VARCHAR(50)              NOT NULL,
+    wind_speed          DOUBLE PRECISION         NOT NULL,
+    as_word             VARCHAR(50)              NOT NULL,
+    humidity            DOUBLE PRECISION         NOT NULL,
+    current_temperature DOUBLE PRECISION         NOT NULL,
+    max_temperature     DOUBLE PRECISION         NOT NULL,
+    min_temperature     DOUBLE PRECISION         NOT NULL,
+    x                   INTEGER                  NOT NULL,
+    y                   INTEGER                  NOT NULL,
+    created_at          TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+);
+
+CREATE TABLE weather_locations
+(
+    id UUID    NOT NULL PRIMARY KEY,
+    x  INTEGER NOT NULL,
+    y  INTEGER NOT NULL,
+    UNIQUE (x, y)
 );
 
 -- 3. Profiles

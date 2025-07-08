@@ -1,4 +1,4 @@
-package project.closet.weather.response;
+package project.closet.weather.kakaoresponse;
 
 import java.util.List;
 

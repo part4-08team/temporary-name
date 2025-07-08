@@ -11,6 +11,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
 import project.closet.dto.response.WeatherAPILocation;
+import project.closet.dto.response.WeatherDto;
 
 @Tag(name = "날씨 관리", description = "날씨 관련 API")
 public interface WeatherApi {
@@ -25,7 +26,7 @@ public interface WeatherApi {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    ResponseEntity<List<String>> getWeatherInfo(
+    ResponseEntity<List<WeatherDto>> getWeatherInfo(
             @Parameter Double longitude,
             @Parameter Double latitude
     );
