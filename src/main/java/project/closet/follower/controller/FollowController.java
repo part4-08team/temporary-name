@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import project.closet.dto.request.FollowCreateRequest;
 import project.closet.dto.response.FollowDto;
+import project.closet.dto.response.FollowListResponse;
 import project.closet.dto.response.FollowSummaryDto;
 import project.closet.follower.controller.api.FollowApi;
 import project.closet.follower.service.FollowService;
@@ -53,14 +54,16 @@ public class FollowController implements FollowApi {
 
     @GetMapping("/followings")
     @Override
-    public ResponseEntity<Void> getFollowingList(
+    public ResponseEntity<FollowListResponse> getFollowingList(
             @RequestParam(name = "followerId") UUID followerId,
             @RequestParam(name = "cursor", required = false) String cursor,
             @RequestParam(name = "idAfter", required = false) UUID idAfter,
             @RequestParam(name = "limit", defaultValue = "20") int limit,
             @RequestParam(name = "nameLike", required = false) String nameLike
     ) {
-        return null;
+        FollowListResponse followingList =
+                followService.getFollowingList(followerId, cursor, idAfter, limit, nameLike);
+        return ResponseEntity.ok(followingList);
     }
 
     @GetMapping("/followers")
