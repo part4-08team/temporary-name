@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -23,6 +24,7 @@ import project.closet.dto.response.FeedDto;
 import project.closet.dto.response.FeedDtoCursorResponse;
 import project.closet.feed.controller.api.FeedApi;
 import project.closet.feed.service.FeedService;
+import project.closet.security.ClosetUserDetails;
 import project.closet.weather.entity.PrecipitationType;
 import project.closet.weather.entity.SkyStatus;
 
@@ -52,15 +54,21 @@ public class FeedController implements FeedApi {
 
     @PostMapping
     @Override
-    public ResponseEntity<FeedDto> createFeed(@RequestBody @Valid FeedCreateRequest feedCreateRequest) {
+    public ResponseEntity<FeedDto> createFeed(
+            @RequestBody @Valid FeedCreateRequest feedCreateRequest) {
         FeedDto feedDto = feedService.createFeed(feedCreateRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(feedDto);
     }
 
     @PostMapping("{feedId}/like")
     @Override
-    public ResponseEntity<FeedDto> likeFeed(@PathVariable("feedId") UUID feedId) {
-        return null;
+    public ResponseEntity<Void> likeFeed(
+            @PathVariable("feedId") UUID feedId,
+            @AuthenticationPrincipal ClosetUserDetails closetUserDetails
+    ) {
+        UUID userId = closetUserDetails.getUserId();
+        feedService.likeFeed(feedId, userId);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("{feedId}/like")

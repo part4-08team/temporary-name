@@ -147,7 +147,8 @@ CREATE TABLE feed_likes
 (
     id      UUID NOT NULL PRIMARY KEY,
     user_id UUID NOT NULL,
-    feed_id UUID NOT NULL
+    feed_id UUID NOT NULL,
+    CONSTRAINT uk_feed_like UNIQUE (user_id, feed_id)
 );
 
 -- 13. Attribute Selectable Values
