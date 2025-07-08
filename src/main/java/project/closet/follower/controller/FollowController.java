@@ -68,14 +68,17 @@ public class FollowController implements FollowApi {
 
     @GetMapping("/followers")
     @Override
-    public ResponseEntity<Void> getFolloweeList(
+    public ResponseEntity<FollowListResponse> getFolloweeList(
             @RequestParam(name = "followeeId") UUID followeeId,
             @RequestParam(name = "cursor", required = false) String cursor,
             @RequestParam(name = "idAfter", required = false) UUID idAfter,
             @RequestParam(name = "limit", defaultValue = "20") int limit,
             @RequestParam(name = "nameLike") String nameLike
     ) {
-        return null;
+        FollowListResponse response = followService.getFollowerList(
+                followeeId, cursor, idAfter, limit, nameLike
+        );
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("{followId}")

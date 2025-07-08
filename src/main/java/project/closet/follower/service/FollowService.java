@@ -22,4 +22,13 @@ public interface FollowService {
             int limit,
             String nameLike
     );
+
+    // 팔로워 리스트 조회
+    FollowListResponse getFollowerList(
+            UUID followeeId,
+            String cursor,
+            UUID idAfter,
+            int limit,
+            String nameLike
+    );
 }

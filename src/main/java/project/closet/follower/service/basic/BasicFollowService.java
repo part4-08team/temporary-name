@@ -1,5 +1,7 @@
 package project.closet.follower.service.basic;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -47,15 +49,18 @@ public class BasicFollowService implements FollowService {
     @Transactional(readOnly = true)
     @Override
     public FollowSummaryDto getFollowSummary(UUID userId, UUID currentUserId) {
-        log.debug("Getting follow summary for userId: {}, currentUserId: {}", userId, currentUserId);
-        int followerCount = followRepository.countByFolloweeId(userId);
-        int followingCount = followRepository.countByFollowerId(userId);
+        log.debug("Getting follow summary for userId: {}, currentUserId: {}", userId,
+                currentUserId);
+        long followerCount = followRepository.countByFolloweeId(userId);
+        long followingCount = followRepository.countByFollowerId(userId);
 
-        Optional<Follow> myFollow = followRepository.findByFollowerIdAndFolloweeId(currentUserId, userId);
+        Optional<Follow> myFollow = followRepository.findByFollowerIdAndFolloweeId(currentUserId,
+                userId);
         boolean followedByMe = myFollow.isPresent();
         UUID followedByMeId = myFollow.map(Follow::getId).orElse(null);
 
-        boolean followingMe = followRepository.existsByFollowerIdAndFolloweeId(userId, currentUserId);
+        boolean followingMe = followRepository.existsByFollowerIdAndFolloweeId(userId,
+                currentUserId);
 
         return new FollowSummaryDto(
                 userId,
@@ -67,31 +72,77 @@ public class BasicFollowService implements FollowService {
         );
     }
 
+    @Transactional(readOnly = true)
     @Override
     public FollowListResponse getFollowingList(UUID followerId, String cursor, UUID idAfter,
             int limit, String nameLike) {
-        // 1. 커서 페이징 기준에 맞게 정렬 조건 및 필터 조건을 설정한다.
-        //    - createdAt 또는 idAfter 를 기준으로 정렬
-        //    - nameLike 가 있는 경우 followee name 필터 추가
+        List<Follow> follows = followRepository.findFollowingsWithCursor(
+                followerId,
+                cursor != null ? Instant.parse(cursor) : null,
+                idAfter,
+                nameLike,
+                limit
+        );
+        boolean hasNext = follows.size() > limit;
+        List<Follow> pageItems = hasNext ? follows.subList(0, limit) : follows;
+        List<FollowDto> followDtos = pageItems.stream()
+                .map(FollowDto::from)
+                .toList();
 
-        // 2. followerId 를 기준으로 Follow 테이블에서 followee 정보를 가져오는 쿼리를 작성한다.
-        //    - limit + 1 만큼 조회하여 다음 페이지 존재 여부 판단
+        String nextCursor = null;
+        UUID nextIdAfter = null;
+        if (hasNext) {
+            Follow last = pageItems.get(pageItems.size() - 1);
+            nextCursor = last.getCreatedAt().toString(); // ISO-8601 형식 문자열
+            nextIdAfter = last.getId();
+        }
 
-        // 3. 결과 Follow 목록을 FollowDto 리스트로 매핑한다.
-        //    - followee, follower 정보를 UserSummary로 구성
-        //    - 최대 limit 개수로 자른다 (limit + 1로 조회했기 때문에)
+        long totalCount = followRepository.countByFollowerId(followerId);
+        return new FollowListResponse(
+                followDtos,
+                nextCursor,
+                nextIdAfter,
+                hasNext,
+                totalCount,
+                "createdAt",
+                "DESCENDING"
+        );
+    }
 
-        // 4. hasNext 값을 계산한다.
-        //    - 조회한 결과가 limit보다 많다면 hasNext = true
+    @Transactional(readOnly = true)
+    @Override
+    public FollowListResponse getFollowerList(UUID followeeId, String cursor, UUID idAfter,
+            int limit, String nameLike) {
+        Instant parsedCursor = (cursor != null) ? Instant.parse(cursor) : null;
 
-        // 5. nextCursor 및 nextIdAfter 값을 계산한다.
-        //    - 마지막 Follow 객체의 createdAt 또는 id 기준으로 커서 생성
+        List<Follow> follows = followRepository.findFollowersWithCursor(
+                followeeId, parsedCursor, idAfter, nameLike, limit + 1);
 
-        // 6. 전체 followerId 기준 totalCount 를 계산한다.
-        //    - 팔로우 수 세기 (추후 캐시 적용 고려 가능)
+        boolean hasNext = follows.size() > limit;
+        List<Follow> pageItems = hasNext ? follows.subList(0, limit) : follows;
 
-        // 7. FollowListResponse 객체를 생성하여 반환한다.
-        //    - data, nextCursor, nextIdAfter, hasNext, totalCount, sortBy, sortDirection 포함
-        return null;
+        List<FollowDto> followDtos = pageItems.stream()
+                .map(FollowDto::from)
+                .toList();
+
+        String nextCursor = null;
+        UUID nextIdAfter = null;
+        if (hasNext) {
+            Follow last = pageItems.get(pageItems.size() - 1);
+            nextCursor = last.getCreatedAt().toString();
+            nextIdAfter = last.getId();
+        }
+
+        long totalCount = followRepository.countByFolloweeId(followeeId);
+
+        return new FollowListResponse(
+                followDtos,
+                nextCursor,
+                nextIdAfter,
+                hasNext,
+                totalCount,
+                "createdAt",
+                "DESC"
+        );
     }
 }
