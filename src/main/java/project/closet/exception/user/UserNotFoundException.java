@@ -3,7 +3,7 @@ package project.closet.exception.user;
 import java.util.UUID;
 import project.closet.exception.ErrorCode;
 
-public class UserNotFoundException extends UserException{
+public class UserNotFoundException extends UserException {
 
     protected UserNotFoundException() {
         super(ErrorCode.USER_NOT_FOUND);

@@ -1,11 +1,8 @@
 package project.closet.weather.controller;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,7 +29,7 @@ public class WeatherController implements WeatherApi {
             @RequestParam Double longitude,
             @RequestParam Double latitude
     ) {
-        // TODO 날씨 정보 조회 요청
+        // 날씨 정보 조회 요청
         log.info("날씨 정보 조회 요청: longitude={}, latitude={}", longitude, latitude);
 
         return ResponseEntity.ok(weatherService.getWeatherInfo(longitude, latitude));

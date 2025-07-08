@@ -5,6 +5,5 @@ public enum SkyStatus {
     CLEAR,
     PARTLY_CLOUDY,
     CLOUDY,
-    UNKNOWN
-    ;
+    UNKNOWN;
 }

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import project.closet.dto.request.FollowCreateRequest;
 import project.closet.dto.response.FollowDto;
+import project.closet.dto.response.FollowListResponse;
 import project.closet.dto.response.FollowSummaryDto;
 import project.closet.follower.controller.api.FollowApi;
 import project.closet.follower.service.FollowService;
@@ -53,31 +54,37 @@ public class FollowController implements FollowApi {
 
     @GetMapping("/followings")
     @Override
-    public ResponseEntity<Void> getFollowingList(
+    public ResponseEntity<FollowListResponse> getFollowingList(
             @RequestParam(name = "followerId") UUID followerId,
             @RequestParam(name = "cursor", required = false) String cursor,
             @RequestParam(name = "idAfter", required = false) UUID idAfter,
             @RequestParam(name = "limit", defaultValue = "20") int limit,
             @RequestParam(name = "nameLike", required = false) String nameLike
     ) {
-        return null;
+        FollowListResponse followingList =
+                followService.getFollowingList(followerId, cursor, idAfter, limit, nameLike);
+        return ResponseEntity.ok(followingList);
     }
 
     @GetMapping("/followers")
     @Override
-    public ResponseEntity<Void> getFolloweeList(
+    public ResponseEntity<FollowListResponse> getFolloweeList(
             @RequestParam(name = "followeeId") UUID followeeId,
             @RequestParam(name = "cursor", required = false) String cursor,
             @RequestParam(name = "idAfter", required = false) UUID idAfter,
             @RequestParam(name = "limit", defaultValue = "20") int limit,
             @RequestParam(name = "nameLike") String nameLike
     ) {
-        return null;
+        FollowListResponse response = followService.getFollowerList(
+                followeeId, cursor, idAfter, limit, nameLike
+        );
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("{followId}")
     @Override
     public ResponseEntity<Void> cancelFollow(@PathVariable("followId") UUID followId) {
-        return null;
+        followService.cancelFollowById(followId);
+        return ResponseEntity.noContent().build(); // 204 No Content
     }
 }
