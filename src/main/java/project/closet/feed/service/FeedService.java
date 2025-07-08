@@ -9,4 +9,6 @@ public interface FeedService {
     FeedDto createFeed(FeedCreateRequest feedCreateRequest);
 
     void likeFeed(UUID feedId, UUID userId);
+
+    void cancelFeedLike(UUID feedId, UUID userId);
 }

@@ -73,8 +73,13 @@ public class FeedController implements FeedApi {
 
     @DeleteMapping("{feedId}/like")
     @Override
-    public ResponseEntity<Void> cancelFeed(@PathVariable("feedId") UUID feedId) {
-        return null;
+    public ResponseEntity<Void> cancelFeed(
+            @PathVariable("feedId") UUID feedId,
+            @AuthenticationPrincipal ClosetUserDetails closetUserDetails
+    ) {
+        UUID userId = closetUserDetails.getUserId();
+        feedService.cancelFeedLike(feedId, userId);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{feedId}/comments")

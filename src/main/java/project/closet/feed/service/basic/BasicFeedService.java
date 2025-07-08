@@ -82,7 +82,6 @@ public class BasicFeedService implements FeedService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> UserNotFoundException.withId(userId));
 
-        // Feed 조회 -> 연관관계 fetch join 해야할듯
         Feed feed = feedRepository.findById(feedId)
                 .orElseThrow(() -> FeedNotFoundException.withId(feedId));
 
@@ -92,5 +91,18 @@ public class BasicFeedService implements FeedService {
         }
 
         feedLikeRepository.save(new FeedLike(feed, user));
+    }
+
+    @Transactional
+    @Override
+    public void cancelFeedLike(UUID feedId, UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> UserNotFoundException.withId(userId));
+
+        Feed feed = feedRepository.findById(feedId)
+                .orElseThrow(() -> FeedNotFoundException.withId(feedId));
+
+        feedLikeRepository.deleteByUserAndFeed(user, feed);
+        // Like 취소 시에 알림이 필요하다면, int 반환 받아서 값이 1이면 알림 생성하도록 할 수 있음
     }
 }

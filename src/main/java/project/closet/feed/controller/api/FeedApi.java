@@ -77,7 +77,7 @@ public interface FeedApi {
                     responseCode = "400", description = "피드 좋아요 취소 실패"
             )
     })
-    ResponseEntity<Void> cancelFeed(UUID feedId);
+    ResponseEntity<Void> cancelFeed(UUID feedId, ClosetUserDetails closetUserDetails);
 
     // 피드 댓글 조회
     @Operation(summary = "피드 댓글 조회", description = "피드 댓글 조회 API")

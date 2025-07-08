@@ -10,6 +10,7 @@ public interface FeedLikeRepository extends JpaRepository<FeedLike, UUID> {
 
     boolean existsByUserAndFeed(User user, Feed feed);
 
+    void deleteByUserAndFeed(User user, Feed feed);
 }
 
 /*
