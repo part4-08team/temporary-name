@@ -6,8 +6,10 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +20,6 @@ import project.closet.dto.response.KakaoAddressResponse;
 import project.closet.dto.response.WeatherAPILocation;
 import project.closet.dto.response.WeatherDto;
 import project.closet.weather.entity.Weather;
-import project.closet.weather.kakaoresponse.WeatherApiResponse;
 import project.closet.weather.location.WeatherLocation;
 import project.closet.weather.location.WeatherLocationRepository;
 import project.closet.weather.repository.WeatherRepository;
@@ -55,45 +56,57 @@ public class BasicWeatherService implements WeatherService {
         );
     }
 
-    @Transactional
-    @Scheduled(cron = "0 0 23 * * *")  //매일 23시 0분 0초에 실행
-    @Override
+    @Scheduled(cron = "0 0 23 * * *")
     public void fetchAndSaveWeatherForecast() {
-        log.info("날씨 정보 처리 요청");
+        log.info("🌤️ 날씨 정보 처리 요청");
+
         LocalDate forecastBaseDate = LocalDate.now().minusDays(1);
         LocalTime forecastTime = LocalTime.of(23, 0);
         Instant forecastedAt = LocalDateTime.of(forecastBaseDate, forecastTime)
-                .atZone(ZoneId.of("Asia/Seoul"))
-                .toInstant();
+                .atZone(ZoneId.of("Asia/Seoul")).toInstant();
 
-        weatherLocationRepository.findAll()
-                .forEach(weatherLocation -> {
-                    // 1. 데이터를 요청할 날짜 및 시간 설정 (총 6일 데이터가 필요함)
-                    WeatherApiResponse weatherRawData = weatherAPIClient.getWeatherRawData(
-                            weatherLocation.getX(),
-                            weatherLocation.getY(),
-                            forecastBaseDate,
-                            forecastTime
-                    );
+        List<WeatherLocation> locations = weatherLocationRepository.findAll();
+        int batchSize = 100;  // 원하는 batch 크기
 
-                    // 2. 날씨 데이터 파싱
-                    List<Weather> weathers = weatherDataParser.parseToWeatherEntities(
-                            weatherRawData,
-                            forecastedAt,
-                            weatherLocation.getX(),
-                            weatherLocation.getY()
-                    );
+        for (int i = 0; i < locations.size(); i += batchSize) {
+            List<WeatherLocation> batch = locations.subList(i, Math.min(i + batchSize, locations.size()));
+            log.info("🚀 {}~{}번째 지역 날씨 요청 시작", i + 1, Math.min(i + batchSize, locations.size()));
 
-                    // 3. DB 저장
-                    if (!weathers.isEmpty()) {
-                        weatherRepository.saveAll(weathers);
-                        log.info("✅ {}건의 날씨 데이터 저장 완료 (x={}, y={})", weathers.size(), weatherLocation.getX(), weatherLocation.getY());
-                    } else {
-                        log.warn("⚠️ 파싱된 날씨 데이터 없음 (x={}, y={})", weatherLocation.getX(), weatherLocation.getY());
-                    }
-                });
-        log.info("날씨 정보 처리 완료");
+            List<CompletableFuture<List<Weather>>> futures = batch.stream()
+                    .map(location -> weatherAPIClient.fetchWeatherAsync(
+                                    location.getX(), location.getY(), forecastBaseDate, forecastTime)
+                            .thenApply(response -> weatherDataParser.parseToWeatherEntities(
+                                    response, forecastedAt, location.getX(), location.getY()))
+                            .exceptionally(ex -> {
+                                log.warn("❌ 날씨 요청 실패 (x={}, y={}): {}", location.getX(), location.getY(), ex.getMessage());
+                                return Collections.emptyList();  // 실패 시 빈 리스트 반환
+                            })
+                    ).toList();
+
+            // 이 batch가 완료될 때까지 기다림
+            List<Weather> parsedWeather = futures.stream()
+                    .map(CompletableFuture::join)
+                    .flatMap(List::stream)
+                    .collect(Collectors.toList());
+
+            if (!parsedWeather.isEmpty()) {
+                weatherRepository.saveAll(parsedWeather);
+                log.info("✅ 배치 {}건 저장 완료", parsedWeather.size());
+            } else {
+                log.warn("⚠️ 저장할 데이터 없음 ({}~{})", i + 1, i + batchSize);
+            }
+
+            // 선택: 서버 과부하 방지용 sleep (필요시)
+            try {
+                Thread.sleep(1000);  // 1초 쉬었다가 다음 배치 실행
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        log.info("🌤️ 날씨 정보 전체 처리 완료");
     }
+
 
     // TODO 바로 전 날짜의 온도와 비교해서 온도 정보 반환
     @Transactional(readOnly = true)
@@ -109,7 +122,7 @@ public class BasicWeatherService implements WeatherService {
                 .toInstant();
         // 3. 날씨 정보 가공 후 반환
         List<Weather> weathers =
-                weatherRepository.findAllByXAndYAndForecastedAt(grid.x(), grid.y(), baseForecastedAt);
+                weatherRepository.findAllByXAndYAndForecastedAtOrderByForecastAtAsc(grid.x(), grid.y(), baseForecastedAt);
 
         Map<Instant, Weather> weatherMapByForecastAt = weathers.stream()
                 .collect(Collectors.toMap(Weather::getForecastAt, w -> w));

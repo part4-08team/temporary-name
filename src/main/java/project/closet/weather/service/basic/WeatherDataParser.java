@@ -42,6 +42,9 @@ public class WeatherDataParser {
         // ✅ TMN (최저기온, 06:00) 및 TMX (최고기온, 15:00) 데이터 매핑
         Map<LocalDate, Double> minTempMap = extractTemperatureMap(items, "TMN", "0600");
         Map<LocalDate, Double> maxTempMap = extractTemperatureMap(items, "TMX", "1500");
+        Map<LocalDate, Double> humidityMap = computeAverageHumidityByDate(items);
+        Map<LocalDate, Double> popMap = computeAveragePrecipitationProbabilityByDate(items);
+        Map<LocalDate, Double> windSpeedMap = computeAverageWindSpeedByDate(items);
 
         // 00시 데이터만 필터링 → 날짜별 그룹화
         Map<LocalDate, List<WeatherItem>> grouped = items.stream()
@@ -54,6 +57,13 @@ public class WeatherDataParser {
         for (Map.Entry<LocalDate, List<WeatherItem>> entry : grouped.entrySet()) {
             LocalDate date = entry.getKey();
             List<WeatherItem> dailyItems = entry.getValue();
+
+            // ⚠️ TMN/TMX 데이터 없는 날짜 제외
+            if (!minTempMap.containsKey(date) || !maxTempMap.containsKey(date)) {
+                log.warn("⏭️ TMN/TMX 누락 → {}일 데이터 생략", date);
+                continue;
+            }
+
             Instant forecastAt = date.atStartOfDay()
                     .atZone(ZONE_ID)
                     .toInstant();
@@ -64,10 +74,10 @@ public class WeatherDataParser {
                     .skyStatus(mapSky(dailyItems))
                     .precipitationType(mapPty(dailyItems))
                     .amount(mapPcp(dailyItems))
-                    .probability(mapIntValue(dailyItems, "POP"))
-                    .humidity(mapDoubleValue(dailyItems, "REH"))
-                    .windSpeed(mapDoubleValue(dailyItems, "WSD"))
-                    .asWord(convertToWindWord(mapDoubleValue(dailyItems, "WSD")))
+                    .probability(popMap.getOrDefault(date, 0.0))
+                    .humidity(humidityMap.getOrDefault(date, 0.0))
+                    .windSpeed(windSpeedMap.getOrDefault(date, 0.0))
+                    .asWord(convertToWindWord(windSpeedMap.getOrDefault(date, 0.0)))
                     .currentTemperature(mapDoubleValue(dailyItems, "TMP"))
                     .minTemperature(minTempMap.get(date))
                     .maxTemperature(maxTempMap.get(date))
@@ -112,18 +122,12 @@ public class WeatherDataParser {
                 .map(WeatherItem::fcstValue)
                 .findFirst()
                 .map(value -> {
-                    try {
-                        int amount = Integer.parseInt(value);
-                        if (amount <= 5) {
-                            return SkyStatus.CLEAR;
-                        }
-                        if (amount <= 8) {
-                            return SkyStatus.PARTLY_CLOUDY;
-                        }
-                        return SkyStatus.CLOUDY;
-                    } catch (NumberFormatException e) {
-                        return SkyStatus.UNKNOWN;
-                    }
+                    return switch (value) {
+                        case "1" -> SkyStatus.CLEAR;
+                        case "3" -> SkyStatus.PARTLY_CLOUDY;
+                        case "4" -> SkyStatus.CLOUDY;
+                        default -> SkyStatus.UNKNOWN;
+                    };
                 })
                 .orElse(SkyStatus.UNKNOWN);
     }
@@ -218,7 +222,52 @@ public class WeatherDataParser {
                 .orElse(0.0);
     }
 
-    private int mapIntValue(List<WeatherItem> items, String category) {
-        return (int) mapDoubleValue(items, category);
+    // 습도 평균 구하는 메소드
+    private Map<LocalDate, Double> computeAverageHumidityByDate(List<WeatherItem> items) {
+        return items.stream()
+                .filter(item -> "REH".equals(item.category()))
+                .collect(Collectors.groupingBy(
+                        item -> LocalDate.parse(item.fcstDate(), DateTimeFormatter.BASIC_ISO_DATE),
+                        Collectors.averagingDouble(item -> {
+                            try {
+                                return Double.parseDouble(item.fcstValue());
+                            } catch (NumberFormatException e) {
+                                return 0.0; // 또는 로그 출력
+                            }
+                        })
+                ));
     }
+
+    // 강수 확률 평균
+    private Map<LocalDate, Double> computeAveragePrecipitationProbabilityByDate(
+            List<WeatherItem> items) {
+        return items.stream()
+                .filter(item -> "POP".equals(item.category()))
+                .collect(Collectors.groupingBy(
+                        item -> LocalDate.parse(item.fcstDate(), DateTimeFormatter.BASIC_ISO_DATE),
+                        Collectors.averagingDouble(item -> {
+                            try {
+                                return Double.parseDouble(item.fcstValue());
+                            } catch (NumberFormatException e) {
+                                return 0.0; // 또는 log.warn(...)
+                            }
+                        })
+                ));
+    }
+
+    private Map<LocalDate, Double> computeAverageWindSpeedByDate(List<WeatherItem> items) {
+        return items.stream()
+                .filter(item -> "WSD".equals(item.category()))
+                .collect(Collectors.groupingBy(
+                        item -> LocalDate.parse(item.fcstDate(), DateTimeFormatter.BASIC_ISO_DATE),
+                        Collectors.averagingDouble(item -> {
+                            try {
+                                return Double.parseDouble(item.fcstValue());
+                            } catch (NumberFormatException e) {
+                                return 0.0;  // 또는 log.warn(...);
+                            }
+                        })
+                ));
+    }
+
 }

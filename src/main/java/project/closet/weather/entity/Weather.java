@@ -32,7 +32,7 @@ public class Weather extends BaseEntity {
     private Double amount;  // 강수량
 
     @Column(nullable = false)
-    private Integer probability; // 강수 확률
+    private Double probability; // 강수 확률
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
@@ -64,7 +64,7 @@ public class Weather extends BaseEntity {
 
     @Builder
     public Weather(Instant forecastedAt, Instant forecastAt, SkyStatus skyStatus, Double amount,
-            Integer probability, PrecipitationType precipitationType, Double windSpeed,
+            Double probability, PrecipitationType precipitationType, Double windSpeed,
             AsWord asWord,
             Double humidity, Double currentTemperature, Double maxTemperature,
             Double minTemperature,

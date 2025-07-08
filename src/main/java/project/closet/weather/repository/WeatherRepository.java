@@ -8,7 +8,7 @@ import project.closet.weather.entity.Weather;
 
 public interface WeatherRepository extends JpaRepository<Weather, UUID> {
 
-    List<Weather> findAllByXAndYAndForecastedAt(Integer x, Integer y, Instant forecastedAt);
+    List<Weather> findAllByXAndYAndForecastedAtOrderByForecastAtAsc(Integer x, Integer y, Instant forecastedAt);
 
     boolean existsByForecastedAt(Instant forecastedAt);
 }

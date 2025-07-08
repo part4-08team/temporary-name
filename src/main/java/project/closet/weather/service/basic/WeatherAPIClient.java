@@ -30,9 +30,7 @@ public class WeatherAPIClient {
         URI uri = buildUri(x, y, formattedDate, formattedTime);
 
         log.debug("Weather API 호출 URI: {}", uri);
-        WeatherApiResponse response = restTemplate.getForObject(uri, WeatherApiResponse.class);
-//        log.debug("Weather API 응답: {}", response);
-        return response;
+        return restTemplate.getForObject(uri, WeatherApiResponse.class);
     }
 
     @Async("weatherExecutor")
