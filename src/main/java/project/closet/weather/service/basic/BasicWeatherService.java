@@ -69,7 +69,8 @@ public class BasicWeatherService implements WeatherService {
         int batchSize = 100;  // 원하는 batch 크기
 
         for (int i = 0; i < locations.size(); i += batchSize) {
-            List<WeatherLocation> batch = locations.subList(i, Math.min(i + batchSize, locations.size()));
+            List<WeatherLocation> batch = locations.subList(i,
+                    Math.min(i + batchSize, locations.size()));
             log.info("🚀 {}~{}번째 지역 날씨 요청 시작", i + 1, Math.min(i + batchSize, locations.size()));
 
             List<CompletableFuture<List<Weather>>> futures = batch.stream()
@@ -78,7 +79,8 @@ public class BasicWeatherService implements WeatherService {
                             .thenApply(response -> weatherDataParser.parseToWeatherEntities(
                                     response, forecastedAt, location.getX(), location.getY()))
                             .exceptionally(ex -> {
-                                log.warn("❌ 날씨 요청 실패 (x={}, y={}): {}", location.getX(), location.getY(), ex.getMessage());
+                                log.warn("❌ 날씨 요청 실패 (x={}, y={}): {}", location.getX(),
+                                        location.getY(), ex.getMessage());
                                 return Collections.emptyList();  // 실패 시 빈 리스트 반환
                             })
                     ).toList();
@@ -122,14 +124,16 @@ public class BasicWeatherService implements WeatherService {
                 .toInstant();
         // 3. 날씨 정보 가공 후 반환
         List<Weather> weathers =
-                weatherRepository.findAllByXAndYAndForecastedAtOrderByForecastAtAsc(grid.x(), grid.y(), baseForecastedAt);
+                weatherRepository.findAllByXAndYAndForecastedAtOrderByForecastAtAsc(grid.x(),
+                        grid.y(), baseForecastedAt);
 
         Map<Instant, Weather> weatherMapByForecastAt = weathers.stream()
                 .collect(Collectors.toMap(Weather::getForecastAt, w -> w));
 
         return weathers.stream()
                 .map(weather -> {
-                    Weather yesterday = weatherMapByForecastAt.get(weather.getForecastAt().minus(1, ChronoUnit.DAYS));
+                    Weather yesterday = weatherMapByForecastAt.get(
+                            weather.getForecastAt().minus(1, ChronoUnit.DAYS));
                     return WeatherDto.from(weather, yesterday);
                 })
                 .toList();

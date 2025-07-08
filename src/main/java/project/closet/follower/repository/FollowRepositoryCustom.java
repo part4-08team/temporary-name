@@ -6,6 +6,7 @@ import java.util.UUID;
 import project.closet.follower.entity.Follow;
 
 public interface FollowRepositoryCustom {
+
     List<Follow> findFollowingsWithCursor(
             UUID followerId,
             Instant cursor,

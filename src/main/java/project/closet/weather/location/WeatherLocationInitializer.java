@@ -41,7 +41,9 @@ public class WeatherLocationInitializer implements ApplicationRunner {
             List<WeatherLocation> locations = new ArrayList<>();
 
             for (Row row : sheet) {
-                if (row.getRowNum() == 0) continue; // 헤더 스킵
+                if (row.getRowNum() == 0) {
+                    continue; // 헤더 스킵
+                }
 
                 int x = getIntValue(row, 5);
                 int y = getIntValue(row, 6);

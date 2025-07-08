@@ -29,7 +29,8 @@ public class FollowRepositoryImpl implements FollowRepositoryCustom {
         );
 
         if (cursor != null) {
-            jpql.append("AND (f.createdAt < :cursor OR (f.createdAt = :cursor AND f.id > :idAfter)) ");
+            jpql.append(
+                    "AND (f.createdAt < :cursor OR (f.createdAt = :cursor AND f.id > :idAfter)) ");
         }
 
         if (nameLike != null && !nameLike.isBlank()) {
@@ -64,7 +65,8 @@ public class FollowRepositoryImpl implements FollowRepositoryCustom {
         );
 
         if (cursor != null) {
-            jpql.append("AND (f.createdAt < :cursor OR (f.createdAt = :cursor AND f.id > :idAfter)) ");
+            jpql.append(
+                    "AND (f.createdAt < :cursor OR (f.createdAt = :cursor AND f.id > :idAfter)) ");
         }
 
         if (nameLike != null && !nameLike.isBlank()) {

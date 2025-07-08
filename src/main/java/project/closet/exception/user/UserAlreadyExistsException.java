@@ -3,6 +3,7 @@ package project.closet.exception.user;
 import project.closet.exception.ErrorCode;
 
 public class UserAlreadyExistsException extends UserException {
+
     public UserAlreadyExistsException() {
         super(ErrorCode.DUPLICATE_USER);
     }
