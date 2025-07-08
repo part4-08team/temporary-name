@@ -74,7 +74,7 @@ public interface FollowApi {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    ResponseEntity<Void> getFolloweeList(
+    ResponseEntity<FollowListResponse> getFolloweeList(
             UUID followeeId,
             String cursor,
             UUID idAfter,
