@@ -4,9 +4,11 @@ import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -31,6 +33,13 @@ public class WeatherAPIClient {
         WeatherApiResponse response = restTemplate.getForObject(uri, WeatherApiResponse.class);
 //        log.debug("Weather API 응답: {}", response);
         return response;
+    }
+
+    @Async("weatherExecutor")
+    public CompletableFuture<WeatherApiResponse> fetchWeatherAsync(int x, int y, LocalDate baseDate, LocalTime baseTime) {
+        return CompletableFuture.completedFuture(
+                getWeatherRawData(x, y, baseDate, baseTime)
+        );
     }
 
     public URI buildUri(int x, int y, String baseDate, String baseTime) {
