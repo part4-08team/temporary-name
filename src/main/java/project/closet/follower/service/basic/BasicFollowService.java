@@ -46,15 +46,18 @@ public class BasicFollowService implements FollowService {
     @Transactional(readOnly = true)
     @Override
     public FollowSummaryDto getFollowSummary(UUID userId, UUID currentUserId) {
-        log.debug("Getting follow summary for userId: {}, currentUserId: {}", userId, currentUserId);
+        log.debug("Getting follow summary for userId: {}, currentUserId: {}", userId,
+                currentUserId);
         int followerCount = followRepository.countByFolloweeId(userId);
         int followingCount = followRepository.countByFollowerId(userId);
 
-        Optional<Follow> myFollow = followRepository.findByFollowerIdAndFolloweeId(currentUserId, userId);
+        Optional<Follow> myFollow = followRepository.findByFollowerIdAndFolloweeId(currentUserId,
+                userId);
         boolean followedByMe = myFollow.isPresent();
         UUID followedByMeId = myFollow.map(Follow::getId).orElse(null);
 
-        boolean followingMe = followRepository.existsByFollowerIdAndFolloweeId(userId, currentUserId);
+        boolean followingMe = followRepository.existsByFollowerIdAndFolloweeId(userId,
+                currentUserId);
 
         return new FollowSummaryDto(
                 userId,

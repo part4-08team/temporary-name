@@ -24,7 +24,8 @@ public class WeatherAPIClient {
 
     private final RestTemplate restTemplate;
 
-    public WeatherApiResponse getWeatherRawData(int x, int y, LocalDate baseDate, LocalTime baseTime) {
+    public WeatherApiResponse getWeatherRawData(int x, int y, LocalDate baseDate,
+            LocalTime baseTime) {
         String formattedDate = baseDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String formattedTime = baseTime.format(DateTimeFormatter.ofPattern("HHmm"));
         URI uri = buildUri(x, y, formattedDate, formattedTime);
@@ -34,14 +35,16 @@ public class WeatherAPIClient {
     }
 
     @Async("weatherExecutor")
-    public CompletableFuture<WeatherApiResponse> fetchWeatherAsync(int x, int y, LocalDate baseDate, LocalTime baseTime) {
+    public CompletableFuture<WeatherApiResponse> fetchWeatherAsync(int x, int y, LocalDate baseDate,
+            LocalTime baseTime) {
         return CompletableFuture.completedFuture(
                 getWeatherRawData(x, y, baseDate, baseTime)
         );
     }
 
     public URI buildUri(int x, int y, String baseDate, String baseTime) {
-        return UriComponentsBuilder.fromUriString("http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst")
+        return UriComponentsBuilder.fromUriString(
+                        "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst")
                 .queryParam("ServiceKey", apiKey)
                 .queryParam("pageNo", 1)
                 .queryParam("numOfRows", 2000)
