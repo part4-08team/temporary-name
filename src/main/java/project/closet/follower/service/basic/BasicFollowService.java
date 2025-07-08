@@ -52,6 +52,7 @@ public class BasicFollowService implements FollowService {
     public FollowSummaryDto getFollowSummary(UUID userId, UUID currentUserId) {
         log.debug("Getting follow summary for userId: {}, currentUserId: {}", userId,
                 currentUserId);
+
         long followerCount = followRepository.countByFolloweeId(userId);
         long followingCount = followRepository.countByFollowerId(userId);
 

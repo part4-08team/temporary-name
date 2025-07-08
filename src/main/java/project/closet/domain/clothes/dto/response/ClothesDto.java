@@ -16,21 +16,8 @@ public record ClothesDto(
         List<ClothesAttributeWithDefDto> attributes // 의상 속성
 ) {
     public static ClothesDto fromEntity(Clothes c) {
-        List<ClothesAttributeWithDefDto> attrs = c.getAttributes().stream()
-                .map(attr -> {
-                    Attribute definition = attr.getDefinition();
-                    List<String> selectableValues = definition.getSelectableValues().stream()
-                            .map(AttributeSelectableValue::getValue)
-                            .toList();
-
-                    return new ClothesAttributeWithDefDto(
-                            definition.getId(),
-                            definition.getDefinitionName(),
-                            selectableValues,
-                            attr.getValue()
-                    );
-                })
-                .toList();
+        List<ClothesAttributeWithDefDto> attrs =
+                ClothesAttributeWithDefDto.fromClothes(c);
 
         return new ClothesDto(
                 c.getId(),

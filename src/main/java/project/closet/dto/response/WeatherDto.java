@@ -12,7 +12,7 @@ public record WeatherDto(
         Instant forecastAt,
         WeatherAPILocation location,
         SkyStatus skyStatus,
-        Precipitation precipitation,
+        PrecipitationDto precipitation,
         Humidity humidity,
         TemperatureDto temperature,
         WindSpeedDto windSpeed
@@ -37,7 +37,7 @@ public record WeatherDto(
                         null
                 ),
                 current.getSkyStatus(),
-                new Precipitation(
+                new PrecipitationDto(
                         current.getPrecipitationType(),
                         current.getAmount(),
                         current.getProbability() / 100.0
