@@ -38,7 +38,7 @@ import project.closet.user.entity.Role;
 @Slf4j
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig2 {
+public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(
