@@ -44,10 +44,10 @@ CREATE TABLE weather_locations
 -- 3. Profiles
 CREATE TABLE profiles
 (
-    id                      UUID      NOT NULL PRIMARY KEY,
-    user_id                 UUID      NOT NULL,
-    created_at              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at              TIMESTAMP          DEFAULT CURRENT_TIMESTAMP,
+    id                      UUID                     NOT NULL PRIMARY KEY,
+    user_id                 UUID                     NOT NULL,
+    created_at              TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at              TIMESTAMP with time zone          DEFAULT CURRENT_TIMESTAMP,
     gender                  VARCHAR(50),
     birth_date              DATE,
     profile_image_url       VARCHAR(1024),
@@ -67,12 +67,12 @@ CREATE TABLE profile_location_names
 -- 4. Feeds
 CREATE TABLE feeds
 (
-    id         UUID      NOT NULL PRIMARY KEY,
-    user_id    UUID,
-    weather_id UUID      NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    content    TEXT
+    id         UUID                     NOT NULL PRIMARY KEY,
+    author_id  UUID,
+    weather_id UUID                     NOT NULL,
+    created_at TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    content    TEXT                     NOT NULL
 );
 
 -- 5. Feed Comments
@@ -188,8 +188,12 @@ ALTER TABLE profiles
     ADD CONSTRAINT fk_profiles_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE;
 
 ALTER TABLE feeds
-    ADD CONSTRAINT fk_feeds_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE SET NULL,
-    ADD CONSTRAINT fk_feeds_weather FOREIGN KEY (weather_id) REFERENCES weathers(id) ON
+    ADD CONSTRAINT fk_feeds_user
+        FOREIGN KEY (author_id)
+            REFERENCES users (id) ON DELETE SET NULL,
+    ADD CONSTRAINT fk_feeds_weather
+        FOREIGN KEY (weather_id)
+        REFERENCES weathers(id) ON
 DELETE
 CASCADE;
 

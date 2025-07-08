@@ -1,0 +1,73 @@
+package project.closet.feed.service.basic;
+
+import java.util.List;
+import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import project.closet.domain.clothes.repository.ClothesRepository;
+import project.closet.dto.request.FeedCreateRequest;
+import project.closet.dto.response.FeedDto;
+import project.closet.dto.response.OotdDto;
+import project.closet.dto.response.UserSummary;
+import project.closet.dto.response.WeatherSummaryDto;
+import project.closet.exception.user.UserNotFoundException;
+import project.closet.exception.weather.WeatherNotFoundException;
+import project.closet.feed.entity.Feed;
+import project.closet.feed.entity.FeedClothes;
+import project.closet.feed.repository.FeedRepository;
+import project.closet.feed.service.FeedService;
+import project.closet.user.entity.User;
+import project.closet.user.repository.UserRepository;
+import project.closet.weather.entity.Weather;
+import project.closet.weather.repository.WeatherRepository;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class BasicFeedService implements FeedService {
+
+    private final UserRepository userRepository;
+    private final WeatherRepository weatherRepository;
+    private final FeedRepository feedRepository;
+    private final ClothesRepository clothesRepository;
+
+    @Transactional
+    @Override
+    public FeedDto createFeed(FeedCreateRequest feedCreateRequest) {
+        UUID authorId = feedCreateRequest.authorId();
+        User author = userRepository.findByIdWithProfile(authorId)
+                .orElseThrow(() -> UserNotFoundException.withId(authorId));
+
+        UUID weatherId = feedCreateRequest.weatherId();
+        Weather weather = weatherRepository.findById(weatherId)
+                .orElseThrow(() -> WeatherNotFoundException.withId(weatherId));
+
+        Feed feed = new Feed(author, weather, feedCreateRequest.content());
+
+        clothesRepository.findAllByIdInWithAttributes(feedCreateRequest.clothesIds())
+                .forEach(feed::addClothes);
+
+        feedRepository.save(feed);
+
+        List<OotdDto> ootdDtos = feed.getFeedClothesList()
+                .stream().map(FeedClothes::getClothes)
+                .map(OotdDto::from)
+                .toList();
+
+        FeedDto feedDto = new FeedDto(
+                feed.getId(),
+                feed.getCreatedAt(),
+                feed.getUpdatedAt(),
+                UserSummary.from(author),
+                WeatherSummaryDto.from(weather),
+                ootdDtos,
+                feed.getContent(),
+                0,
+                0,
+                false
+        );
+        return feedDto;
+    }
+}

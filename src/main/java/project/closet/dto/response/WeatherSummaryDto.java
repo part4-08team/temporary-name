@@ -2,6 +2,7 @@ package project.closet.dto.response;
 
 import java.util.UUID;
 import project.closet.weather.entity.SkyStatus;
+import project.closet.weather.entity.Weather;
 
 public record WeatherSummaryDto(
         UUID weatherId,
@@ -10,4 +11,21 @@ public record WeatherSummaryDto(
         TemperatureDto temperature
 ) {
 
+    public static WeatherSummaryDto from (Weather weather) {
+        return new WeatherSummaryDto(
+                weather.getId(),
+                weather.getSkyStatus(),
+                new PrecipitationDto(
+                        weather.getPrecipitationType(),
+                        weather.getAmount(),
+                        weather.getProbability()
+                ),
+                new TemperatureDto(
+                        weather.getCurrentTemperature(),
+                        0.0,
+                        weather.getMinTemperature(),
+                        weather.getMaxTemperature()
+                )
+        );
+    }
 }

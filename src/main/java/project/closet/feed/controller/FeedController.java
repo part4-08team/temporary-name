@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +22,7 @@ import project.closet.dto.response.CommentDtoCursorResponse;
 import project.closet.dto.response.FeedDto;
 import project.closet.dto.response.FeedDtoCursorResponse;
 import project.closet.feed.controller.api.FeedApi;
+import project.closet.feed.service.FeedService;
 import project.closet.weather.entity.PrecipitationType;
 import project.closet.weather.entity.SkyStatus;
 
@@ -29,6 +31,8 @@ import project.closet.weather.entity.SkyStatus;
 @RequiredArgsConstructor
 @RequestMapping("/api/feeds")
 public class FeedController implements FeedApi {
+
+    private final FeedService feedService;
 
     @GetMapping
     @Override
@@ -49,7 +53,8 @@ public class FeedController implements FeedApi {
     @PostMapping
     @Override
     public ResponseEntity<FeedDto> createFeed(@RequestBody @Valid FeedCreateRequest feedCreateRequest) {
-        return null;
+        FeedDto feedDto = feedService.createFeed(feedCreateRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(feedDto);
     }
 
     @PostMapping("{feedId}/like")
