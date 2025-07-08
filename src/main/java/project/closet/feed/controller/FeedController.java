@@ -49,7 +49,7 @@ public class FeedController implements FeedApi {
             PrecipitationType precipitationTypeEqual,
             UUID authorIdEqual
     ) {
-        return null;
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @PostMapping
@@ -90,7 +90,7 @@ public class FeedController implements FeedApi {
             UUID idAfter,
             int limit
     ) {
-        return null;
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @PostMapping("/{feedId}/comments")
@@ -99,13 +99,13 @@ public class FeedController implements FeedApi {
             @PathVariable("feedId") UUID feedId,
             @RequestBody @Valid CommentCreateRequest commentCreateRequest
     ) {
-        return null;
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @DeleteMapping("/{feedId}")
     @Override
     public ResponseEntity<Void> deleteFeed(@PathVariable("feedId") UUID feedId) {
-        return null;
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @PatchMapping("/{feedId}")
@@ -114,6 +114,6 @@ public class FeedController implements FeedApi {
             @PathVariable("feedId") UUID feedId,
             @RequestBody @Valid FeedUpdateRequest feedUpdateRequest
     ) {
-        return null;
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 }
