@@ -11,6 +11,9 @@ public enum ErrorCode {
     USER_NOT_FOUND("사용자를 찾을 수 없습니다."),
     DUPLICATE_USER("이미 존재하는 사용자입니다."),
 
+    // FOLLOW
+    SELF_FOLLOW_NOT_ALLOWED("자기 자신을 팔로우할 수 없습니다."),
+
     INVALID_REQUEST("잘못된 요청입니다."),
     INTERNAL_ERROR("서버 내부 오류입니다."),
 

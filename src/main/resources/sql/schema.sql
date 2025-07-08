@@ -113,7 +113,7 @@ CREATE TABLE feed_clothes
     clothes_id UUID NOT NULL
 );
 
--- 10. Follows
+-- 10. Follows UNIQUE 제약 조건 동일한 유저가 동일한 유저를 팔로우할 수 없도록
 CREATE TABLE follows
 (
     id          UUID      NOT NULL PRIMARY KEY,

@@ -22,6 +22,8 @@ public abstract class SecurityMatchers {
     public static final RequestMatcher LOGOUT = new AntPathRequestMatcher(
             "/api/auth/sign-out", HttpMethod.POST.name());
 
+    public static final RequestMatcher TEST =
+            new AntPathRequestMatcher("/api/weathers/test", HttpMethod.GET.name());
     public static final String LOGIN_URL = "/api/auth/sign-in";
 
     public static final RequestMatcher ME =
@@ -31,6 +33,6 @@ public abstract class SecurityMatchers {
             new AntPathRequestMatcher("/api/auth/refresh", HttpMethod.POST.name());
 
     public static final RequestMatcher[] PUBLIC_MATCHERS = new RequestMatcher[]{
-            NON_API, GET_CSRF_TOKEN, SIGN_UP, LOGIN, ME, REFRESH, LOGOUT
+            NON_API, GET_CSRF_TOKEN, SIGN_UP, LOGIN, ME, REFRESH, LOGOUT, TEST
     };
 }
