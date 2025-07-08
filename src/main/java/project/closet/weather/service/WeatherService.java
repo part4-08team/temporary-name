@@ -12,6 +12,6 @@ public interface WeatherService {
     // 스케줄러로 날씨 정보 저장 메소드
     void fetchAndSaveWeatherForecast();
 
-    // TODO 날씨 정보 조회 요청 메소드
+    // 날씨 정보 조회 요청 메소드
     List<WeatherDto> getWeatherInfo(Double longitude, Double latitude);
 }

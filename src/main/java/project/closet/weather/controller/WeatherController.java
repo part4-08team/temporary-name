@@ -49,10 +49,4 @@ public class WeatherController implements WeatherApi {
         return ResponseEntity.ok(location);
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<Void> getWeatherTest() {
-        log.info("날씨 API 테스트 요청");
-        weatherAPIClient.getWeatherRawData(58,74, LocalDate.of(2025, 7, 4), LocalTime.of(14,0));
-        return ResponseEntity.ok().build();
-    }
 }
