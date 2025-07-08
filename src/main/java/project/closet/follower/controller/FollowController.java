@@ -73,7 +73,7 @@ public class FollowController implements FollowApi {
             @RequestParam(name = "cursor", required = false) String cursor,
             @RequestParam(name = "idAfter", required = false) UUID idAfter,
             @RequestParam(name = "limit", defaultValue = "20") int limit,
-            @RequestParam(name = "nameLike") String nameLike
+            @RequestParam(name = "nameLike", required = false) String nameLike
     ) {
         FollowListResponse response = followService.getFollowerList(
                 followeeId, cursor, idAfter, limit, nameLike
