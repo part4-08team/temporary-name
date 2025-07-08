@@ -117,7 +117,7 @@ public class BasicFollowService implements FollowService {
         Instant parsedCursor = (cursor != null) ? Instant.parse(cursor) : null;
 
         List<Follow> follows = followRepository.findFollowersWithCursor(
-                followeeId, parsedCursor, idAfter, nameLike, limit + 1);
+                followeeId, parsedCursor, idAfter, nameLike, limit);
 
         boolean hasNext = follows.size() > limit;
         List<Follow> pageItems = hasNext ? follows.subList(0, limit) : follows;

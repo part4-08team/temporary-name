@@ -28,29 +28,30 @@ public class FollowRepositoryImpl implements FollowRepositoryCustom {
                         "WHERE f.follower.id = :followerId "
         );
 
-        if (cursor != null) {
+        if (cursor != null && idAfter != null) {
             jpql.append(
-                    "AND (f.createdAt < :cursor OR (f.createdAt = :cursor AND f.id > :idAfter)) ");
+                    "AND (f.createdAt < :cursor OR (f.createdAt = :cursor AND f.id < :idAfter)) ");
         }
 
         if (nameLike != null && !nameLike.isBlank()) {
             jpql.append("AND fe.name LIKE :nameLike ");
         }
 
-        jpql.append("ORDER BY f.createdAt DESC, f.id ASC");
+        jpql.append("ORDER BY f.createdAt DESC, f.id DESC");
 
         TypedQuery<Follow> query = em.createQuery(jpql.toString(), Follow.class);
         query.setParameter("followerId", followerId);
-        if (cursor != null) {
+
+        if (cursor != null && idAfter != null) {
             query.setParameter("cursor", cursor);
             query.setParameter("idAfter", idAfter);
         }
+
         if (nameLike != null && !nameLike.isBlank()) {
             query.setParameter("nameLike", "%" + nameLike + "%");
         }
 
-        query.setMaxResults(limit + 1); // 커서 페이지네이션: limit + 1
-
+        query.setMaxResults(limit + 1);
         return query.getResultList();
     }
 
@@ -64,23 +65,25 @@ public class FollowRepositoryImpl implements FollowRepositoryCustom {
                         "WHERE f.followee.id = :followeeId "
         );
 
-        if (cursor != null) {
+        if (cursor != null && idAfter != null) {
             jpql.append(
-                    "AND (f.createdAt < :cursor OR (f.createdAt = :cursor AND f.id > :idAfter)) ");
+                    "AND (f.createdAt < :cursor OR (f.createdAt = :cursor AND f.id < :idAfter)) ");
         }
 
         if (nameLike != null && !nameLike.isBlank()) {
             jpql.append("AND fo.name LIKE :nameLike ");
         }
 
-        jpql.append("ORDER BY f.createdAt DESC, f.id ASC");
+        jpql.append("ORDER BY f.createdAt DESC, f.id DESC");
 
         TypedQuery<Follow> query = em.createQuery(jpql.toString(), Follow.class);
         query.setParameter("followeeId", followeeId);
-        if (cursor != null) {
+
+        if (cursor != null && idAfter != null) {
             query.setParameter("cursor", cursor);
             query.setParameter("idAfter", idAfter);
         }
+
         if (nameLike != null && !nameLike.isBlank()) {
             query.setParameter("nameLike", "%" + nameLike + "%");
         }
