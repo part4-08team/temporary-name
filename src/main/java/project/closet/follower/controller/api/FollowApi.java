@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
 import project.closet.dto.request.FollowCreateRequest;
 import project.closet.dto.response.FollowDto;
+import project.closet.dto.response.FollowListResponse;
 import project.closet.dto.response.FollowSummaryDto;
 import project.closet.security.ClosetUserDetails;
 
@@ -54,7 +55,7 @@ public interface FollowApi {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    ResponseEntity<Void> getFollowingList(
+    ResponseEntity<FollowListResponse> getFollowingList(
             UUID followerId,
             String cursor,
             UUID idAfter,
@@ -73,7 +74,7 @@ public interface FollowApi {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    ResponseEntity<Void> getFolloweeList(
+    ResponseEntity<FollowListResponse> getFolloweeList(
             UUID followeeId,
             String cursor,
             UUID idAfter,

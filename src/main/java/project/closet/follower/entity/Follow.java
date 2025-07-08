@@ -28,7 +28,7 @@ public class Follow extends BaseEntity {
 
     @Builder
     public Follow(User follower, User followee) {
-        if (follower.equals(followee)) {
+        if (follower.getId().equals(followee.getId())) {
             throw SelfFollowNotAllowedException.withUserId(follower.getId().toString());
         }
         this.follower = follower;

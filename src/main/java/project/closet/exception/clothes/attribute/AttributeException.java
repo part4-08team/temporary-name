@@ -5,7 +5,9 @@ import project.closet.exception.ErrorCode;
 
 public class AttributeException extends ClosetException {
 
-    protected AttributeException(ErrorCode errorCode) {super(errorCode);}
+    protected AttributeException(ErrorCode errorCode) {
+        super(errorCode);
+    }
 
     protected AttributeException(ErrorCode errorCode, Throwable cause) {
         super(errorCode, cause);
