@@ -76,14 +76,14 @@ CREATE TABLE feeds
 );
 
 -- 5. Feed Comments
-CREATE TABLE feed_comment
+CREATE TABLE feed_comments
 (
     id         UUID      NOT NULL PRIMARY KEY,
     feed_id    UUID      NOT NULL,
-    user_id    UUID      NOT NULL,
+    author_id  UUID      NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    comment    TEXT      NOT NULL
+    content    TEXT      NOT NULL
 );
 
 -- 6. Clothes

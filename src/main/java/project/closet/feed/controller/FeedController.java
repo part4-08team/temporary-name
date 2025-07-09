@@ -99,7 +99,8 @@ public class FeedController implements FeedApi {
             @PathVariable("feedId") UUID feedId,
             @RequestBody @Valid CommentCreateRequest commentCreateRequest
     ) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        CommentDto commentDto = feedService.createComment(commentCreateRequest);
+        return ResponseEntity.ok(commentDto);
     }
 
     @DeleteMapping("/{feedId}")

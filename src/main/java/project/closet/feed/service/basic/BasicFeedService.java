@@ -7,7 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.closet.domain.clothes.repository.ClothesRepository;
+import project.closet.dto.request.CommentCreateRequest;
 import project.closet.dto.request.FeedCreateRequest;
+import project.closet.dto.response.CommentDto;
 import project.closet.dto.response.FeedDto;
 import project.closet.dto.response.OotdDto;
 import project.closet.dto.response.UserSummary;
@@ -18,6 +20,8 @@ import project.closet.exception.user.UserNotFoundException;
 import project.closet.exception.weather.WeatherNotFoundException;
 import project.closet.feed.entity.Feed;
 import project.closet.feed.entity.FeedClothes;
+import project.closet.feed.entity.FeedComment;
+import project.closet.feed.repository.FeedCommentRepository;
 import project.closet.feed.repository.FeedRepository;
 import project.closet.feed.service.FeedService;
 import project.closet.follower.entity.FeedLike;
@@ -37,6 +41,7 @@ public class BasicFeedService implements FeedService {
     private final FeedRepository feedRepository;
     private final ClothesRepository clothesRepository;
     private final FeedLikeRepository feedLikeRepository;
+    private final FeedCommentRepository feedCommentRepository;
 
     @Transactional
     @Override
@@ -104,5 +109,19 @@ public class BasicFeedService implements FeedService {
 
         feedLikeRepository.deleteByUserAndFeed(user, feed);
         // Like 취소 시에 알림이 필요하다면, int 반환 받아서 값이 1이면 알림 생성하도록 할 수 있음
+    }
+
+    @Transactional
+    @Override
+    public CommentDto createComment(CommentCreateRequest commentCreateRequest) {
+        UUID feedId = commentCreateRequest.feedId();
+        UUID authorId = commentCreateRequest.authorId();
+        User author = userRepository.findByIdWithProfile(authorId)
+                .orElseThrow(() -> UserNotFoundException.withId(authorId));
+        Feed feed = feedRepository.findById(feedId)
+                .orElseThrow(() -> FeedNotFoundException.withId(feedId));
+        FeedComment feedComment = new FeedComment(feed, author, commentCreateRequest.content());
+        feedCommentRepository.save(feedComment);
+        return CommentDto.from(feedComment);
     }
 }
