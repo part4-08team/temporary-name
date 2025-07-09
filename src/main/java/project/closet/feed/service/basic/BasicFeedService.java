@@ -12,15 +12,19 @@ import project.closet.dto.response.FeedDto;
 import project.closet.dto.response.OotdDto;
 import project.closet.dto.response.UserSummary;
 import project.closet.dto.response.WeatherSummaryDto;
+import project.closet.exception.feed.FeedLikeAlreadyExistsException;
+import project.closet.exception.feed.FeedNotFoundException;
 import project.closet.exception.user.UserNotFoundException;
 import project.closet.exception.weather.WeatherNotFoundException;
 import project.closet.feed.entity.Feed;
 import project.closet.feed.entity.FeedClothes;
 import project.closet.feed.repository.FeedRepository;
 import project.closet.feed.service.FeedService;
+import project.closet.follower.entity.FeedLike;
 import project.closet.user.entity.User;
 import project.closet.user.repository.UserRepository;
 import project.closet.weather.entity.Weather;
+import project.closet.weather.repository.FeedLikeRepository;
 import project.closet.weather.repository.WeatherRepository;
 
 @Slf4j
@@ -32,6 +36,7 @@ public class BasicFeedService implements FeedService {
     private final WeatherRepository weatherRepository;
     private final FeedRepository feedRepository;
     private final ClothesRepository clothesRepository;
+    private final FeedLikeRepository feedLikeRepository;
 
     @Transactional
     @Override
@@ -69,5 +74,35 @@ public class BasicFeedService implements FeedService {
                 false
         );
         return feedDto;
+    }
+
+    @Transactional
+    @Override
+    public void likeFeed(UUID feedId, UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> UserNotFoundException.withId(userId));
+
+        Feed feed = feedRepository.findById(feedId)
+                .orElseThrow(() -> FeedNotFoundException.withId(feedId));
+
+        // 중복 체크
+        if (feedLikeRepository.existsByUserAndFeed(user, feed)) {
+            throw FeedLikeAlreadyExistsException.of(userId, feedId);
+        }
+
+        feedLikeRepository.save(new FeedLike(feed, user));
+    }
+
+    @Transactional
+    @Override
+    public void cancelFeedLike(UUID feedId, UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> UserNotFoundException.withId(userId));
+
+        Feed feed = feedRepository.findById(feedId)
+                .orElseThrow(() -> FeedNotFoundException.withId(feedId));
+
+        feedLikeRepository.deleteByUserAndFeed(user, feed);
+        // Like 취소 시에 알림이 필요하다면, int 반환 받아서 값이 1이면 알림 생성하도록 할 수 있음
     }
 }

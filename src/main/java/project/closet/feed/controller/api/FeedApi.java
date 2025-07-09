@@ -14,6 +14,7 @@ import project.closet.dto.response.CommentDto;
 import project.closet.dto.response.CommentDtoCursorResponse;
 import project.closet.dto.response.FeedDto;
 import project.closet.dto.response.FeedDtoCursorResponse;
+import project.closet.security.ClosetUserDetails;
 import project.closet.weather.entity.PrecipitationType;
 import project.closet.weather.entity.SkyStatus;
 
@@ -58,13 +59,13 @@ public interface FeedApi {
     @Operation(summary = "피드 좋아요", description = "피드 좋아요 API")
     @ApiResponses(value = {
             @ApiResponse(
-                    responseCode = "200", description = "피드 좋아요 성공"
+                    responseCode = "204", description = "피드 좋아요 성공"
             ),
             @ApiResponse(
                     responseCode = "400", description = "피드 좋아요 실패"
             )
     })
-    ResponseEntity<FeedDto> likeFeed(UUID feedId);
+    ResponseEntity<Void> likeFeed(UUID feedId, ClosetUserDetails closetUserDetails);
 
     // 피드 좋아요 취소
     @Operation(summary = "피드 좋아요 취소", description = "피드 좋아요 취소 API")
@@ -76,7 +77,7 @@ public interface FeedApi {
                     responseCode = "400", description = "피드 좋아요 취소 실패"
             )
     })
-    ResponseEntity<Void> cancelFeed(UUID feedId);
+    ResponseEntity<Void> cancelFeed(UUID feedId, ClosetUserDetails closetUserDetails);
 
     // 피드 댓글 조회
     @Operation(summary = "피드 댓글 조회", description = "피드 댓글 조회 API")

@@ -8,6 +8,7 @@ public enum ErrorCode {
     DM_NOT_FOUND("DM을 찾을 수 없습니다."),
     //FEED
     FEED_NOT_FOUND("피드를 찾을 수 없습니다."),
+    FEED_ALREADY_EXISTS("이미 존재하는 피드입니다."),
     // USER
     USER_NOT_FOUND("사용자를 찾을 수 없습니다."),
     DUPLICATE_USER("이미 존재하는 사용자입니다."),
