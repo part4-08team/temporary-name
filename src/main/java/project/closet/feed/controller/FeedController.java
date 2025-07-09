@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.query.SortDirection;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -41,17 +42,20 @@ public class FeedController implements FeedApi {
     @GetMapping
     @Override
     public ResponseEntity<FeedDtoCursorResponse> getFeedList(
-            String cursor,
-            UUID idAfter,
-            int limit,
-            String sortBy,
-            String sortDirection,
-            String keywordLike,
-            SkyStatus skyStatusEqual,
-            PrecipitationType precipitationTypeEqual,
-            UUID authorIdEqual
+            @RequestParam(name = "cursor", required = false) Instant cursor,
+            @RequestParam(name = "idAfter", required = false) UUID idAfter,
+            @RequestParam(name = "limit", defaultValue = "20") int limit,
+            @RequestParam(name = "sortBy") String sortBy,  // 좋아요
+            @RequestParam(name = "sortDirection") SortDirection sortDirection,   // 항상 DESCENDING 임
+            @RequestParam(name = "keywordLike", required = false) String keywordLike,
+            @RequestParam(name = "skyStatusEqual", required = false) SkyStatus skyStatusEqual,
+            @RequestParam(name = "precipitationType", required = false) PrecipitationType precipitationType,
+            @RequestParam(name = "authorIdEqual", required = false) UUID authorIdEqual
     ) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        FeedDtoCursorResponse feedList = feedService.getFeedList(
+                cursor, idAfter, limit, sortBy, sortDirection, keywordLike,
+                skyStatusEqual, precipitationType, authorIdEqual);
+        return ResponseEntity.ok(feedList);
     }
 
     @PostMapping

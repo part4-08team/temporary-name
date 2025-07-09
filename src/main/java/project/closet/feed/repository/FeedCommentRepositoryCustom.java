@@ -7,6 +7,6 @@ import project.closet.feed.entity.FeedComment;
 
 public interface FeedCommentRepositoryCustom {
 
-    List<FeedComment> findByFeedWithCursor(UUID feedId, Instant cursor, UUID idAfter, int limitPlusOne);
+    List<FeedComment> findByFeedWithCursor(UUID feedId, Instant cursor, UUID idAfter, int limit);
 
 }

@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.Instant;
 import java.util.UUID;
+import org.hibernate.query.SortDirection;
 import org.springframework.http.ResponseEntity;
 import project.closet.dto.request.CommentCreateRequest;
 import project.closet.dto.request.FeedCreateRequest;
@@ -33,11 +34,11 @@ public interface FeedApi {
             )
     })
     ResponseEntity<FeedDtoCursorResponse> getFeedList(
-            String cursor,
+            Instant cursor,
             UUID idAfter,
             int limit,
             String sortBy,
-            String sortDirection,
+            SortDirection sortDirection,
             String keywordLike,
             SkyStatus skyStatusEqual,
             PrecipitationType precipitationTypeEqual,

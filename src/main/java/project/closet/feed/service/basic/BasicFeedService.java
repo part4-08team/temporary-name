@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Sort.Direction;
+import org.hibernate.query.SortDirection;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.closet.domain.clothes.repository.ClothesRepository;
@@ -15,6 +15,7 @@ import project.closet.dto.request.FeedUpdateRequest;
 import project.closet.dto.response.CommentDto;
 import project.closet.dto.response.CommentDtoCursorResponse;
 import project.closet.dto.response.FeedDto;
+import project.closet.dto.response.FeedDtoCursorResponse;
 import project.closet.dto.response.OotdDto;
 import project.closet.dto.response.UserSummary;
 import project.closet.dto.response.WeatherSummaryDto;
@@ -23,7 +24,6 @@ import project.closet.exception.feed.FeedNotFoundException;
 import project.closet.exception.user.UserNotFoundException;
 import project.closet.exception.weather.WeatherNotFoundException;
 import project.closet.feed.entity.Feed;
-import project.closet.feed.entity.FeedClothes;
 import project.closet.feed.entity.FeedComment;
 import project.closet.feed.entity.FeedLike;
 import project.closet.feed.repository.FeedCommentRepository;
@@ -32,6 +32,8 @@ import project.closet.feed.repository.FeedRepository;
 import project.closet.feed.service.FeedService;
 import project.closet.user.entity.User;
 import project.closet.user.repository.UserRepository;
+import project.closet.weather.entity.PrecipitationType;
+import project.closet.weather.entity.SkyStatus;
 import project.closet.weather.entity.Weather;
 import project.closet.weather.repository.WeatherRepository;
 
@@ -196,7 +198,24 @@ public class BasicFeedService implements FeedService {
                 hasNext,
                 totalCount,
                 "createdAt",
-                "ASCENDING"
+                SortDirection.ASCENDING
         );
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public FeedDtoCursorResponse getFeedList(
+            Instant cursor, UUID idAfter, int limit, String sortBy,
+            SortDirection sortDirection, String keywordLike, SkyStatus skyStatusEqual,
+            PrecipitationType precipitationType, UUID authorIdEqual
+    ) {
+        // repository로부터 필터/정렬/커서 조건을 만족하는 Feed 목록 조회
+
+        // 전체 개수 조회 (필터 조건 적용된 총 count)
+
+        // hasNext, nextCursor, nextIdAfter 계산
+
+        //FeedDto 변환 (Feed → FeedDto: author, weather, clothes 포함)
+        return null;
     }
 }
