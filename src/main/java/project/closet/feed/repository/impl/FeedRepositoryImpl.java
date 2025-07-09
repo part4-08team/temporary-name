@@ -89,8 +89,9 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom {
         }
 
         // 정렬 Order By
-        jpql.append("ORDER BY f.").append(sortBy).append(" ").append(sortDirection.name());
-        jpql.append(", f.id ").append(sortDirection.name());
+        jpql.append("ORDER BY f.")
+                .append(sortBy).append(" ").append(toJpaDirection(sortDirection))
+                .append(", f.id ").append(toJpaDirection(sortDirection));
 
         // 파라미터 매핑
         TypedQuery<Feed> query = em.createQuery(jpql.toString(), Feed.class);
@@ -135,5 +136,9 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom {
         TypedQuery<Long> query = em.createQuery(jqpl.toString(), Long.class);
         params.forEach(query::setParameter);
         return query.getSingleResult();
+    }
+
+    private String toJpaDirection(SortDirection direction) {
+        return direction == SortDirection.DESCENDING ? "DESC" : "ASC";
     }
 }

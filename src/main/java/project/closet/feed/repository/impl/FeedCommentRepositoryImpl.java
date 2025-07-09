@@ -15,8 +15,12 @@ public class FeedCommentRepositoryImpl implements FeedCommentRepositoryCustom {
     private final EntityManager em;
 
     @Override
-    public List<FeedComment> findByFeedWithCursor(UUID feedId, Instant cursor, UUID idAfter,
-            int limit) {
+    public List<FeedComment> findByFeedWithCursor(
+            UUID feedId,
+            Instant cursor,
+            UUID idAfter,
+            int limit
+    ) {
         StringBuilder jpql = new StringBuilder("""
                     SELECT c FROM FeedComment c
                     JOIN FETCH c.author
