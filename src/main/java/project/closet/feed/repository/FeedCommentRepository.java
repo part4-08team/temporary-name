@@ -5,7 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import project.closet.feed.entity.Feed;
 import project.closet.feed.entity.FeedComment;
 
-public interface FeedCommentRepository extends JpaRepository<FeedComment, UUID> {
+public interface FeedCommentRepository extends JpaRepository<FeedComment, UUID>, FeedCommentRepositoryCustom {
 
     long countByFeed(Feed feed);
+
+    long countByFeedId(UUID feedId);
 }

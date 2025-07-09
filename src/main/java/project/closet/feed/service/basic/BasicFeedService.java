@@ -1,17 +1,19 @@
 package project.closet.feed.service.basic;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.closet.domain.clothes.entity.Clothes;
 import project.closet.domain.clothes.repository.ClothesRepository;
 import project.closet.dto.request.CommentCreateRequest;
 import project.closet.dto.request.FeedCreateRequest;
 import project.closet.dto.request.FeedUpdateRequest;
 import project.closet.dto.response.CommentDto;
+import project.closet.dto.response.CommentDtoCursorResponse;
 import project.closet.dto.response.FeedDto;
 import project.closet.dto.response.OotdDto;
 import project.closet.dto.response.UserSummary;
@@ -62,11 +64,6 @@ public class BasicFeedService implements FeedService {
                 .forEach(feed::addClothes);
 
         feedRepository.save(feed);
-
-        List<OotdDto> ootdDtos = feed.getFeedClothesList()
-                .stream().map(FeedClothes::getClothes)
-                .map(OotdDto::from)
-                .toList();
 
         return toFeedDto(feed, 0, 0, false); // likeCount, commentCount는 초기값 0으로 설정
     }
@@ -134,10 +131,6 @@ public class BasicFeedService implements FeedService {
         // comment count 조회
         long commentCount = feedCommentRepository.countByFeed(feed);
 
-        List<OotdDto> ootdDtos = feed.getFeedClothesList().stream()
-                .map(feedClothes -> OotdDto.from(feedClothes.getClothes()))
-                .toList();
-
         boolean likedByMe = feedLikeRepository.existsByFeedIdAndUserId(feedId, loginUserId);
 
         return toFeedDto(feed, likeCount, commentCount, likedByMe); // likedByMe: false
@@ -159,6 +152,51 @@ public class BasicFeedService implements FeedService {
                 likeCount,
                 commentCount,
                 likedByMe
+        );
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public CommentDtoCursorResponse getFeedComments(
+            UUID feedId,
+            Instant cursor,
+            UUID idAfter,
+            int limit
+    ) {
+        if (!feedRepository.existsById(feedId)) {
+            throw FeedNotFoundException.withId(feedId);
+        }
+
+        List<FeedComment> comments =
+                feedCommentRepository.findByFeedWithCursor(feedId, cursor, idAfter, limit + 1);
+
+        long totalCount = feedCommentRepository.countByFeedId(feedId);
+
+        boolean hasNext = comments.size() > limit;
+        List<FeedComment> result = comments.stream()
+                .limit(limit)
+                .toList();
+
+        Instant nextCursor = null;
+        UUID nextId = null;
+        if (!result.isEmpty()) {
+            FeedComment last = result.get(result.size() - 1);
+            nextCursor = last.getCreatedAt();
+            nextId = last.getId();
+        }
+
+        List<CommentDto> data = result.stream()
+                .map(CommentDto::from)
+                .toList();
+
+        return new CommentDtoCursorResponse(
+                data,
+                nextCursor,
+                nextId,
+                hasNext,
+                totalCount,
+                "createdAt",
+                "ASCENDING"
         );
     }
 }

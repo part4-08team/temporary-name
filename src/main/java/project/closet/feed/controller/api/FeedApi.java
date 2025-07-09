@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.time.Instant;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import project.closet.dto.request.CommentCreateRequest;
@@ -91,7 +92,7 @@ public interface FeedApi {
     })
     ResponseEntity<CommentDtoCursorResponse> getFeedComments(
             UUID feedId,
-            String cursor,
+            Instant cursor,
             UUID idAfter,
             int limit
     );
