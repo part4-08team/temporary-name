@@ -15,4 +15,6 @@ public interface FeedService {
     void cancelFeedLike(UUID feedId, UUID userId);
 
     CommentDto createComment(CommentCreateRequest commentCreateRequest);
+
+    void deleteFeed(UUID feedId);
 }

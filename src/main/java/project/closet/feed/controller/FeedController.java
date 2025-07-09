@@ -106,7 +106,8 @@ public class FeedController implements FeedApi {
     @DeleteMapping("/{feedId}")
     @Override
     public ResponseEntity<Void> deleteFeed(@PathVariable("feedId") UUID feedId) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        feedService.deleteFeed(feedId);
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{feedId}")

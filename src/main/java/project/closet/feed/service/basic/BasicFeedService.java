@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.closet.domain.clothes.repository.ClothesRepository;
@@ -123,5 +124,11 @@ public class BasicFeedService implements FeedService {
         FeedComment feedComment = new FeedComment(feed, author, commentCreateRequest.content());
         feedCommentRepository.save(feedComment);
         return CommentDto.from(feedComment);
+    }
+
+    @Transactional
+    @Override
+    public void deleteFeed(UUID feedId) {
+        feedRepository.deleteById(feedId);
     }
 }
