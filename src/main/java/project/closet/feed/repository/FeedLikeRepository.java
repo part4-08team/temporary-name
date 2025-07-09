@@ -1,4 +1,4 @@
-package project.closet.weather.repository;
+package project.closet.feed.repository;
 
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
