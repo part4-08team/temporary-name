@@ -48,4 +48,11 @@ public class Feed extends BaseUpdatableEntity {
         FeedClothes feedClothes = new FeedClothes(this, clothes);
         this.feedClothesList.add(feedClothes);
     }
+
+    public void updateContent(String content) {
+        if (content == null || content.isBlank()) {
+            throw new IllegalArgumentException("Content cannot be null or blank");
+        }
+        this.content = content;
+    }
 }

@@ -12,8 +12,8 @@ public record FeedDto(
         WeatherSummaryDto weather,
         List<OotdDto> ootds,
         String content,
-        int likeCount,
-        int commentCount,
+        long likeCount,
+        long commentCount,
         boolean likedByMe
 ) {
 

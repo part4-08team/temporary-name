@@ -131,5 +131,6 @@ public interface FeedApi {
                     responseCode = "400", description = "피드 수정 실패"
             )
     })
-    ResponseEntity<FeedDto> updateFeed(UUID feedId, FeedUpdateRequest feedUpdateRequest);
+    ResponseEntity<FeedDto> updateFeed(UUID feedId, FeedUpdateRequest feedUpdateRequest,
+            ClosetUserDetails closetUserDetails);
 }

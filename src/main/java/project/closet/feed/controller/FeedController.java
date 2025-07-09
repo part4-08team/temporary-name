@@ -106,15 +106,19 @@ public class FeedController implements FeedApi {
     @DeleteMapping("/{feedId}")
     @Override
     public ResponseEntity<Void> deleteFeed(@PathVariable("feedId") UUID feedId) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        feedService.deleteFeed(feedId);
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{feedId}")
     @Override
     public ResponseEntity<FeedDto> updateFeed(
             @PathVariable("feedId") UUID feedId,
-            @RequestBody @Valid FeedUpdateRequest feedUpdateRequest
+            @RequestBody @Valid FeedUpdateRequest feedUpdateRequest,
+            @AuthenticationPrincipal ClosetUserDetails closetUserDetails
     ) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        FeedDto feedDto = feedService.updateFeed(feedId, feedUpdateRequest,
+                closetUserDetails.getUserId());
+        return ResponseEntity.ok(feedDto);
     }
 }
