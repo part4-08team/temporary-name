@@ -117,6 +117,8 @@ public class FeedController implements FeedApi {
             @RequestBody @Valid FeedUpdateRequest feedUpdateRequest,
             @AuthenticationPrincipal ClosetUserDetails closetUserDetails
     ) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        FeedDto feedDto = feedService.updateFeed(feedId, feedUpdateRequest,
+                closetUserDetails.getUserId());
+        return ResponseEntity.ok(feedDto);
     }
 }
