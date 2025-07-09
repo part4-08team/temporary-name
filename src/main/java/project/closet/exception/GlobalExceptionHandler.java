@@ -1,13 +1,35 @@
 package project.closet.exception;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        String name = ex.getName();
+        String value = ex.getValue() != null ? ex.getValue().toString() : "null";
+        String message = String.format("잘못된 요청 파라미터입니다: '%s' 값 '%s'는 유효하지 않습니다.", name, value);
+
+        Map<String, Object> details = new HashMap<>();
+        details.put("parameter", name);
+        details.put("invalidValue", value);
+
+        ErrorResponse response = new ErrorResponse(
+                ex.getClass().getSimpleName(),
+                message,
+                details,
+                HttpStatus.BAD_REQUEST.value()
+        );
+        return ResponseEntity.badRequest().body(response);
+    }
 
     //도메인에서 명시적으로 발생시킨 사용자 정의 예외
     @ExceptionHandler(ClosetException.class)

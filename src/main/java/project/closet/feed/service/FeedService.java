@@ -1,10 +1,12 @@
 package project.closet.feed.service;
 
+import java.time.Instant;
 import java.util.UUID;
 import project.closet.dto.request.CommentCreateRequest;
 import project.closet.dto.request.FeedCreateRequest;
 import project.closet.dto.request.FeedUpdateRequest;
 import project.closet.dto.response.CommentDto;
+import project.closet.dto.response.CommentDtoCursorResponse;
 import project.closet.dto.response.FeedDto;
 
 public interface FeedService {
@@ -20,4 +22,6 @@ public interface FeedService {
     void deleteFeed(UUID feedId);
 
     FeedDto updateFeed(UUID feedId, FeedUpdateRequest feedUpdateRequest, UUID loginUserId);
+
+    CommentDtoCursorResponse getFeedComments(UUID feedId, Instant cursor, UUID idAfter, int limit);
 }

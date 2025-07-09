@@ -1,6 +1,7 @@
 package project.closet.feed.controller;
 
 import jakarta.validation.Valid;
+import java.time.Instant;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import project.closet.dto.request.CommentCreateRequest;
 import project.closet.dto.request.FeedCreateRequest;
@@ -86,11 +88,13 @@ public class FeedController implements FeedApi {
     @Override
     public ResponseEntity<CommentDtoCursorResponse> getFeedComments(
             @PathVariable("feedId") UUID feedId,
-            String cursor,
-            UUID idAfter,
-            int limit
+            @RequestParam(name = "cursor", required = false) Instant cursor,
+            @RequestParam(name = "idAfter", required = false) UUID idAfter,
+            @RequestParam(name = "limit", defaultValue = "20") int limit
     ) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        CommentDtoCursorResponse feedComments =
+                feedService.getFeedComments(feedId, cursor, idAfter, limit);
+        return ResponseEntity.ok(feedComments);
     }
 
     @PostMapping("/{feedId}/comments")
