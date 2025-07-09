@@ -22,13 +22,13 @@ import project.closet.feed.entity.Feed;
 import project.closet.feed.entity.FeedClothes;
 import project.closet.feed.entity.FeedComment;
 import project.closet.feed.repository.FeedCommentRepository;
+import project.closet.feed.repository.FeedLikeRepository;
 import project.closet.feed.repository.FeedRepository;
 import project.closet.feed.service.FeedService;
 import project.closet.follower.entity.FeedLike;
 import project.closet.user.entity.User;
 import project.closet.user.repository.UserRepository;
 import project.closet.weather.entity.Weather;
-import project.closet.weather.repository.FeedLikeRepository;
 import project.closet.weather.repository.WeatherRepository;
 
 @Slf4j

@@ -106,7 +106,8 @@ public interface FeedApi {
                     responseCode = "400", description = "피드 댓글 등록 실패"
             )
     })
-    ResponseEntity<CommentDto> createFeedComment(UUID feedId, CommentCreateRequest commentCreateRequest);
+    ResponseEntity<CommentDto> createFeedComment(UUID feedId,
+            CommentCreateRequest commentCreateRequest);
 
     // 피드 삭제
     @Operation(summary = "피드 삭제", description = "피드 삭제 API")
