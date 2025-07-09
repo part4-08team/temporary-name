@@ -30,7 +30,7 @@ public interface FeedService {
     CommentDtoCursorResponse getFeedComments(UUID feedId, Instant cursor, UUID idAfter, int limit);
 
     FeedDtoCursorResponse getFeedList(
-            Instant cursor,
+            String cursor,
             UUID idAfter,
             int limit,
             String sortBy,
@@ -38,6 +38,7 @@ public interface FeedService {
             String keywordLike,
             SkyStatus skyStatusEqual,
             PrecipitationType precipitationType,
-            UUID authorIdEqual
+            UUID authorIdEqual,
+            UUID loginUserId
     );
 }

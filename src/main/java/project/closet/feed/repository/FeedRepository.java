@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import project.closet.feed.entity.Feed;
 
-public interface FeedRepository extends JpaRepository<Feed, UUID> {
+public interface FeedRepository extends JpaRepository<Feed, UUID>, FeedRepositoryCustom {
 
     @Query("""
                 SELECT f FROM Feed f

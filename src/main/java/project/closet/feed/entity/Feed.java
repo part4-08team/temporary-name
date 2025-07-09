@@ -13,6 +13,7 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import project.closet.domain.base.BaseUpdatableEntity;
 import project.closet.domain.clothes.entity.Clothes;
 import project.closet.user.entity.User;
@@ -35,8 +36,12 @@ public class Feed extends BaseUpdatableEntity {
     @Column(name = "content", columnDefinition = "TEXT", nullable = false)
     private String content;
 
+    @BatchSize(size = 100)
     @OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FeedClothes> feedClothesList = new ArrayList<>();
+
+    @Column(name = "like_count", nullable = false)
+    private int likeCount = 0;
 
     public Feed(User author, Weather weather, String content) {
         this.author = author;

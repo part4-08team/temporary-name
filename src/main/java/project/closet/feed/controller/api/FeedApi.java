@@ -34,7 +34,7 @@ public interface FeedApi {
             )
     })
     ResponseEntity<FeedDtoCursorResponse> getFeedList(
-            Instant cursor,
+            String cursor,
             UUID idAfter,
             int limit,
             String sortBy,
@@ -42,7 +42,8 @@ public interface FeedApi {
             String keywordLike,
             SkyStatus skyStatusEqual,
             PrecipitationType precipitationTypeEqual,
-            UUID authorIdEqual
+            UUID authorIdEqual,
+            @Parameter(hidden = true) ClosetUserDetails closetUserDetails
     );
 
     // 피드 등록
@@ -67,7 +68,8 @@ public interface FeedApi {
                     responseCode = "400", description = "피드 좋아요 실패"
             )
     })
-    ResponseEntity<Void> likeFeed(UUID feedId, ClosetUserDetails closetUserDetails);
+    ResponseEntity<Void> likeFeed(UUID feedId,
+            @Parameter(hidden = true) ClosetUserDetails closetUserDetails);
 
     // 피드 좋아요 취소
     @Operation(summary = "피드 좋아요 취소", description = "피드 좋아요 취소 API")
@@ -79,7 +81,9 @@ public interface FeedApi {
                     responseCode = "400", description = "피드 좋아요 취소 실패"
             )
     })
-    ResponseEntity<Void> cancelFeed(UUID feedId, ClosetUserDetails closetUserDetails);
+    ResponseEntity<Void> cancelFeed(UUID feedId,
+            @Parameter(hidden = true)
+            ClosetUserDetails closetUserDetails);
 
     // 피드 댓글 조회
     @Operation(summary = "피드 댓글 조회", description = "피드 댓글 조회 API")
@@ -133,6 +137,9 @@ public interface FeedApi {
                     responseCode = "400", description = "피드 수정 실패"
             )
     })
-    ResponseEntity<FeedDto> updateFeed(UUID feedId, FeedUpdateRequest feedUpdateRequest,
-            ClosetUserDetails closetUserDetails);
+    ResponseEntity<FeedDto> updateFeed(
+            UUID feedId,
+            FeedUpdateRequest feedUpdateRequest,
+            @Parameter(hidden = true) ClosetUserDetails closetUserDetails
+    );
 }

@@ -67,9 +67,11 @@ public class BasicFeedService implements FeedService {
 
         feedRepository.save(feed);
 
-        return toFeedDto(feed, 0, 0, false); // likeCount, commentCount는 초기값 0으로 설정
+        return toFeedDto(feed, feed.getLikeCount(), false);
     }
 
+
+    // TODO : Feed Like Count 업데이트 구현해야함
     @Transactional
     @Override
     public void likeFeed(UUID feedId, UUID userId) {
@@ -130,31 +132,10 @@ public class BasicFeedService implements FeedService {
 
         // like count 조회
         long likeCount = feedLikeRepository.countByFeed(feed);
-        // comment count 조회
-        long commentCount = feedCommentRepository.countByFeed(feed);
 
-        boolean likedByMe = feedLikeRepository.existsByFeedIdAndUserId(feedId, loginUserId);
+        boolean likedByMe = feedLikeRepository.existsByUserIdAndFeedId(loginUserId, feedId);
 
-        return toFeedDto(feed, likeCount, commentCount, likedByMe); // likedByMe: false
-    }
-
-    private FeedDto toFeedDto(Feed feed, long likeCount, long commentCount, boolean likedByMe) {
-        List<OotdDto> ootdDtos = feed.getFeedClothesList().stream()
-                .map(feedClothes -> OotdDto.from(feedClothes.getClothes()))
-                .toList();
-
-        return new FeedDto(
-                feed.getId(),
-                feed.getCreatedAt(),
-                feed.getUpdatedAt(),
-                UserSummary.from(feed.getAuthor()),
-                WeatherSummaryDto.from(feed.getWeather()),
-                ootdDtos,
-                feed.getContent(),
-                likeCount,
-                commentCount,
-                likedByMe
-        );
+        return toFeedDto(feed, feed.getLikeCount(), likedByMe);
     }
 
     @Transactional(readOnly = true)
@@ -205,17 +186,79 @@ public class BasicFeedService implements FeedService {
     @Transactional(readOnly = true)
     @Override
     public FeedDtoCursorResponse getFeedList(
-            Instant cursor, UUID idAfter, int limit, String sortBy,
-            SortDirection sortDirection, String keywordLike, SkyStatus skyStatusEqual,
-            PrecipitationType precipitationType, UUID authorIdEqual
+            String cursor,
+            UUID idAfter,
+            int limit,
+            String sortBy,
+            SortDirection sortDirection,
+            String keywordLike,
+            SkyStatus skyStatusEqual,
+            PrecipitationType precipitationType,
+            UUID authorIdEqual,
+            UUID loginUserId
     ) {
-        // repository로부터 필터/정렬/커서 조건을 만족하는 Feed 목록 조회
+        List<Feed> feeds = feedRepository.findAllWithCursorAndFilters(
+                cursor, idAfter, limit, sortBy, sortDirection,
+                keywordLike, skyStatusEqual, precipitationType, authorIdEqual
+        );
 
-        // 전체 개수 조회 (필터 조건 적용된 총 count)
+        boolean hasNext = feeds.size() > limit;
+        if (hasNext) {
+            feeds = feeds.subList(0, limit);
+        }
 
-        // hasNext, nextCursor, nextIdAfter 계산
+        Feed last = feeds.isEmpty() ? null : feeds.get(feeds.size() - 1);
+        String nextCursor = null;
+        UUID nextIdAfter = null;
 
-        //FeedDto 변환 (Feed → FeedDto: author, weather, clothes 포함)
-        return null;
+        if (last != null) {
+            nextIdAfter = last.getId();
+            nextCursor = switch (sortBy) {
+                case "createdAt" -> last.getCreatedAt().toString();
+                case "likeCount" -> String.valueOf(last.getLikeCount());
+                default -> throw new IllegalArgumentException("지원하지 않는 sortBy 값입니다: " + sortBy);
+            };
+        }
+
+        List<FeedDto> feedDtos = feeds.stream()
+                .map(feed -> {
+                    long commentCount = feedCommentRepository.countByFeedId(feed.getId());
+                    boolean likedByMe =
+                            feedLikeRepository.existsByUserIdAndFeedId(loginUserId, feed.getId());
+                    return toFeedDto(feed, commentCount, likedByMe);
+                })
+                .toList();
+
+        long totalCount = feedRepository.countByFilters(
+                keywordLike, skyStatusEqual, precipitationType, authorIdEqual);
+
+        return new FeedDtoCursorResponse(
+                feedDtos,
+                nextCursor,
+                nextIdAfter,
+                hasNext,
+                totalCount,
+                sortBy,
+                sortDirection
+        );
+    }
+
+    private FeedDto toFeedDto(Feed feed, long commentCount, boolean likedByMe) {
+        List<OotdDto> ootdDtos = feed.getFeedClothesList().stream()
+                .map(feedClothes -> OotdDto.from(feedClothes.getClothes()))
+                .toList();
+
+        return new FeedDto(
+                feed.getId(),
+                feed.getCreatedAt(),
+                feed.getUpdatedAt(),
+                UserSummary.from(feed.getAuthor()),
+                WeatherSummaryDto.from(feed.getWeather()),
+                ootdDtos,
+                feed.getContent(),
+                feed.getLikeCount(),
+                commentCount,
+                likedByMe
+        );
     }
 }

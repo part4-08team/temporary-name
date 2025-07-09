@@ -42,19 +42,20 @@ public class FeedController implements FeedApi {
     @GetMapping
     @Override
     public ResponseEntity<FeedDtoCursorResponse> getFeedList(
-            @RequestParam(name = "cursor", required = false) Instant cursor,
+            @RequestParam(name = "cursor", required = false) String cursor,
             @RequestParam(name = "idAfter", required = false) UUID idAfter,
             @RequestParam(name = "limit", defaultValue = "20") int limit,
-            @RequestParam(name = "sortBy") String sortBy,  // 좋아요
-            @RequestParam(name = "sortDirection") SortDirection sortDirection,   // 항상 DESCENDING 임
+            @RequestParam(name = "sortBy") String sortBy,  // likeCount, createdAt
+            @RequestParam(name = "sortDirection") SortDirection sortDirection,
             @RequestParam(name = "keywordLike", required = false) String keywordLike,
             @RequestParam(name = "skyStatusEqual", required = false) SkyStatus skyStatusEqual,
             @RequestParam(name = "precipitationType", required = false) PrecipitationType precipitationType,
-            @RequestParam(name = "authorIdEqual", required = false) UUID authorIdEqual
+            @RequestParam(name = "authorIdEqual", required = false) UUID authorIdEqual,
+            @AuthenticationPrincipal ClosetUserDetails closetUserDetails
     ) {
         FeedDtoCursorResponse feedList = feedService.getFeedList(
                 cursor, idAfter, limit, sortBy, sortDirection, keywordLike,
-                skyStatusEqual, precipitationType, authorIdEqual);
+                skyStatusEqual, precipitationType, authorIdEqual, closetUserDetails.getUserId());
         return ResponseEntity.ok(feedList);
     }
 
