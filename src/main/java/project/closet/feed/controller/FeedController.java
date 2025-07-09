@@ -114,7 +114,8 @@ public class FeedController implements FeedApi {
     @Override
     public ResponseEntity<FeedDto> updateFeed(
             @PathVariable("feedId") UUID feedId,
-            @RequestBody @Valid FeedUpdateRequest feedUpdateRequest
+            @RequestBody @Valid FeedUpdateRequest feedUpdateRequest,
+            @AuthenticationPrincipal ClosetUserDetails closetUserDetails
     ) {
         throw new UnsupportedOperationException("Not yet implemented");
     }

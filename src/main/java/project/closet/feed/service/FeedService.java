@@ -3,6 +3,7 @@ package project.closet.feed.service;
 import java.util.UUID;
 import project.closet.dto.request.CommentCreateRequest;
 import project.closet.dto.request.FeedCreateRequest;
+import project.closet.dto.request.FeedUpdateRequest;
 import project.closet.dto.response.CommentDto;
 import project.closet.dto.response.FeedDto;
 
@@ -17,4 +18,6 @@ public interface FeedService {
     CommentDto createComment(CommentCreateRequest commentCreateRequest);
 
     void deleteFeed(UUID feedId);
+
+    FeedDto updateFeed(UUID feedId, FeedUpdateRequest feedUpdateRequest, UUID loginUserId);
 }

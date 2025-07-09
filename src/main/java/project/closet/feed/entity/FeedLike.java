@@ -1,4 +1,4 @@
-package project.closet.follower.entity;
+package project.closet.feed.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,7 +12,6 @@ import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import project.closet.feed.entity.Feed;
 import project.closet.user.entity.User;
 
 @Getter

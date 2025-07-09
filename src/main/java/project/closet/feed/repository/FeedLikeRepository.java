@@ -3,7 +3,7 @@ package project.closet.feed.repository;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import project.closet.feed.entity.Feed;
-import project.closet.follower.entity.FeedLike;
+import project.closet.feed.entity.FeedLike;
 import project.closet.user.entity.User;
 
 public interface FeedLikeRepository extends JpaRepository<FeedLike, UUID> {
@@ -11,6 +11,10 @@ public interface FeedLikeRepository extends JpaRepository<FeedLike, UUID> {
     boolean existsByUserAndFeed(User user, Feed feed);
 
     void deleteByUserAndFeed(User user, Feed feed);
+
+    long countByFeed(Feed feed);
+
+    boolean existsByFeedIdAndUserId(UUID feedId, UUID userId);
 }
 
 /*
