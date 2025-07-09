@@ -65,11 +65,6 @@ public class BasicFeedService implements FeedService {
 
         feedRepository.save(feed);
 
-        List<OotdDto> ootdDtos = feed.getFeedClothesList()
-                .stream().map(FeedClothes::getClothes)
-                .map(OotdDto::from)
-                .toList();
-
         return toFeedDto(feed, 0, 0, false); // likeCount, commentCount는 초기값 0으로 설정
     }
 
@@ -135,10 +130,6 @@ public class BasicFeedService implements FeedService {
         long likeCount = feedLikeRepository.countByFeed(feed);
         // comment count 조회
         long commentCount = feedCommentRepository.countByFeed(feed);
-
-        List<OotdDto> ootdDtos = feed.getFeedClothesList().stream()
-                .map(feedClothes -> OotdDto.from(feedClothes.getClothes()))
-                .toList();
 
         boolean likedByMe = feedLikeRepository.existsByFeedIdAndUserId(feedId, loginUserId);
 
