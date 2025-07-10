@@ -20,6 +20,7 @@ import project.closet.dto.request.ChangePasswordRequest;
 import project.closet.dto.request.ProfileUpdateRequest;
 import project.closet.dto.request.UserCreateRequest;
 import project.closet.dto.request.UserLockUpdateRequest;
+import project.closet.dto.request.UserRoleUpdateRequest;
 import project.closet.dto.response.PageResponse;
 import project.closet.dto.response.ProfileDto;
 import project.closet.dto.response.UserDto;
@@ -98,5 +99,19 @@ public class UserController implements UserApi {
     ) {
         new UnsupportedOperationException("Not yet implemented");
         return null;
+    }
+
+    @PostMapping("/{userId}/role")
+    @Override
+    public ResponseEntity<UserDto> updateRole(
+            @PathVariable(value = "userId") UUID userId,
+            @RequestBody @Valid UserRoleUpdateRequest userRoleUpdateRequest
+    ) {
+        log.info("권한 수정 요청");
+        UserDto userDto = userService.updateRole(userId, userRoleUpdateRequest);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(userDto);
     }
 }

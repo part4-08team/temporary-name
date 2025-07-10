@@ -10,11 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import project.closet.dto.request.ProfileUpdateRequest;
 import project.closet.dto.request.UserCreateRequest;
+import project.closet.dto.request.UserRoleUpdateRequest;
 import project.closet.dto.response.ProfileDto;
 import project.closet.dto.response.UserDto;
 import project.closet.dto.response.WeatherAPILocation;
 import project.closet.exception.user.UserAlreadyExistsException;
 import project.closet.exception.user.UserNotFoundException;
+import project.closet.security.jwt.JwtService;
 import project.closet.user.entity.Profile;
 import project.closet.user.entity.User;
 import project.closet.user.repository.UserRepository;
@@ -30,6 +32,7 @@ public class BasicUserService implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final GeoGridConverter geoGridConverter;
+    private final JwtService jwtService;
 
     @Transactional
     @Override
@@ -93,5 +96,17 @@ public class BasicUserService implements UserService {
         }
 
         return ProfileDto.of(user, location, profile);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Transactional
+    @Override
+    public UserDto updateRole(UUID userId, UserRoleUpdateRequest userRoleUpdateRequest) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> UserNotFoundException.withId(userId));
+        user.updateRole(userRoleUpdateRequest.role());
+
+        jwtService.invalidateJwtSession(user.getId());
+        return UserDto.from(user);
     }
 }

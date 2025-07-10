@@ -17,6 +17,7 @@ import project.closet.dto.request.ChangePasswordRequest;
 import project.closet.dto.request.ProfileUpdateRequest;
 import project.closet.dto.request.UserCreateRequest;
 import project.closet.dto.request.UserLockUpdateRequest;
+import project.closet.dto.request.UserRoleUpdateRequest;
 import project.closet.dto.response.PageResponse;
 import project.closet.dto.response.ProfileDto;
 import project.closet.dto.response.UserDto;
@@ -123,4 +124,15 @@ public interface UserApi {
             @Parameter(description = "잠금 상태") UserLockUpdateRequest request
     );
 
+    //  권한 수정
+    @Operation(summary = "권한 수정", description = "권한 수정 API")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200", description = "권한 수정 성공"
+            ),
+            @ApiResponse(
+                    responseCode = "404", description = "권한 수정 실패(사용자 없음)"
+            )
+    })
+    ResponseEntity<UserDto> updateRole(UUID userId, UserRoleUpdateRequest userRoleUpdateRequest);
 }
