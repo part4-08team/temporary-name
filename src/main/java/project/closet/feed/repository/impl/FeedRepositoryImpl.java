@@ -57,35 +57,30 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom {
             jpql.append("AND a.id = :authorIdEqual ");
             params.put("authorIdEqual", authorIdEqual);
         }
-
-        switch (sortBy) {
-            case "createdAt" -> {
-                Instant parse = (cursor != null && !cursor.isBlank())
-                        ? Instant.parse(cursor) : null;
-                if (sortDirection == SortDirection.DESCENDING) {
+        if (cursor != null && !cursor.isBlank()) {
+            switch (sortBy) {
+                case "createdAt" -> {
+                    Instant parsed = Instant.parse(cursor);
                     jpql.append(
-                            "AND (f.createdAt < :cursor OR (f.createdAt = :cursor AND f.id < :idAfter)) ");
-                } else {
-                    jpql.append(
-                            "AND (f.createdAt > :cursor OR (f.createdAt = :cursor AND f.id > :idAfter)) ");
+                            sortDirection == SortDirection.DESCENDING ?
+                                    "AND (f.createdAt < :cursor OR (f.createdAt = :cursor AND f.id < :idAfter)) " :
+                                    "AND (f.createdAt > :cursor OR (f.createdAt = :cursor AND f.id > :idAfter)) "
+                    );
+                    params.put("cursor", parsed);
+                    params.put("idAfter", idAfter);
                 }
-                params.put("cursor", parse);
-                params.put("idAfter", idAfter);
-            }
-            case "likeCount" -> {
-                Integer parse = (cursor != null && !cursor.isBlank())
-                        ? Integer.parseInt(cursor) : null;
-                if (sortDirection == SortDirection.DESCENDING) {
+                case "likeCount" -> {
+                    Integer parsed = Integer.parseInt(cursor);
                     jpql.append(
-                            "AND (f.likeCount < :cursor OR (f.likeCount = :cursor AND f.id < :idAfter)) ");
-                } else {
-                    jpql.append(
-                            "AND (f.likeCount > :cursor OR (f.likeCount = :cursor AND f.id > :idAfter)) ");
+                            sortDirection == SortDirection.DESCENDING ?
+                                    "AND (f.likeCount < :cursor OR (f.likeCount = :cursor AND f.id < :idAfter)) " :
+                                    "AND (f.likeCount > :cursor OR (f.likeCount = :cursor AND f.id > :idAfter)) "
+                    );
+                    params.put("cursor", parsed);
+                    params.put("idAfter", idAfter);
                 }
-                params.put("cursor", parse);
-                params.put("idAfter", idAfter);
+                default -> throw new IllegalArgumentException("지원하지 않는 정렬 값입니다: " + sortBy);
             }
-            default -> throw new IllegalArgumentException("지원하지 않는 sortBy 값입니다: " + sortBy);
         }
 
         // 정렬 Order By

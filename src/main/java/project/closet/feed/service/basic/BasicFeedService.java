@@ -67,11 +67,11 @@ public class BasicFeedService implements FeedService {
 
         feedRepository.save(feed);
 
-        return toFeedDto(feed, feed.getLikeCount(), false);
+        return toFeedDto(feed, 0, false);
     }
 
 
-    // TODO : Feed Like Count 업데이트 구현해야함
+    // TODO : Feed Like Count 업데이트 구현해야함 + 1, -1
     @Transactional
     @Override
     public void likeFeed(UUID feedId, UUID userId) {
@@ -135,7 +135,8 @@ public class BasicFeedService implements FeedService {
 
         boolean likedByMe = feedLikeRepository.existsByUserIdAndFeedId(loginUserId, feedId);
 
-        return toFeedDto(feed, feed.getLikeCount(), likedByMe);
+        long commentCount = feedCommentRepository.countByFeedId(feed.getId());
+        return toFeedDto(feed, commentCount, likedByMe);
     }
 
     @Transactional(readOnly = true)
