@@ -5,11 +5,13 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.query.SortDirection;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import project.closet.dto.request.ChangePasswordRequest;
 import project.closet.dto.request.ProfileUpdateRequest;
 import project.closet.dto.request.UserCreateRequest;
 import project.closet.dto.request.UserLockUpdateRequest;
@@ -179,5 +181,19 @@ public class BasicUserService implements UserService {
             case "createdAt" -> user.getCreatedAt().toString();
             default -> throw new IllegalArgumentException("정렬 기준이 유효하지 않습니다: " + sortBy);
         };
+    }
+
+    @PreAuthorize("principal.userId == #userId")
+    @Transactional
+    @Override
+    public void changePassword(
+            UUID userId,
+            ChangePasswordRequest changePasswordRequest
+    ) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> UserNotFoundException.withId(userId));
+
+        String encodePassword = passwordEncoder.encode(changePasswordRequest.password());
+        user.updatePassword(encodePassword);
     }
 }

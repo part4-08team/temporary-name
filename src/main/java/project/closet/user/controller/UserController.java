@@ -101,7 +101,9 @@ public class UserController implements UserApi {
             @PathVariable("userId") UUID userId,
             @RequestBody @Valid ChangePasswordRequest changePasswordRequest
     ) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        log.info("사용자 비밀번호 변경 요청: userId={}", userId);
+        userService.changePassword(userId, changePasswordRequest);
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{userId}/lock")

@@ -2,7 +2,9 @@ package project.closet.user.service;
 
 import java.util.UUID;
 import org.hibernate.query.SortDirection;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
+import project.closet.dto.request.ChangePasswordRequest;
 import project.closet.dto.request.ProfileUpdateRequest;
 import project.closet.dto.request.UserCreateRequest;
 import project.closet.dto.request.UserLockUpdateRequest;
@@ -41,4 +43,7 @@ public interface UserService {
             Role roleEqual,
             Boolean locked
     );
+
+    // 유저 비밀번호 변경
+    void changePassword(UUID userId, ChangePasswordRequest changePasswordRequest);
 }
