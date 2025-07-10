@@ -1,9 +1,9 @@
 package project.closet.user.service.basic;
 
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,6 +19,7 @@ import project.closet.dto.response.WeatherAPILocation;
 import project.closet.exception.user.UserAlreadyExistsException;
 import project.closet.exception.user.UserNotFoundException;
 import project.closet.security.jwt.JwtService;
+import project.closet.storage.S3ContentStorage;
 import project.closet.user.entity.Profile;
 import project.closet.user.entity.User;
 import project.closet.user.repository.UserRepository;
@@ -35,6 +36,7 @@ public class BasicUserService implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final GeoGridConverter geoGridConverter;
     private final JwtService jwtService;
+    private final S3ContentStorage s3ContentStorage;
 
     @Transactional
     @Override
@@ -79,6 +81,9 @@ public class BasicUserService implements UserService {
         User user = userRepository.findByIdWithProfile(userId)
                 .orElseThrow(() -> UserNotFoundException.withId(userId));
         user.updateProfile(profileUpdateRequest);
+        Optional.ofNullable(profileImage)
+                .map(s3ContentStorage::upload)
+                .ifPresent(user::updateProfileImageKey);
         return toProfileDto(user);
     }
 
@@ -96,8 +101,10 @@ public class BasicUserService implements UserService {
                     profile.getLocationNames()
             );
         }
+        String profileImageUrl =
+                s3ContentStorage.getPresignedUrl(user.getProfile().getProfileImageKey());
 
-        return ProfileDto.of(user, location, profile);
+        return ProfileDto.of(user, location, profile, profileImageUrl);
     }
 
     @PreAuthorize("hasRole('ADMIN')")

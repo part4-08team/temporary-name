@@ -65,7 +65,6 @@ public class User extends BaseUpdatableEntity {
         this.profile.updateProfile(
                 request.gender(),
                 request.birthDate(),
-                null,
                 request.temperatureSensitivity(),
                 request.location().latitude(),
                 request.location().longitude(),
@@ -84,5 +83,9 @@ public class User extends BaseUpdatableEntity {
         if (this.locked != locked) {
             this.locked = locked;
         }
+    }
+
+    public void updateProfileImageKey(String profileImageKey) {
+        this.profile.updateProfileImageKey(profileImageKey);
     }
 }

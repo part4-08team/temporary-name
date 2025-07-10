@@ -84,7 +84,6 @@ public class Profile extends BaseUpdatableEntity {
     public void updateProfile(
             Gender newGender,
             LocalDate newBirthDate,
-            String newProfileImageUrl,
             Integer newTemperatureSensitivity,
             Double newLatitude,
             Double newLongitude,
@@ -95,9 +94,6 @@ public class Profile extends BaseUpdatableEntity {
         }
         if (newBirthDate != null && !newBirthDate.equals(this.birthDate)) {
             this.birthDate = newBirthDate;
-        }
-        if (newProfileImageUrl != null && !newProfileImageUrl.equals(this.profileImageKey)) {
-            this.profileImageKey = newProfileImageUrl;
         }
         if (newTemperatureSensitivity != null && !newTemperatureSensitivity.equals(
                 this.temperatureSensitivity)) {
@@ -111,6 +107,12 @@ public class Profile extends BaseUpdatableEntity {
         }
         if (newLocationName != null && !newLocationName.equals(this.locationNames)) {
             this.locationNames = newLocationName;
+        }
+    }
+
+    public void updateProfileImageKey(String profileImageKey) {
+        if (profileImageKey != null && !profileImageKey.equals(this.profileImageKey)) {
+            this.profileImageKey = profileImageKey;
         }
     }
 
