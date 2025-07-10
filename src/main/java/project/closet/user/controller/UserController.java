@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.query.SortDirection;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,9 @@ import project.closet.dto.request.UserRoleUpdateRequest;
 import project.closet.dto.response.PageResponse;
 import project.closet.dto.response.ProfileDto;
 import project.closet.dto.response.UserDto;
+import project.closet.dto.response.UserDtoCursorResponse;
 import project.closet.user.controller.api.UserApi;
+import project.closet.user.entity.Role;
 import project.closet.user.service.UserService;
 
 @Slf4j
@@ -37,8 +40,20 @@ public class UserController implements UserApi {
 
     @GetMapping
     @Override
-    public ResponseEntity<PageResponse<UserDto>> findAll() {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public ResponseEntity<UserDtoCursorResponse> findAll(
+            String cursor,
+            UUID idAfter,
+            int limit,
+            String sortBy,
+            SortDirection sortDirection,
+            String emailLike,
+            Role roleEqual,
+            boolean locked
+    ) {
+        UserDtoCursorResponse response = userService.findAll(
+                cursor, idAfter, limit, sortBy, sortDirection, emailLike, roleEqual, locked
+        );
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping

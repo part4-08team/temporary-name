@@ -1,22 +1,30 @@
 package project.closet.dto.response;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 import project.closet.user.entity.Role;
 import project.closet.user.entity.User;
 
 public record UserDto(
-        UUID userId,
-        String name,
+        UUID id,
+        Instant createdAt,
         String email,
-        Role role
+        String name,
+        Role role,
+        List<String> linkedOAuthProviders,
+        boolean locked
 ) {
 
     public static UserDto from(User user) {
         return new UserDto(
                 user.getId(),
-                user.getName(),
+                user.getCreatedAt(),
                 user.getEmail(),
-                user.getRole()
+                user.getName(),
+                user.getRole(),
+                List.of(),
+                user.isLocked()
         );
     }
 }

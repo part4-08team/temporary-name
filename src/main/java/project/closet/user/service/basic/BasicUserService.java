@@ -3,6 +3,7 @@ package project.closet.user.service.basic;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.query.SortDirection;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -14,11 +15,13 @@ import project.closet.dto.request.UserLockUpdateRequest;
 import project.closet.dto.request.UserRoleUpdateRequest;
 import project.closet.dto.response.ProfileDto;
 import project.closet.dto.response.UserDto;
+import project.closet.dto.response.UserDtoCursorResponse;
 import project.closet.dto.response.WeatherAPILocation;
 import project.closet.exception.user.UserAlreadyExistsException;
 import project.closet.exception.user.UserNotFoundException;
 import project.closet.security.jwt.JwtService;
 import project.closet.user.entity.Profile;
+import project.closet.user.entity.Role;
 import project.closet.user.entity.User;
 import project.closet.user.repository.UserRepository;
 import project.closet.user.service.UserService;
@@ -118,5 +121,12 @@ public class BasicUserService implements UserService {
                 .orElseThrow(() -> UserNotFoundException.withId(userId));
         user.updateLockStatus(userLockUpdateRequest.locked());
         return user.getId();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public UserDtoCursorResponse findAll(String cursor, UUID idAfter, int limit, String sortBy,
+            SortDirection sortDirection, String emailLike, Role roleEqual, boolean locked) {
+        return null;
     }
 }
