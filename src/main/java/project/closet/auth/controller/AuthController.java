@@ -2,6 +2,7 @@ package project.closet.auth.controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -10,14 +11,12 @@ import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import project.closet.auth.controller.api.AuthApi;
 import project.closet.auth.service.AuthService;
-import project.closet.dto.request.RoleUpdateRequest;
-import project.closet.dto.response.UserDto;
+import project.closet.dto.request.ResetPasswordRequest;
 import project.closet.security.jwt.JwtService;
 import project.closet.security.jwt.JwtSession;
 
@@ -63,13 +62,12 @@ public class AuthController implements AuthApi {
         return ResponseEntity.ok(jwtSession.getAccessToken());
     }
 
-    @PutMapping("role")
-    public ResponseEntity<UserDto> role(@RequestBody RoleUpdateRequest request) {
-        log.info("권한 수정 요청");
-        UserDto userDto = authService.updateRole(request);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(userDto);
+    @PostMapping("reset-password")
+    @Override
+    public ResponseEntity<Void> resetPassword(
+            @RequestBody @Valid ResetPasswordRequest resetPasswordRequest
+    ) {
+        authService.resetPassword(resetPasswordRequest.email());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

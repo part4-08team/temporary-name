@@ -39,7 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (optionalAccessToken.isPresent() && !isPermitAll(request)) {
             String accessToken = optionalAccessToken.get();
             if (jwtService.validate(accessToken)) {
-                UserDto userDto = jwtService.parse(accessToken).userDto();
+                UserDto userDto = jwtService.parse(accessToken).toUserDto();
                 ClosetUserDetails userDetails = new ClosetUserDetails(userDto, null);
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());

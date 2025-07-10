@@ -5,8 +5,9 @@ import project.closet.user.entity.Role;
 import project.closet.user.entity.User;
 
 public record UserDto(
-        UUID id,
-        String username,
+        UUID userId,
+        String name,
+        String email,
         Role role
 ) {
 
@@ -14,6 +15,7 @@ public record UserDto(
         return new UserDto(
                 user.getId(),
                 user.getName(),
+                user.getEmail(),
                 user.getRole()
         );
     }
