@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import project.closet.dto.request.ProfileUpdateRequest;
 import project.closet.dto.request.UserCreateRequest;
+import project.closet.dto.request.UserLockUpdateRequest;
 import project.closet.dto.request.UserRoleUpdateRequest;
 import project.closet.dto.response.ProfileDto;
 import project.closet.dto.response.UserDto;
@@ -108,5 +109,14 @@ public class BasicUserService implements UserService {
 
         jwtService.invalidateJwtSession(user.getId());
         return UserDto.from(user);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public UUID updateLockStatus(UUID userId, UserLockUpdateRequest userLockUpdateRequest) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> UserNotFoundException.withId(userId));
+        user.updateLockStatus(userLockUpdateRequest.locked());
+        return user.getId();
     }
 }

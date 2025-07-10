@@ -79,4 +79,10 @@ public class User extends BaseUpdatableEntity {
         }
         this.password = encodedPassword;
     }
+
+    public void updateLockStatus(boolean locked) {
+        if (this.locked != locked) {
+            this.locked = locked;
+        }
+    }
 }

@@ -106,6 +106,7 @@ public interface UserApi {
             @Parameter(description = "변경 비밀번호") ChangePasswordRequest changePasswordRequest
     );
 
+    // 계정 잠금
     @Operation(
             summary = "계정 잠금 상태 변경",
             description = "[어드민 기능] 계정 잠금 상태를 변경합니다."
@@ -119,7 +120,7 @@ public interface UserApi {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             ),
     })
-    ResponseEntity<String> changeAccountLockStatus(
+    ResponseEntity<UUID> changeAccountLockStatus(
             @Parameter(description = "사용자 ID") UUID userId,
             @Parameter(description = "잠금 상태") UserLockUpdateRequest request
     );
@@ -135,4 +136,5 @@ public interface UserApi {
             )
     })
     ResponseEntity<UserDto> updateRole(UUID userId, UserRoleUpdateRequest userRoleUpdateRequest);
+
 }
