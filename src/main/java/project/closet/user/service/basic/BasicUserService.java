@@ -116,6 +116,7 @@ public class BasicUserService implements UserService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @Transactional
     @Override
     public UUID updateLockStatus(UUID userId, UserLockUpdateRequest userLockUpdateRequest) {
         User user = userRepository.findById(userId)
@@ -125,6 +126,7 @@ public class BasicUserService implements UserService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @Transactional(readOnly = true)
     @Override
     public UserDtoCursorResponse findAll(
             String cursor,
