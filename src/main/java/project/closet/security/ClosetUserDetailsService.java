@@ -6,7 +6,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import project.closet.dto.response.UserDto;
 import project.closet.exception.user.UserNotFoundException;
 import project.closet.user.entity.User;
 import project.closet.user.repository.UserRepository;
@@ -27,7 +26,6 @@ public class ClosetUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> UserNotFoundException.withEmail(email));
-        UserDto userDto = UserDto.from(user);
-        return new ClosetUserDetails(userDto, user.getPassword());
+        return ClosetUserDetails.from(user);
     }
 }

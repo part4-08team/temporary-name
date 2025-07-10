@@ -26,4 +26,7 @@ public interface UserService {
 
     // 회원 잠금 상태 수정
     UUID updateLockStatus(UUID userId, UserLockUpdateRequest userRoleUpdateRequest);
+
+    // 회원 조회
+    
 }
