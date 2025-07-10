@@ -30,7 +30,7 @@ CREATE TABLE weathers
     min_temperature     DOUBLE PRECISION         NOT NULL,
     x                   INTEGER                  NOT NULL,
     y                   INTEGER                  NOT NULL,
-    created_at          TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at          TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE weather_locations
@@ -199,9 +199,9 @@ ALTER TABLE feeds
 DELETE
 CASCADE;
 
-ALTER TABLE feed_comment
+ALTER TABLE feed_comments
     ADD CONSTRAINT fk_feed_comment_feed FOREIGN KEY (feed_id) REFERENCES feeds (id) ON DELETE CASCADE,
-    ADD CONSTRAINT fk_feed_comment_user FOREIGN KEY (user_id) REFERENCES users(id) ON
+    ADD CONSTRAINT fk_feed_comment_user FOREIGN KEY (author_id) REFERENCES users(id) ON
 DELETE
 CASCADE;
 

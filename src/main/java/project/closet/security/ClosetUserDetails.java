@@ -33,10 +33,10 @@ public class ClosetUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return userDto.username();
+        return userDto.name();
     }
 
     public UUID getUserId() {
-        return userDto.id();
+        return userDto.userId();
     }
 }

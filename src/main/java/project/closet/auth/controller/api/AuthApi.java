@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.web.csrf.CsrfToken;
+import project.closet.dto.request.ResetPasswordRequest;
 
 @Tag(name = "인증 관리", description = "인증 관련 API")
 public interface AuthApi {
@@ -50,4 +51,15 @@ public interface AuthApi {
             @Parameter(hidden = true) HttpServletResponse response
     );
 
+    // 비밀번호 초기화
+    @Operation(summary = "비밀번호 초기화", description = "임시 비밀번호로 초기화 후 이메일로 전송합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "204", description = "비밀번호 초기화 성공"
+            ),
+            @ApiResponse(
+                    responseCode = "400", description = "잘못된 요청"
+            )
+    })
+    ResponseEntity<Void> resetPassword(ResetPasswordRequest resetPasswordRequest);
 }

@@ -36,7 +36,7 @@ public class FeedCommentRepositoryImpl implements FeedCommentRepositoryCustom {
                     """);
         }
 
-        jpql.append(" ORDER BY c.createdAt ASC, c.id ASC");
+        jpql.append(" ORDER BY c.createdAt ASC, c.userId ASC");
 
         TypedQuery<FeedComment> query = em.createQuery(jpql.toString(), FeedComment.class)
                 .setParameter("feedId", feedId)
