@@ -99,7 +99,7 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom {
     @Override
     public long countByFilters(String keywordLike, SkyStatus skyStatusEqual,
             PrecipitationType precipitationType, UUID authorIdEqual) {
-        StringBuilder jqpl = new StringBuilder("""
+        StringBuilder jpql = new StringBuilder("""
                 SELECT COUNT(f) FROM Feed f
                 JOIN f.weather w
                 JOIN f.author a
@@ -109,26 +109,26 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom {
         Map<String, Object> params = new HashMap<>();
 
         if (keywordLike != null && !keywordLike.isBlank()) {
-            jqpl.append("AND LOWER(f.content) LIKE LOWER(:keywordLike) ");
+            jpql.append("AND LOWER(f.content) LIKE LOWER(:keywordLike) ");
             params.put("keywordLike", "%" + keywordLike + "%");
         }
 
         if (skyStatusEqual != null) {
-            jqpl.append("AND w.skyStatus = :skyStatusEqual ");
+            jpql.append("AND w.skyStatus = :skyStatusEqual ");
             params.put("skyStatusEqual", skyStatusEqual);
         }
 
         if (precipitationType != null) {
-            jqpl.append("AND w.precipitationType = :precipitationType ");
+            jpql.append("AND w.precipitationType = :precipitationType ");
             params.put("precipitationType", precipitationType);
         }
 
         if (authorIdEqual != null) {
-            jqpl.append("AND a.id = :authorIdEqual ");
+            jpql.append("AND a.id = :authorIdEqual ");
             params.put("authorIdEqual", authorIdEqual);
         }
 
-        TypedQuery<Long> query = em.createQuery(jqpl.toString(), Long.class);
+        TypedQuery<Long> query = em.createQuery(jpql.toString(), Long.class);
         params.forEach(query::setParameter);
         return query.getSingleResult();
     }
