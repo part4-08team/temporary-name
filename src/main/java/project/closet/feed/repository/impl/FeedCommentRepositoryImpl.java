@@ -19,19 +19,19 @@ public class FeedCommentRepositoryImpl implements FeedCommentRepositoryCustom {
         StringBuilder jpql = new StringBuilder("""
             SELECT c FROM FeedComment c
             JOIN FETCH c.author
-            WHERE c.feed.id = :feedId
+            WHERE c.feed.userId = :feedId
         """);
 
         if (cursor != null) {
             jpql.append("""
                 AND (
                     c.createdAt > :cursor OR
-                    (c.createdAt = :cursor AND c.id > :idAfter)
+                    (c.createdAt = :cursor AND c.userId > :idAfter)
                 )
             """);
         }
 
-        jpql.append(" ORDER BY c.createdAt ASC, c.id ASC");
+        jpql.append(" ORDER BY c.createdAt ASC, c.userId ASC");
 
         TypedQuery<FeedComment> query = em.createQuery(jpql.toString(), FeedComment.class)
                 .setParameter("feedId", feedId)

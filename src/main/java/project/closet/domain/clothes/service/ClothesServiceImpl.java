@@ -82,7 +82,7 @@ public class ClothesServiceImpl implements ClothesService {
             lastId        = UUID.fromString(parts[1]);
         }
 
-        // 2) Pageable 생성 (항상 createdAt DESC, id DESC 로 고정)
+        // 2) Pageable 생성 (항상 createdAt DESC, userId DESC 로 고정)
         var pageable = PageRequest.of(
                 0,
                 limit,
