@@ -28,7 +28,7 @@ public record ProfileDto(
                 profile.getBirthDate(),
                 location,
                 profile.getTemperatureSensitivity(),
-                profile.getProfileImageUrl()
+                profile.getProfileImageKey()
         );
     }
 }

@@ -36,8 +36,8 @@ public class Profile extends BaseUpdatableEntity {
     @Column(name = "birth_date")
     private LocalDate birthDate;
 
-    @Column(name = "profile_image_url", length = 1024)
-    private String profileImageUrl;
+    @Column(name = "profile_image_key", length = 1024)
+    private String profileImageKey;
 
     @Column(name = "temperature_sensitivity", length = 50)
     private Integer temperatureSensitivity;
@@ -68,7 +68,7 @@ public class Profile extends BaseUpdatableEntity {
         this.user = user;
         this.gender = gender;
         this.birthDate = birthDate;
-        this.profileImageUrl = profileImageUrl;
+        this.profileImageKey = profileImageUrl;
         this.temperatureSensitivity = temperatureSensitivity;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -96,8 +96,8 @@ public class Profile extends BaseUpdatableEntity {
         if (newBirthDate != null && !newBirthDate.equals(this.birthDate)) {
             this.birthDate = newBirthDate;
         }
-        if (newProfileImageUrl != null && !newProfileImageUrl.equals(this.profileImageUrl)) {
-            this.profileImageUrl = newProfileImageUrl;
+        if (newProfileImageUrl != null && !newProfileImageUrl.equals(this.profileImageKey)) {
+            this.profileImageKey = newProfileImageUrl;
         }
         if (newTemperatureSensitivity != null && !newTemperatureSensitivity.equals(
                 this.temperatureSensitivity)) {

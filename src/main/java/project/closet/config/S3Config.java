@@ -15,21 +15,15 @@ public class S3Config {
     private final String accessKey;
     private final String secretKey;
     private final String region;
-    private final String bucket;
-
-    @Value("${closet.storage.s3.presigned-url-expiration:600}") // 기본값 10분
-    private long presignedUrlExpirationSeconds;
 
     public S3Config(
             @Value("${closet.storage.s3.access-key}") String accessKey,
             @Value("${closet.storage.s3.secret-key}") String secretKey,
-            @Value("${closet.storage.s3.region}") String region,
-            @Value("${closet.storage.s3.bucket}") String bucket
+            @Value("${closet.storage.s3.region}") String region
     ) {
         this.accessKey = accessKey;
         this.secretKey = secretKey;
         this.region = region;
-        this.bucket = bucket;
     }
 
     @Bean
@@ -44,7 +38,8 @@ public class S3Config {
                 .build();
     }
 
-    private S3Presigner getS3Presigner() {
+    @Bean
+    public S3Presigner s3Presigner() {
         return S3Presigner.builder()
                 .region(Region.of(region))
                 .credentialsProvider(
@@ -54,4 +49,5 @@ public class S3Config {
                 )
                 .build();
     }
+
 }

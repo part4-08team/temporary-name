@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.closet.domain.clothes.repository.ClothesRepository;
@@ -23,13 +22,13 @@ import project.closet.exception.feed.FeedNotFoundException;
 import project.closet.exception.user.UserNotFoundException;
 import project.closet.exception.weather.WeatherNotFoundException;
 import project.closet.feed.entity.Feed;
-import project.closet.feed.entity.FeedClothes;
 import project.closet.feed.entity.FeedComment;
 import project.closet.feed.entity.FeedLike;
 import project.closet.feed.repository.FeedCommentRepository;
 import project.closet.feed.repository.FeedLikeRepository;
 import project.closet.feed.repository.FeedRepository;
 import project.closet.feed.service.FeedService;
+import project.closet.storage.S3ContentStorage;
 import project.closet.user.entity.User;
 import project.closet.user.repository.UserRepository;
 import project.closet.weather.entity.Weather;
@@ -46,6 +45,7 @@ public class BasicFeedService implements FeedService {
     private final ClothesRepository clothesRepository;
     private final FeedLikeRepository feedLikeRepository;
     private final FeedCommentRepository feedCommentRepository;
+    private final S3ContentStorage s3ContentStorage;
 
     @Transactional
     @Override
@@ -109,7 +109,9 @@ public class BasicFeedService implements FeedService {
                 .orElseThrow(() -> FeedNotFoundException.withId(feedId));
         FeedComment feedComment = new FeedComment(feed, author, commentCreateRequest.content());
         feedCommentRepository.save(feedComment);
-        return CommentDto.from(feedComment);
+        String presignedUrl =
+                s3ContentStorage.getPresignedUrl(author.getProfile().getProfileImageKey());
+        return CommentDto.from(feedComment, presignedUrl);
     }
 
     @Transactional
@@ -141,11 +143,13 @@ public class BasicFeedService implements FeedService {
                 .map(feedClothes -> OotdDto.from(feedClothes.getClothes()))
                 .toList();
 
+        String presignedUrl =
+                s3ContentStorage.getPresignedUrl(feed.getAuthor().getProfile().getProfileImageKey());
         return new FeedDto(
                 feed.getId(),
                 feed.getCreatedAt(),
                 feed.getUpdatedAt(),
-                UserSummary.from(feed.getAuthor()),
+                UserSummary.from(feed.getAuthor(), presignedUrl),
                 WeatherSummaryDto.from(feed.getWeather()),
                 ootdDtos,
                 feed.getContent(),
@@ -186,7 +190,11 @@ public class BasicFeedService implements FeedService {
         }
 
         List<CommentDto> data = result.stream()
-                .map(CommentDto::from)
+                .map(feedComment -> {
+                    String presignedUrl =
+                            s3ContentStorage.getPresignedUrl(feedComment.getAuthor().getProfile().getProfileImageKey());
+                    return CommentDto.from(feedComment, presignedUrl);
+                })
                 .toList();
 
         return new CommentDtoCursorResponse(

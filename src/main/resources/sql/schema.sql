@@ -50,7 +50,7 @@ CREATE TABLE profiles
     updated_at              TIMESTAMP with time zone          DEFAULT CURRENT_TIMESTAMP,
     gender                  VARCHAR(50),
     birth_date              DATE,
-    profile_image_url       VARCHAR(1024),
+    profile_image_key       VARCHAR(1024),
     temperature_sensitivity INTEGER,
     latitude                DOUBLE PRECISION,
     longitude               DOUBLE PRECISION,

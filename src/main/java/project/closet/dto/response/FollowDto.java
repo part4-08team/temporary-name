@@ -15,12 +15,12 @@ public record FollowDto(
                 new UserSummary(
                         follow.getFollowee().getId(),
                         follow.getFollowee().getName(),
-                        follow.getFollowee().getProfile().getProfileImageUrl()
+                        follow.getFollowee().getProfile().getProfileImageKey()
                 ),
                 new UserSummary(
                         follow.getFollower().getId(),
                         follow.getFollower().getName(),
-                        follow.getFollower().getProfile().getProfileImageUrl()
+                        follow.getFollower().getProfile().getProfileImageKey()
                 )
         );
     }
