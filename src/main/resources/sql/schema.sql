@@ -72,7 +72,8 @@ CREATE TABLE feeds
     weather_id UUID                     NOT NULL,
     created_at TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    content    TEXT                     NOT NULL
+    content    TEXT                     NOT NULL,
+    like_count INTEGER NOT NULL DEFAULT 0,
 );
 
 -- 5. Feed Comments

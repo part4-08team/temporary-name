@@ -19,6 +19,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import org.hibernate.annotations.BatchSize;
 import project.closet.domain.base.BaseUpdatableEntity;
 import project.closet.user.entity.User;
 
@@ -48,6 +49,7 @@ public class Clothes extends BaseUpdatableEntity {
     @Column(name = "type", nullable = false, length = 50)
     private ClothesType type;
 
+    @BatchSize(size = 100)
     @OneToMany(
             mappedBy = "clothes",
             cascade = CascadeType.ALL,

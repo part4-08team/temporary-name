@@ -3,6 +3,7 @@ package project.closet.dto.response;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+import org.hibernate.query.SortDirection;
 
 public record CommentDtoCursorResponse(
         List<CommentDto> data,
@@ -11,7 +12,7 @@ public record CommentDtoCursorResponse(
         boolean hasNext,
         long totalCount,
         String sortBy,
-        String sortDirection
+        SortDirection sortDirection
 ) {
 
 }

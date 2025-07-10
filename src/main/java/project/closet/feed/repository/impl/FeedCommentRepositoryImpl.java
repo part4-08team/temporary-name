@@ -15,27 +15,32 @@ public class FeedCommentRepositoryImpl implements FeedCommentRepositoryCustom {
     private final EntityManager em;
 
     @Override
-    public List<FeedComment> findByFeedWithCursor(UUID feedId, Instant cursor, UUID idAfter, int limitPlusOne) {
+    public List<FeedComment> findByFeedWithCursor(
+            UUID feedId,
+            Instant cursor,
+            UUID idAfter,
+            int limit
+    ) {
         StringBuilder jpql = new StringBuilder("""
-            SELECT c FROM FeedComment c
-            JOIN FETCH c.author
-            WHERE c.feed.userId = :feedId
-        """);
+                    SELECT c FROM FeedComment c
+                    JOIN FETCH c.author
+                    WHERE c.feed.id = :feedId
+                """);
 
         if (cursor != null) {
             jpql.append("""
-                AND (
-                    c.createdAt > :cursor OR
-                    (c.createdAt = :cursor AND c.userId > :idAfter)
-                )
-            """);
+                        AND (
+                            c.createdAt > :cursor OR
+                            (c.createdAt = :cursor AND c.id > :idAfter)
+                        )
+                    """);
         }
 
         jpql.append(" ORDER BY c.createdAt ASC, c.userId ASC");
 
         TypedQuery<FeedComment> query = em.createQuery(jpql.toString(), FeedComment.class)
                 .setParameter("feedId", feedId)
-                .setMaxResults(limitPlusOne);
+                .setMaxResults(limit);
 
         if (cursor != null) {
             query.setParameter("cursor", cursor);
