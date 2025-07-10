@@ -72,4 +72,11 @@ public class User extends BaseUpdatableEntity {
                 request.location().locationNames()
         );
     }
+
+    public void updatePassword(String encodedPassword) {
+        if (encodedPassword == null || encodedPassword.isBlank()) {
+            throw new IllegalArgumentException("비밀번호는 비어있을 수 없습니다.");
+        }
+        this.password = encodedPassword;
+    }
 }
