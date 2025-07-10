@@ -25,19 +25,19 @@ public class FollowRepositoryImpl implements FollowRepositoryCustom {
                 "SELECT f FROM Follow f " +
                         "JOIN FETCH f.followee fe " +
                         "LEFT JOIN FETCH fe.profile p " +
-                        "WHERE f.follower.id = :followerId "
+                        "WHERE f.follower.userId = :followerId "
         );
 
         if (cursor != null && idAfter != null) {
             jpql.append(
-                    "AND (f.createdAt < :cursor OR (f.createdAt = :cursor AND f.id < :idAfter)) ");
+                    "AND (f.createdAt < :cursor OR (f.createdAt = :cursor AND f.userId < :idAfter)) ");
         }
 
         if (nameLike != null && !nameLike.isBlank()) {
             jpql.append("AND fe.name LIKE :nameLike ");
         }
 
-        jpql.append("ORDER BY f.createdAt DESC, f.id DESC");
+        jpql.append("ORDER BY f.createdAt DESC, f.userId DESC");
 
         TypedQuery<Follow> query = em.createQuery(jpql.toString(), Follow.class);
         query.setParameter("followerId", followerId);
@@ -62,19 +62,19 @@ public class FollowRepositoryImpl implements FollowRepositoryCustom {
                 "SELECT f FROM Follow f " +
                         "JOIN FETCH f.follower fo " +
                         "LEFT JOIN FETCH fo.profile p " +
-                        "WHERE f.followee.id = :followeeId "
+                        "WHERE f.followee.userId = :followeeId "
         );
 
         if (cursor != null && idAfter != null) {
             jpql.append(
-                    "AND (f.createdAt < :cursor OR (f.createdAt = :cursor AND f.id < :idAfter)) ");
+                    "AND (f.createdAt < :cursor OR (f.createdAt = :cursor AND f.userId < :idAfter)) ");
         }
 
         if (nameLike != null && !nameLike.isBlank()) {
             jpql.append("AND fo.name LIKE :nameLike ");
         }
 
-        jpql.append("ORDER BY f.createdAt DESC, f.id DESC");
+        jpql.append("ORDER BY f.createdAt DESC, f.userId DESC");
 
         TypedQuery<Follow> query = em.createQuery(jpql.toString(), Follow.class);
         query.setParameter("followeeId", followeeId);

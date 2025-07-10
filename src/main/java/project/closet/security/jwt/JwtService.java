@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import project.closet.dto.response.UserDto;
 import project.closet.exception.ErrorCode;
 import project.closet.exception.user.UserNotFoundException;
+import project.closet.user.entity.Role;
 import project.closet.user.repository.UserRepository;
 
 @Slf4j
@@ -50,7 +51,7 @@ public class JwtService {
         JwtObject accessJwtObject = generateJwtObject(userDto, accessTokenValiditySeconds);
         JwtObject refreshJwtObject = generateJwtObject(userDto, refreshTokenValiditySeconds);
 
-        JwtSession jwtSession = new JwtSession(userDto.id(), accessJwtObject.token(),
+        JwtSession jwtSession = new JwtSession(userDto.userId(), accessJwtObject.token(),
                 refreshJwtObject.token(), accessJwtObject.expirationTime());
         jwtSessionRepository.save(jwtSession);
 
@@ -85,7 +86,10 @@ public class JwtService {
             return new JwtObject(
                     objectMapper.convertValue(jsonObject.get("iat"), Instant.class),
                     objectMapper.convertValue(jsonObject.get("exp"), Instant.class),
-                    objectMapper.convertValue(jsonObject.get("userDto"), UserDto.class),
+                    objectMapper.convertValue(jsonObject.get("userId"), UUID.class),
+                    objectMapper.convertValue(jsonObject.get("name"), String.class),
+                    objectMapper.convertValue(jsonObject.get("email"), String.class),
+                    objectMapper.convertValue(jsonObject.get("role"), Role.class),
                     token
             );
         } catch (ParseException e) {
@@ -104,7 +108,7 @@ public class JwtService {
                 .orElseThrow(() -> new JwtException(ErrorCode.TOKEN_NOT_FOUND,
                         Map.of("refreshToken", refreshToken)));
 
-        UUID userId = parse(refreshToken).userDto().id();
+        UUID userId = parse(refreshToken).userId();
         UserDto userDto = userRepository.findById(userId)
                 .map(UserDto::from)
                 .orElseThrow(() -> UserNotFoundException.withId(userId));
@@ -136,9 +140,11 @@ public class JwtService {
         Instant expirationTime = issueTime.plus(Duration.ofSeconds(tokenValiditySeconds));
 
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                .subject(userDto.username())
-                .claim("userDto", userDto)
-                .claim("userId", userDto.id().toString())
+                .subject(userDto.email())
+                .claim("userId", userDto.userId().toString())
+                .claim("role", userDto.role().name())
+                .claim("name", userDto.name())
+                .claim("email", userDto.email())
                 .issueTime(new Date(issueTime.toEpochMilli()))
                 .expirationTime(new Date(expirationTime.toEpochMilli()))
                 .build();
@@ -155,7 +161,7 @@ public class JwtService {
 
         String token = signedJWT.serialize();
 
-        return new JwtObject(issueTime, expirationTime, userDto, token);
+        return JwtObject.of(issueTime, expirationTime, userDto, token);
     }
 
     public JwtSession getSwtSession(String refreshToken) {
