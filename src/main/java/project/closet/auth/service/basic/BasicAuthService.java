@@ -1,17 +1,12 @@
 package project.closet.auth.service.basic;
 
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import project.closet.auth.service.AuthService;
-import project.closet.dto.request.RoleUpdateRequest;
 import project.closet.dto.response.UserDto;
-import project.closet.exception.user.UserNotFoundException;
 import project.closet.security.jwt.JwtService;
 import project.closet.user.entity.Profile;
 import project.closet.user.entity.Role;
@@ -51,16 +46,4 @@ public class BasicAuthService implements AuthService {
         log.info("어드민 계정이 생성되었습니다: {}", adminDto);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @Transactional
-    @Override
-    public UserDto updateRole(RoleUpdateRequest request) {
-        UUID userId = request.userId();
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> UserNotFoundException.withId(userId));
-        user.updateRole(request.newRole());
-
-        jwtService.invalidateJwtSession(user.getId());
-        return UserDto.from(user);
-    }
 }

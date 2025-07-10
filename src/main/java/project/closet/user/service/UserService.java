@@ -4,6 +4,7 @@ import java.util.UUID;
 import org.springframework.web.multipart.MultipartFile;
 import project.closet.dto.request.ProfileUpdateRequest;
 import project.closet.dto.request.UserCreateRequest;
+import project.closet.dto.request.UserRoleUpdateRequest;
 import project.closet.dto.response.ProfileDto;
 import project.closet.dto.response.UserDto;
 
@@ -18,4 +19,7 @@ public interface UserService {
     // 회원 정보 수정
     ProfileDto updateProfile(UUID userId, ProfileUpdateRequest profileUpdateRequest,
             MultipartFile profileImage);
+
+    // 권한 수정
+    UserDto updateRole(UUID userid, UserRoleUpdateRequest userRoleUpdateRequest);
 }
