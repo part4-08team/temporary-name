@@ -1,5 +1,6 @@
 package project.closet.user.service.basic;
 
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -125,8 +126,56 @@ public class BasicUserService implements UserService {
 
     @PreAuthorize("hasRole('ADMIN')")
     @Override
-    public UserDtoCursorResponse findAll(String cursor, UUID idAfter, int limit, String sortBy,
-            SortDirection sortDirection, String emailLike, Role roleEqual, boolean locked) {
-        return null;
+    public UserDtoCursorResponse findAll(
+            String cursor,
+            UUID idAfter,
+            int limit,
+            String sortBy,
+            SortDirection sortDirection,
+            String emailLike,
+            Role roleEqual,
+            Boolean locked
+    ) {
+        List<User> users =
+                userRepository.findUsersWithCursor(
+                        cursor, idAfter, limit, sortBy, sortDirection, emailLike, roleEqual, locked
+                );
+        boolean hasNext = users.size() > limit;
+        if (hasNext) {
+            users = users.subList(0, limit);
+        }
+
+        List<UserDto> userDtos = users.stream()
+                .map(UserDto::from)
+                .toList();
+
+        String nextCursor = null;
+        UUID nextIdAfter = null;
+
+        if (!users.isEmpty()) {
+            User lastUser = users.get(users.size() - 1);
+            nextCursor = getSortValue(lastUser, sortBy);
+            nextIdAfter = lastUser.getId();
+        }
+
+        long totalCount = userRepository.countAllUsers(emailLike, roleEqual, locked);
+
+        return new UserDtoCursorResponse(
+                userDtos,
+                nextCursor,
+                nextIdAfter,
+                hasNext,
+                totalCount,
+                sortBy,
+                sortDirection
+        );
+    }
+
+    private String getSortValue(User user, String sortBy) {
+        return switch (sortBy) {
+            case "email" -> user.getEmail();
+            case "createdAt" -> user.getCreatedAt().toString();
+            default -> throw new IllegalArgumentException("정렬 기준이 유효하지 않습니다: " + sortBy);
+        };
     }
 }

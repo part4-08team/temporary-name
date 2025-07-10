@@ -45,7 +45,7 @@ public interface UserApi {
             SortDirection sortDirection,
             String emailLike,
             Role roleEqual,
-            boolean locked
+            Boolean locked
     );
 
     @Operation(summary = "사용자 등록(회원가입)")

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,7 +23,6 @@ import project.closet.dto.request.ProfileUpdateRequest;
 import project.closet.dto.request.UserCreateRequest;
 import project.closet.dto.request.UserLockUpdateRequest;
 import project.closet.dto.request.UserRoleUpdateRequest;
-import project.closet.dto.response.PageResponse;
 import project.closet.dto.response.ProfileDto;
 import project.closet.dto.response.UserDto;
 import project.closet.dto.response.UserDtoCursorResponse;
@@ -41,14 +41,14 @@ public class UserController implements UserApi {
     @GetMapping
     @Override
     public ResponseEntity<UserDtoCursorResponse> findAll(
-            String cursor,
-            UUID idAfter,
-            int limit,
-            String sortBy,
-            SortDirection sortDirection,
-            String emailLike,
-            Role roleEqual,
-            boolean locked
+            @RequestParam(name = "cursor", required = false) String cursor,
+            @RequestParam(name = "idAfter", required = false) UUID idAfter,
+            @RequestParam(name = "limit") int limit,
+            @RequestParam(name = "sortBy") String sortBy,
+            @RequestParam(name = "sortDirection") SortDirection sortDirection,
+            @RequestParam(name = "emailLike", required = false) String emailLike,
+            @RequestParam(name = "roleEqual", required = false) Role roleEqual,
+            @RequestParam(name = "locked", required = false) Boolean locked
     ) {
         UserDtoCursorResponse response = userService.findAll(
                 cursor, idAfter, limit, sortBy, sortDirection, emailLike, roleEqual, locked
@@ -125,8 +125,6 @@ public class UserController implements UserApi {
         log.info("권한 수정 요청");
         UserDto userDto = userService.updateRole(userId, userRoleUpdateRequest);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(userDto);
+        return ResponseEntity.status(HttpStatus.OK).body(userDto);
     }
 }
