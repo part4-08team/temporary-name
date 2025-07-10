@@ -38,8 +38,7 @@ public class UserController implements UserApi {
     @GetMapping
     @Override
     public ResponseEntity<PageResponse<UserDto>> findAll() {
-        new UnsupportedOperationException("Not yet implemented");
-        return null;
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @PostMapping
@@ -87,18 +86,19 @@ public class UserController implements UserApi {
             @PathVariable("userId") UUID userId,
             @RequestBody @Valid ChangePasswordRequest changePasswordRequest
     ) {
-        new UnsupportedOperationException("Not yet implemented");
-        return null;
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @PatchMapping("/{userId}/lock")
     @Override
-    public ResponseEntity<String> changeAccountLockStatus(
+    public ResponseEntity<UUID> changeAccountLockStatus(
             @PathVariable("userId") UUID userId,
             @RequestBody @Valid UserLockUpdateRequest request
     ) {
-        new UnsupportedOperationException("Not yet implemented");
-        return null;
+        log.info("사용자 잠금 상태 변경 요청: userId={}, locked={}", userId, request.locked());
+        UUID updatedUserId = userService.updateLockStatus(userId, request);
+        log.debug("사용자 잠금 상태 변경 응답: {}", updatedUserId);
+        return ResponseEntity.ok(updatedUserId);
     }
 
     @PostMapping("/{userId}/role")

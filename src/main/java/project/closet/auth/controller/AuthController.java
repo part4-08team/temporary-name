@@ -67,6 +67,7 @@ public class AuthController implements AuthApi {
     public ResponseEntity<Void> resetPassword(
             @RequestBody @Valid ResetPasswordRequest resetPasswordRequest
     ) {
-        return null;
+        authService.resetPassword(resetPasswordRequest.email());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
