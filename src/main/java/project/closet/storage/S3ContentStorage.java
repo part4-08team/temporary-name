@@ -35,6 +35,7 @@ public class S3ContentStorage {
             PutObjectRequest request = PutObjectRequest.builder()
                     .bucket(bucket)
                     .key(key)
+                    .contentType(file.getContentType())
                     .build();
 
             s3Client.putObject(
