@@ -23,6 +23,7 @@ import project.closet.domain.clothes.entity.ClothesAttribute;
 import project.closet.domain.clothes.entity.ClothesType;
 import project.closet.domain.clothes.repository.AttributeRepository;
 import project.closet.domain.clothes.repository.ClothesRepository;
+import project.closet.exception.clothes.ClothesNotFoundException;
 import project.closet.exception.clothes.attribute.AttributeNotFoundException;
 import project.closet.exception.user.UserNotFoundException;
 import project.closet.user.repository.UserRepository;
@@ -127,5 +128,14 @@ public class ClothesServiceImpl implements ClothesService {
                 "createdAt",
                 "DESCENDING"
         );
+    }
+
+    @Override
+    public void deleteClothesById(UUID clothesId) {
+
+       clothesRepository.findById(clothesId)
+                .orElseThrow(() -> ClothesNotFoundException.withId(clothesId));
+
+        clothesRepository.deleteById(clothesId);
     }
 }

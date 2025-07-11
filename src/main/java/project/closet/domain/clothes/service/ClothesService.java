@@ -23,4 +23,8 @@ public interface ClothesService {
             ClothesType typeEqual,
             UUID ownerId
     );
+
+    void deleteClothesById(
+            UUID clothesId
+    );
 }
