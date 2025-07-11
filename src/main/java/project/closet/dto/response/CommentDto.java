@@ -12,12 +12,12 @@ public record CommentDto(
         String content
 ) {
 
-    public static CommentDto from(FeedComment feedComment) {
+    public static CommentDto from(FeedComment feedComment, String presignedUrl) {
         return new CommentDto(
                 feedComment.getId(),
                 feedComment.getCreatedAt(),
                 feedComment.getFeed().getId(),
-                UserSummary.from(feedComment.getAuthor()),
+                UserSummary.from(feedComment.getAuthor(), presignedUrl),
                 feedComment.getContent()
         );
     }

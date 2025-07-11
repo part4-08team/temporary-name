@@ -36,8 +36,8 @@ public class Profile extends BaseUpdatableEntity {
     @Column(name = "birth_date")
     private LocalDate birthDate;
 
-    @Column(name = "profile_image_url", length = 1024)
-    private String profileImageUrl;
+    @Column(name = "profile_image_key", length = 1024)
+    private String profileImageKey;
 
     @Column(name = "temperature_sensitivity", length = 50)
     private Integer temperatureSensitivity;
@@ -68,7 +68,7 @@ public class Profile extends BaseUpdatableEntity {
         this.user = user;
         this.gender = gender;
         this.birthDate = birthDate;
-        this.profileImageUrl = profileImageUrl;
+        this.profileImageKey = profileImageUrl;
         this.temperatureSensitivity = temperatureSensitivity;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -84,7 +84,6 @@ public class Profile extends BaseUpdatableEntity {
     public void updateProfile(
             Gender newGender,
             LocalDate newBirthDate,
-            String newProfileImageUrl,
             Integer newTemperatureSensitivity,
             Double newLatitude,
             Double newLongitude,
@@ -95,9 +94,6 @@ public class Profile extends BaseUpdatableEntity {
         }
         if (newBirthDate != null && !newBirthDate.equals(this.birthDate)) {
             this.birthDate = newBirthDate;
-        }
-        if (newProfileImageUrl != null && !newProfileImageUrl.equals(this.profileImageUrl)) {
-            this.profileImageUrl = newProfileImageUrl;
         }
         if (newTemperatureSensitivity != null && !newTemperatureSensitivity.equals(
                 this.temperatureSensitivity)) {
@@ -111,6 +107,12 @@ public class Profile extends BaseUpdatableEntity {
         }
         if (newLocationName != null && !newLocationName.equals(this.locationNames)) {
             this.locationNames = newLocationName;
+        }
+    }
+
+    public void updateProfileImageKey(String profileImageKey) {
+        if (profileImageKey != null && !profileImageKey.equals(this.profileImageKey)) {
+            this.profileImageKey = profileImageKey;
         }
     }
 

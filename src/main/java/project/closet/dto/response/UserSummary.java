@@ -9,11 +9,11 @@ public record UserSummary(
         String profileImageUrl
 ) {
 
-    public static UserSummary from (User user) {
+    public static UserSummary from(User user, String presignedUrl) {
         return new UserSummary(
                 user.getId(),
                 user.getName(),
-                user.getProfile().getProfileImageUrl()
+                presignedUrl
         );
     }
 }

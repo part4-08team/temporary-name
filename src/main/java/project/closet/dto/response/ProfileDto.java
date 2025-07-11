@@ -19,7 +19,8 @@ public record ProfileDto(
     public static ProfileDto of(
             User user,
             WeatherAPILocation location,
-            Profile profile
+            Profile profile,
+            String profileImageUrl
     ) {
         return new ProfileDto(
                 user.getId(),
@@ -28,7 +29,7 @@ public record ProfileDto(
                 profile.getBirthDate(),
                 location,
                 profile.getTemperatureSensitivity(),
-                profile.getProfileImageUrl()
+                profileImageUrl
         );
     }
 }

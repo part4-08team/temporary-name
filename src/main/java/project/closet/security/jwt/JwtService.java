@@ -190,7 +190,6 @@ public class JwtService {
 
         String token = signedJWT.serialize();
 
-
         return new JwtObject(
                 issueTime,
                 expirationTime,
