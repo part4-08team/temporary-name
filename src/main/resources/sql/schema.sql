@@ -73,7 +73,7 @@ CREATE TABLE feeds
     created_at TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     content    TEXT                     NOT NULL,
-    like_count INTEGER NOT NULL DEFAULT 0,
+    like_count INTEGER                  NOT NULL DEFAULT 0
 );
 
 -- 5. Feed Comments
@@ -163,11 +163,11 @@ CREATE TABLE attribute_selectable_value
 -- 14. Direct Messages
 CREATE TABLE direct_messages
 (
-    id               UUID         NOT NULL PRIMARY KEY,
-    receiver_user_id UUID         NOT NULL,
-    sender_user_id   UUID         NOT NULL,
-    content          VARCHAR(100) NOT NULL,
-    created_at       TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
+    id          UUID                     NOT NULL PRIMARY KEY,
+    receiver_id UUID                     NOT NULL,
+    sender_id   UUID                     NOT NULL,
+    content     TEXT             NOT NULL,
+    created_at  TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 15. JWT SESSIONS
@@ -195,51 +195,51 @@ ALTER TABLE feeds
             REFERENCES users (id) ON DELETE SET NULL,
     ADD CONSTRAINT fk_feeds_weather
         FOREIGN KEY (weather_id)
-        REFERENCES weathers(id) ON
-DELETE
-CASCADE;
+            REFERENCES weathers (id) ON
+            DELETE
+            CASCADE;
 
 ALTER TABLE feed_comments
     ADD CONSTRAINT fk_feed_comment_feed FOREIGN KEY (feed_id) REFERENCES feeds (id) ON DELETE CASCADE,
-    ADD CONSTRAINT fk_feed_comment_user FOREIGN KEY (author_id) REFERENCES users(id) ON
-DELETE
-CASCADE;
+    ADD CONSTRAINT fk_feed_comment_user FOREIGN KEY (author_id) REFERENCES users (id) ON
+        DELETE
+        CASCADE;
 
 ALTER TABLE clothes
     ADD CONSTRAINT fk_clothes_owner FOREIGN KEY (owner_id) REFERENCES users (id) ON DELETE CASCADE;
 
 ALTER TABLE clothes_attributes
     ADD CONSTRAINT fk_clothes_attributes_clothes FOREIGN KEY (clothes_id) REFERENCES clothes (id) ON DELETE CASCADE,
-    ADD CONSTRAINT fk_clothes_attributes_definition FOREIGN KEY (definition_id) REFERENCES attributes(id) ON
-DELETE
-CASCADE;
+    ADD CONSTRAINT fk_clothes_attributes_definition FOREIGN KEY (definition_id) REFERENCES attributes (id) ON
+        DELETE
+        CASCADE;
 
 ALTER TABLE feed_clothes
     ADD CONSTRAINT fk_feed_clothes_feed FOREIGN KEY (feed_id) REFERENCES feeds (id) ON DELETE CASCADE,
-    ADD CONSTRAINT fk_feed_clothes_clothes FOREIGN KEY (clothes_id) REFERENCES clothes(id) ON
-DELETE
-CASCADE;
+    ADD CONSTRAINT fk_feed_clothes_clothes FOREIGN KEY (clothes_id) REFERENCES clothes (id) ON
+        DELETE
+        CASCADE;
 
 ALTER TABLE follows
     ADD CONSTRAINT fk_follows_follower FOREIGN KEY (follower_id) REFERENCES users (id) ON DELETE CASCADE,
-    ADD CONSTRAINT fk_follows_followee FOREIGN KEY (followee_id) REFERENCES users(id) ON
-DELETE
-CASCADE;
+    ADD CONSTRAINT fk_follows_followee FOREIGN KEY (followee_id) REFERENCES users (id) ON
+        DELETE
+        CASCADE;
 
 ALTER TABLE notifications
     ADD CONSTRAINT fk_notifications_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE;
 
 ALTER TABLE feed_likes
     ADD CONSTRAINT fk_feed_likes_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
-    ADD CONSTRAINT fk_feed_likes_feed FOREIGN KEY (feed_id) REFERENCES feeds(id) ON
-DELETE
-CASCADE;
+    ADD CONSTRAINT fk_feed_likes_feed FOREIGN KEY (feed_id) REFERENCES feeds (id) ON
+        DELETE
+        CASCADE;
 
 ALTER TABLE attribute_selectable_value
     ADD CONSTRAINT fk_attribute_selectable_value_definition FOREIGN KEY (definition_id) REFERENCES attributes (id) ON DELETE CASCADE;
 
 ALTER TABLE direct_messages
-    ADD CONSTRAINT fk_direct_messages_receiver FOREIGN KEY (receiver_user_id) REFERENCES users (id) ON DELETE CASCADE,
-    ADD CONSTRAINT fk_direct_messages_sender FOREIGN KEY (sender_user_id) REFERENCES users(id) ON
-DELETE
-CASCADE;
+    ADD CONSTRAINT fk_direct_messages_receiver FOREIGN KEY (receiver_id) REFERENCES users (id) ON DELETE CASCADE,
+    ADD CONSTRAINT fk_direct_messages_sender FOREIGN KEY (sender_id) REFERENCES users (id) ON
+        DELETE
+        CASCADE;

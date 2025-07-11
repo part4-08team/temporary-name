@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.web.csrf.CsrfToken;
 import project.closet.dto.request.ResetPasswordRequest;
+import project.closet.exception.ErrorResponse;
 
 @Tag(name = "인증 관리", description = "인증 관련 API")
 public interface AuthApi {
@@ -31,7 +32,8 @@ public interface AuthApi {
                     content = @Content(schema = @Schema(implementation = String.class))
             ),
             @ApiResponse(
-                    responseCode = "401", description = "유효하지 않은 리프레시 토큰"
+                    responseCode = "401", description = "유효하지 않은 리프레시 토큰",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
     ResponseEntity<String> me(@Parameter(hidden = true) String refreshToken);
@@ -43,7 +45,8 @@ public interface AuthApi {
                     content = @Content(schema = @Schema(implementation = String.class))
             ),
             @ApiResponse(
-                    responseCode = "401", description = "유효하지 않은 리프레시 토큰"
+                    responseCode = "401", description = "유효하지 않은 리프레시 토큰",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
     ResponseEntity<String> refresh(
@@ -58,7 +61,8 @@ public interface AuthApi {
                     responseCode = "204", description = "비밀번호 초기화 성공"
             ),
             @ApiResponse(
-                    responseCode = "400", description = "잘못된 요청"
+                    responseCode = "400", description = "잘못된 요청",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
     ResponseEntity<Void> resetPassword(ResetPasswordRequest resetPasswordRequest);

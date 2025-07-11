@@ -12,7 +12,6 @@ import java.util.UUID;
 import org.hibernate.query.SortDirection;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.multipart.MultipartFile;
 import project.closet.dto.request.ChangePasswordRequest;
 import project.closet.dto.request.ProfileUpdateRequest;
@@ -22,6 +21,7 @@ import project.closet.dto.request.UserRoleUpdateRequest;
 import project.closet.dto.response.ProfileDto;
 import project.closet.dto.response.UserDto;
 import project.closet.dto.response.UserDtoCursorResponse;
+import project.closet.exception.ErrorResponse;
 import project.closet.user.entity.Role;
 
 @Tag(name = "프로필 관리", description = "프로필 관리 API")
