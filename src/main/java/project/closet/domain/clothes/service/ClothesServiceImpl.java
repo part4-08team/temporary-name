@@ -56,7 +56,7 @@ public class ClothesServiceImpl implements ClothesService {
         // 이미지가 있을 경우에만 업로드 → imageKey 설정
         String imageKey = Optional.ofNullable(image)
                 .map(s3ContentStorage::upload)
-                .orElse(null);
+                .orElse("");
 
         // 의상 엔티티 생성
         Clothes clothes = new Clothes(
