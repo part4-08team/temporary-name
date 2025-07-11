@@ -135,12 +135,12 @@ CREATE TABLE follows
 -- 11. Notifications
 CREATE TABLE notifications
 (
-    id         UUID         NOT NULL PRIMARY KEY,
-    user_id    UUID         NOT NULL,
-    created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    title      VARCHAR(50)  NOT NULL,
-    content    VARCHAR(255) NOT NULL,
-    level      VARCHAR(50)  NOT NULL
+    id         UUID                     NOT NULL PRIMARY KEY,
+    receiver_id    UUID                     NOT NULL,
+    created_at TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    title      VARCHAR(50)              NOT NULL,
+    content    VARCHAR(255)             NOT NULL,
+    level      VARCHAR(50)              NOT NULL
 );
 
 -- 12. Feed Likes
@@ -166,7 +166,7 @@ CREATE TABLE direct_messages
     id          UUID                     NOT NULL PRIMARY KEY,
     receiver_id UUID                     NOT NULL,
     sender_id   UUID                     NOT NULL,
-    content     TEXT             NOT NULL,
+    content     TEXT                     NOT NULL,
     created_at  TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -227,7 +227,7 @@ ALTER TABLE follows
         CASCADE;
 
 ALTER TABLE notifications
-    ADD CONSTRAINT fk_notifications_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_notifications_user FOREIGN KEY (receiver_id) REFERENCES users (id) ON DELETE CASCADE;
 
 ALTER TABLE feed_likes
     ADD CONSTRAINT fk_feed_likes_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
