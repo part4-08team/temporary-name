@@ -61,6 +61,9 @@ dependencies {
     // S3
     implementation 'software.amazon.awssdk:s3:2.31.7'
 
+    // websocket
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
     // Test 에서 롬복 사용 설정
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
