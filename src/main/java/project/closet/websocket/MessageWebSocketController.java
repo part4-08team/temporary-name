@@ -8,7 +8,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import project.closet.dm.service.MessageService;
+import project.closet.dm.service.DirectMessageService;
 import project.closet.dto.request.DirectMessageCreateRequest;
 import project.closet.dto.response.DirectMessageDto;
 
@@ -17,7 +17,7 @@ import project.closet.dto.response.DirectMessageDto;
 @RequiredArgsConstructor
 public class MessageWebSocketController {
 
-    private final MessageService messageService;
+    private final DirectMessageService messageService;
     private final SimpMessagingTemplate messagingTemplate;
 
     @MessageMapping("/direct-messages_send")
