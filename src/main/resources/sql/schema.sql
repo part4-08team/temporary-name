@@ -95,7 +95,7 @@ CREATE TABLE clothes
     created_at TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     name       VARCHAR(50)   NOT NULL UNIQUE,
-    image_url  VARCHAR(1024) NOT NULL,
+    image_key  VARCHAR(1024) NOT NULL,
     type       VARCHAR(50)   NOT NULL
 );
 

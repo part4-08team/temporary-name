@@ -2,6 +2,9 @@ package project.closet.domain.clothes.service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -15,16 +18,20 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import project.closet.domain.clothes.dto.request.ClothesCreateRequest;
+import project.closet.domain.clothes.dto.request.ClothesUpdateRequest;
 import project.closet.domain.clothes.dto.response.ClothesAttributeDto;
 import project.closet.domain.clothes.dto.response.ClothesDto;
 import project.closet.domain.clothes.dto.response.ClothesDtoCursorResponse;
+import project.closet.domain.clothes.entity.Attribute;
 import project.closet.domain.clothes.entity.Clothes;
 import project.closet.domain.clothes.entity.ClothesAttribute;
 import project.closet.domain.clothes.entity.ClothesType;
 import project.closet.domain.clothes.repository.AttributeRepository;
 import project.closet.domain.clothes.repository.ClothesRepository;
+import project.closet.exception.clothes.ClothesNotFoundException;
 import project.closet.exception.clothes.attribute.AttributeNotFoundException;
 import project.closet.exception.user.UserNotFoundException;
+import project.closet.storage.S3ContentStorage;
 import project.closet.user.repository.UserRepository;
 
 @Service
@@ -35,8 +42,10 @@ public class ClothesServiceImpl implements ClothesService {
     private final UserRepository userRepository;
     private final AttributeRepository attributeRepository;
     private final ClothesRepository clothesRepository;
+    private final S3ContentStorage s3ContentStorage;
 
     @Override
+    @Transactional
     public ClothesDto createClothes(
             ClothesCreateRequest request,
             MultipartFile image
@@ -44,25 +53,31 @@ public class ClothesServiceImpl implements ClothesService {
         var owner = userRepository.findById(request.ownerId())
                 .orElseThrow(() -> UserNotFoundException.withId(request.ownerId()));
 
-        // 이미지 처리 로직은 아직 미구현 (추후 추가)
-        String imageUrl = "";
+        // 이미지가 있을 경우에만 업로드 → imageKey 설정
+        String imageKey = Optional.ofNullable(image)
+                .map(s3ContentStorage::upload)
+                .orElse(null);
 
+        // 의상 엔티티 생성
         Clothes clothes = new Clothes(
                 owner,
                 request.name(),
-                imageUrl,
+                imageKey,
                 request.type()
         );
 
-        for (ClothesAttributeDto attrReq : request.attributes()) {
+        // 의상 속성들 추가
+        request.attributes().forEach(attrReq -> {
             var def = attributeRepository.findById(attrReq.definitionId())
                     .orElseThrow(() -> new AttributeNotFoundException(attrReq.definitionId().toString()));
             ClothesAttribute attr = new ClothesAttribute(def, attrReq.value());
             clothes.addAttribute(attr);
-        }
+        });
 
+        // 저장 및 DTO 변환
         Clothes saved = clothesRepository.save(clothes);
-        return ClothesDto.fromEntity(saved);
+        String imageUrl = s3ContentStorage.getPresignedUrl(saved.getImageKey());
+        return ClothesDto.fromEntity(saved, imageUrl);
     }
 
     @Override
@@ -115,8 +130,11 @@ public class ClothesServiceImpl implements ClothesService {
         }
 
         List<ClothesDto> data = content.stream()
-                .map(ClothesDto::fromEntity)
-                .collect(Collectors.toList());
+                .map(clothes -> {
+                    String imageUrl = s3ContentStorage.getPresignedUrl(clothes.getImageKey());
+                    return ClothesDto.fromEntity(clothes, imageUrl);
+                })
+                .toList();
 
         return new ClothesDtoCursorResponse(
                 data,
@@ -127,5 +145,67 @@ public class ClothesServiceImpl implements ClothesService {
                 "createdAt",
                 "DESCENDING"
         );
+    }
+
+    @Override
+    public void deleteClothesById(UUID clothesId) {
+
+       clothesRepository.findById(clothesId)
+                .orElseThrow(() -> ClothesNotFoundException.withId(clothesId));
+
+        clothesRepository.deleteById(clothesId);
+    }
+
+    @Override
+    public ClothesDto updateClothes(
+            UUID clothesId,
+            ClothesUpdateRequest request,
+            MultipartFile image
+    ) {
+        Clothes clothes = clothesRepository.findById(clothesId)
+                .orElseThrow(() -> ClothesNotFoundException.withId(clothesId));
+
+        clothes.updateDetails(request.name(), request.type());
+        partialUpdateAttributes(clothes, request.attributes());
+
+        Optional.ofNullable(image)
+                .map(s3ContentStorage::upload)
+                .ifPresent(clothes::updateImageKey);
+
+        Clothes saved = clothesRepository.save(clothes);
+        String imageUrl = s3ContentStorage.getPresignedUrl(saved.getImageKey());
+
+        return ClothesDto.fromEntity(saved, imageUrl);
+    }
+
+
+    private void partialUpdateAttributes(
+            Clothes clothes,
+            List<ClothesAttributeDto> dtos
+    ) {
+        // a) 기존 속성 맵(definitionId → ClothesAttribute)
+        Map<UUID, ClothesAttribute> existing = clothes.getAttributes().stream()
+                .collect(Collectors.toMap(
+                        attr -> attr.getDefinition().getId(),
+                        attr -> attr
+                ));
+
+        // b) 요청된 DTO 순회
+        for (ClothesAttributeDto dto : dtos) {
+            UUID defId = dto.definitionId();
+            String newVal = dto.value();
+            ClothesAttribute attr = existing.get(defId);
+
+            if (attr != null) {
+                // └ 기존 속성: 값만 변경 (updateValue 내부에서 값 비교)
+                attr.updateValue(newVal);
+            } else if (newVal != null) {
+                // └ 새 정의: 생성하여 컬렉션에 추가
+                Attribute def = attributeRepository.findById(defId)
+                        .orElseThrow(() -> new AttributeNotFoundException(defId.toString()));
+                ClothesAttribute added = new ClothesAttribute(def, newVal);
+                clothes.addAttribute(added);
+            }
+        }
     }
 }

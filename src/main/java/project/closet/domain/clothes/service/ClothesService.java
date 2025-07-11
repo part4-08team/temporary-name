@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.web.multipart.MultipartFile;
 
 import project.closet.domain.clothes.dto.request.ClothesCreateRequest;
+import project.closet.domain.clothes.dto.request.ClothesUpdateRequest;
 import project.closet.domain.clothes.dto.response.ClothesDto;
 import project.closet.domain.clothes.dto.response.ClothesDtoCursorResponse;
 import project.closet.domain.clothes.entity.ClothesType;
@@ -22,5 +23,15 @@ public interface ClothesService {
             int limit,
             ClothesType typeEqual,
             UUID ownerId
+    );
+
+    void deleteClothesById(
+            UUID clothesId
+    );
+
+    ClothesDto updateClothes(
+            UUID clothesId,
+            ClothesUpdateRequest request,
+            MultipartFile image
     );
 }

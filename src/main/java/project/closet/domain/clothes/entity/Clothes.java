@@ -42,8 +42,8 @@ public class Clothes extends BaseUpdatableEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "image_url", nullable = false)
-    private String imageUrl;
+    @Column(name = "image_key", nullable = false)
+    private String imageKey;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false, length = 50)
@@ -60,12 +60,12 @@ public class Clothes extends BaseUpdatableEntity {
     public Clothes(
             User owner,
             String name,
-            String imageUrl,
+            String imageKey,
             ClothesType type
     ) {
         this.owner = owner;
         this.name = name;
-        this.imageUrl = imageUrl;
+        this.imageKey = imageKey;
         this.type = type;
     }
 
@@ -77,5 +77,20 @@ public class Clothes extends BaseUpdatableEntity {
     public void removeAttribute(ClothesAttribute attribute) {
         attributes.remove(attribute);
         attribute.setClothes(null);
+    }
+
+    /** 이름·타입 업데이트 **/
+    public void updateDetails(String name, ClothesType type) {
+        if (name != null && !name.isBlank()) {
+            this.name = name;
+        }
+        if (type != null) {
+            this.type = type;
+        }
+    }
+
+    /** 이미지 Key 업데이트 **/
+    public void updateImageKey(String imageKey) {
+        this.imageKey = imageKey;
     }
 }

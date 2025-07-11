@@ -22,7 +22,7 @@ public record OotdDto(
         return new OotdDto(
                 clothes.getId(),
                 clothes.getName(),
-                clothes.getImageUrl(),
+                clothes.getImageKey(),
                 clothes.getType(),
                 attribute
         );
