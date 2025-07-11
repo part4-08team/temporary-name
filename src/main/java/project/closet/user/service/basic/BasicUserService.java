@@ -1,26 +1,32 @@
 package project.closet.user.service.basic;
 
+
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.query.SortDirection;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import project.closet.dto.request.ChangePasswordRequest;
 import project.closet.dto.request.ProfileUpdateRequest;
 import project.closet.dto.request.UserCreateRequest;
 import project.closet.dto.request.UserLockUpdateRequest;
 import project.closet.dto.request.UserRoleUpdateRequest;
 import project.closet.dto.response.ProfileDto;
 import project.closet.dto.response.UserDto;
+import project.closet.dto.response.UserDtoCursorResponse;
 import project.closet.dto.response.WeatherAPILocation;
 import project.closet.exception.user.UserAlreadyExistsException;
 import project.closet.exception.user.UserNotFoundException;
 import project.closet.security.jwt.JwtService;
 import project.closet.storage.S3ContentStorage;
 import project.closet.user.entity.Profile;
+import project.closet.user.entity.Role;
 import project.closet.user.entity.User;
 import project.closet.user.repository.UserRepository;
 import project.closet.user.service.UserService;
@@ -120,11 +126,82 @@ public class BasicUserService implements UserService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @Transactional
     @Override
     public UUID updateLockStatus(UUID userId, UserLockUpdateRequest userLockUpdateRequest) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> UserNotFoundException.withId(userId));
         user.updateLockStatus(userLockUpdateRequest.locked());
         return user.getId();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Transactional(readOnly = true)
+    @Override
+    public UserDtoCursorResponse findAll(
+            String cursor,
+            UUID idAfter,
+            int limit,
+            String sortBy,
+            SortDirection sortDirection,
+            String emailLike,
+            Role roleEqual,
+            Boolean locked
+    ) {
+        List<User> users =
+                userRepository.findUsersWithCursor(
+                        cursor, idAfter, limit, sortBy, sortDirection, emailLike, roleEqual, locked
+                );
+        boolean hasNext = users.size() > limit;
+        if (hasNext) {
+            users = users.subList(0, limit);
+        }
+
+        List<UserDto> userDtos = users.stream()
+                .map(UserDto::from)
+                .toList();
+
+        String nextCursor = null;
+        UUID nextIdAfter = null;
+
+        if (!users.isEmpty()) {
+            User lastUser = users.get(users.size() - 1);
+            nextCursor = getSortValue(lastUser, sortBy);
+            nextIdAfter = lastUser.getId();
+        }
+
+        long totalCount = userRepository.countAllUsers(emailLike, roleEqual, locked);
+
+        return new UserDtoCursorResponse(
+                userDtos,
+                nextCursor,
+                nextIdAfter,
+                hasNext,
+                totalCount,
+                sortBy,
+                sortDirection
+        );
+    }
+
+    private String getSortValue(User user, String sortBy) {
+        return switch (sortBy) {
+            case "email" -> user.getEmail();
+            case "createdAt" -> user.getCreatedAt().toString();
+            default -> throw new IllegalArgumentException("정렬 기준이 유효하지 않습니다: " + sortBy);
+        };
+    }
+
+    @PreAuthorize("principal.userId == #userId")
+    @Transactional
+    @Override
+    public void changePassword(
+            UUID userId,
+            ChangePasswordRequest changePasswordRequest
+    ) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> UserNotFoundException.withId(userId));
+
+        String encodePassword = passwordEncoder.encode(changePasswordRequest.password());
+        user.updatePassword(encodePassword);
     }
 }

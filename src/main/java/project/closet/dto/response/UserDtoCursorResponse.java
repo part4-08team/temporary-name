@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.UUID;
 import org.hibernate.query.SortDirection;
 
-public record FeedDtoCursorResponse(
-        List<FeedDto> data,
+public record UserDtoCursorResponse(
+        List<UserDto> data,
         String nextCursor,
         UUID nextIdAfter,
         boolean hasNext,

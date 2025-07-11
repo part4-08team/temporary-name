@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.UUID;
+import org.hibernate.query.SortDirection;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
@@ -18,9 +19,10 @@ import project.closet.dto.request.ProfileUpdateRequest;
 import project.closet.dto.request.UserCreateRequest;
 import project.closet.dto.request.UserLockUpdateRequest;
 import project.closet.dto.request.UserRoleUpdateRequest;
-import project.closet.dto.response.PageResponse;
 import project.closet.dto.response.ProfileDto;
 import project.closet.dto.response.UserDto;
+import project.closet.dto.response.UserDtoCursorResponse;
+import project.closet.user.entity.Role;
 
 @Tag(name = "프로필 관리", description = "프로필 관리 API")
 public interface UserApi {
@@ -31,11 +33,20 @@ public interface UserApi {
                     responseCode = "200", description = "계정 목록 조회 성공"
             ),
             @ApiResponse(
-                    responseCode = "404", description = "계정 목록 조회 실패(사용자 없음)",
+                    responseCode = "400", description = "계정 목록 조회 실패(사용자 없음)",
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
-    ResponseEntity<PageResponse<UserDto>> findAll();
+    ResponseEntity<UserDtoCursorResponse> findAll(
+            String cursor,
+            UUID idAfter,
+            int limit,
+            String sortBy,
+            SortDirection sortDirection,
+            String emailLike,
+            Role roleEqual,
+            Boolean locked
+    );
 
     @Operation(summary = "사용자 등록(회원가입)")
     @ApiResponses(value = {

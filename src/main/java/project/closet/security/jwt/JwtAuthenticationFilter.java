@@ -16,7 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
-import project.closet.dto.response.UserDto;
 import project.closet.exception.ErrorCode;
 import project.closet.exception.ErrorResponse;
 import project.closet.security.ClosetUserDetails;
@@ -39,8 +38,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (optionalAccessToken.isPresent() && !isPermitAll(request)) {
             String accessToken = optionalAccessToken.get();
             if (jwtService.validate(accessToken)) {
-                UserDto userDto = jwtService.parse(accessToken).toUserDto();
-                ClosetUserDetails userDetails = new ClosetUserDetails(userDto, null);
+                JwtObject jwtObject = jwtService.parse(accessToken);
+                ClosetUserDetails userDetails = ClosetUserDetails.from(jwtObject);
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
 
