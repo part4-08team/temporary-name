@@ -8,11 +8,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
 import project.closet.dto.request.FollowCreateRequest;
 import project.closet.dto.response.FollowDto;
 import project.closet.dto.response.FollowListResponse;
 import project.closet.dto.response.FollowSummaryDto;
+import project.closet.exception.ErrorResponse;
 import project.closet.security.ClosetUserDetails;
 
 @Tag(name = "팔로우 관리", description = "팔로우 관련 API")

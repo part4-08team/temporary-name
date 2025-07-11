@@ -2,6 +2,8 @@ package project.closet.feed.controller.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,6 +18,7 @@ import project.closet.dto.response.CommentDto;
 import project.closet.dto.response.CommentDtoCursorResponse;
 import project.closet.dto.response.FeedDto;
 import project.closet.dto.response.FeedDtoCursorResponse;
+import project.closet.exception.ErrorResponse;
 import project.closet.security.ClosetUserDetails;
 import project.closet.weather.entity.PrecipitationType;
 import project.closet.weather.entity.SkyStatus;
@@ -30,7 +33,8 @@ public interface FeedApi {
                     responseCode = "200", description = "피드 목록 조회 성공"
             ),
             @ApiResponse(
-                    responseCode = "400", description = "피드 목록 조회 실패"
+                    responseCode = "400", description = "피드 목록 조회 실패",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
     ResponseEntity<FeedDtoCursorResponse> getFeedList(
@@ -53,7 +57,8 @@ public interface FeedApi {
                     responseCode = "201", description = "피드 등록 성공"
             ),
             @ApiResponse(
-                    responseCode = "400", description = "피드 등록 실패"
+                    responseCode = "400", description = "피드 등록 실패",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
     ResponseEntity<FeedDto> createFeed(@Parameter FeedCreateRequest feedCreateRequest);
@@ -65,7 +70,8 @@ public interface FeedApi {
                     responseCode = "204", description = "피드 좋아요 성공"
             ),
             @ApiResponse(
-                    responseCode = "400", description = "피드 좋아요 실패"
+                    responseCode = "400", description = "피드 좋아요 실패",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
     ResponseEntity<Void> likeFeed(UUID feedId,
@@ -78,7 +84,8 @@ public interface FeedApi {
                     responseCode = "204", description = "피드 좋아요 취소 성공"
             ),
             @ApiResponse(
-                    responseCode = "400", description = "피드 좋아요 취소 실패"
+                    responseCode = "400", description = "피드 좋아요 취소 실패",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
     ResponseEntity<Void> cancelFeed(UUID feedId,
@@ -92,7 +99,8 @@ public interface FeedApi {
                     responseCode = "200", description = "피드 댓글 조회 성공"
             ),
             @ApiResponse(
-                    responseCode = "400", description = "피드 댓글 조회 실패"
+                    responseCode = "400", description = "피드 댓글 조회 실패",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
     ResponseEntity<CommentDtoCursorResponse> getFeedComments(
@@ -109,7 +117,8 @@ public interface FeedApi {
                     responseCode = "200", description = "피드 댓글 등록 성공"
             ),
             @ApiResponse(
-                    responseCode = "400", description = "피드 댓글 등록 실패"
+                    responseCode = "400", description = "피드 댓글 등록 실패",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
     ResponseEntity<CommentDto> createFeedComment(UUID feedId,
@@ -122,7 +131,8 @@ public interface FeedApi {
                     responseCode = "204", description = "피드 삭제 성공"
             ),
             @ApiResponse(
-                    responseCode = "400", description = "피드 삭제 실패"
+                    responseCode = "400", description = "피드 삭제 실패",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
     ResponseEntity<Void> deleteFeed(UUID feedId);
@@ -134,7 +144,8 @@ public interface FeedApi {
                     responseCode = "200", description = "피드 수정 성공"
             ),
             @ApiResponse(
-                    responseCode = "400", description = "피드 수정 실패"
+                    responseCode = "400", description = "피드 수정 실패",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))
             )
     })
     ResponseEntity<FeedDto> updateFeed(

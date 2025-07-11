@@ -9,6 +9,7 @@ import project.closet.dm.repository.DirectMessageRepository;
 import project.closet.dm.service.DirectMessageService;
 import project.closet.dto.request.DirectMessageCreateRequest;
 import project.closet.dto.response.DirectMessageDto;
+import project.closet.dto.response.DirectMessageDtoCursorResponse;
 import project.closet.dto.response.UserSummary;
 import project.closet.exception.user.UserNotFoundException;
 import project.closet.storage.S3ContentStorage;
@@ -51,5 +52,11 @@ public class BasicMessageService implements DirectMessageService {
                 senderSummary,
                 receiverSummary
         );
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public DirectMessageDtoCursorResponse getDirectMessages(UUID userId, String cursor, UUID idAfter, int limit) {
+        return null;
     }
 }
