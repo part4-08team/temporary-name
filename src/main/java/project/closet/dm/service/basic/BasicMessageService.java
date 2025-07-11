@@ -1,7 +1,10 @@
 package project.closet.dm.service.basic;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.query.SortDirection;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.closet.dm.entity.DirectMessage;
@@ -56,7 +59,50 @@ public class BasicMessageService implements DirectMessageService {
 
     @Transactional(readOnly = true)
     @Override
-    public DirectMessageDtoCursorResponse getDirectMessages(UUID userId, String cursor, UUID idAfter, int limit) {
-        return null;
+    public DirectMessageDtoCursorResponse getDirectMessages(UUID targetUserId, Instant cursor, UUID idAfter, int limit, UUID loginUserId) {
+        List<DirectMessage> messages = directMessageRepository.findDirectMessagesBetweenUsers(
+                targetUserId, loginUserId, cursor, idAfter, limit + 1
+        );
+
+        boolean hasNext = messages.size() > limit;
+        if (hasNext) {
+            messages.remove(messages.size() - 1);
+        }
+
+        String nextCursor = null;
+        UUID nextIdAfter = null;
+        if (hasNext && !messages.isEmpty()) {
+            DirectMessage last = messages.get(messages.size() - 1);
+            nextCursor = last.getCreatedAt().toString();
+            nextIdAfter = last.getId();
+        }
+
+        List<DirectMessageDto> dmDtos = messages.stream()
+                .map(directMessage -> {
+                    String senderImageKey = directMessage.getSender().getProfile().getProfileImageKey();
+                    String presignedUrl = s3ContentStorage.getPresignedUrl(senderImageKey);
+                    UserSummary senderSummary = UserSummary.from(directMessage.getSender(), presignedUrl);
+
+                    String receiverImageKey = directMessage.getReceiver().getProfile().getProfileImageKey();
+                    String receiverPresignedUrl = s3ContentStorage.getPresignedUrl(receiverImageKey);
+                    UserSummary receiverSummary = UserSummary.from(directMessage.getReceiver(), receiverPresignedUrl);
+                    return new DirectMessageDto(
+                            directMessage,
+                            senderSummary,
+                            receiverSummary
+                    );
+                }).toList();
+
+        long totalCount = directMessageRepository.countDirectMessagesBetweenUsers(targetUserId, loginUserId);
+
+        return new DirectMessageDtoCursorResponse(
+                dmDtos,
+                nextCursor,
+                nextIdAfter,
+                hasNext,
+                totalCount,
+                "createdAt",
+                SortDirection.DESCENDING
+        );
     }
 }

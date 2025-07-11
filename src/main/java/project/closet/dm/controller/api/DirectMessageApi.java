@@ -6,10 +6,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.time.Instant;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import project.closet.dto.response.DirectMessageDtoCursorResponse;
 import project.closet.exception.ErrorResponse;
+import project.closet.security.ClosetUserDetails;
 
 @Tag(name = "DirectMessage", description = "DirectMessage API")
 public interface DirectMessageApi {
@@ -27,8 +29,9 @@ public interface DirectMessageApi {
     })
     ResponseEntity<DirectMessageDtoCursorResponse> getDirectMessage(
             UUID userId,
-            String cursor,
+            Instant cursor,
             UUID idAfter,
-            int limit
+            int limit,
+            ClosetUserDetails closetUserDetails
     );
 }
