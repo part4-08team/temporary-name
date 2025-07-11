@@ -252,7 +252,7 @@ public class BasicFeedService implements FeedService {
     private FeedDto toFeedDto(Feed feed, long commentCount, boolean likedByMe) {
         List<OotdDto> ootdDtos = feed.getFeedClothesList().stream()
                 .map(feedClothes -> {
-                    s3ContentStorage.getPresignedUrl(feedClothes.getClothes().getImageUrl());
+                    s3ContentStorage.getPresignedUrl(feedClothes.getClothes().getImageKey());
                     return OotdDto.from(feedClothes.getClothes());
                 })
                 .toList();
