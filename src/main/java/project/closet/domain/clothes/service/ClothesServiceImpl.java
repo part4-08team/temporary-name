@@ -3,6 +3,7 @@ package project.closet.domain.clothes.service;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -30,6 +31,7 @@ import project.closet.domain.clothes.repository.ClothesRepository;
 import project.closet.exception.clothes.ClothesNotFoundException;
 import project.closet.exception.clothes.attribute.AttributeNotFoundException;
 import project.closet.exception.user.UserNotFoundException;
+import project.closet.storage.S3ContentStorage;
 import project.closet.user.repository.UserRepository;
 
 @Service
@@ -40,8 +42,10 @@ public class ClothesServiceImpl implements ClothesService {
     private final UserRepository userRepository;
     private final AttributeRepository attributeRepository;
     private final ClothesRepository clothesRepository;
+    private final S3ContentStorage s3ContentStorage;
 
     @Override
+    @Transactional
     public ClothesDto createClothes(
             ClothesCreateRequest request,
             MultipartFile image
@@ -49,25 +53,31 @@ public class ClothesServiceImpl implements ClothesService {
         var owner = userRepository.findById(request.ownerId())
                 .orElseThrow(() -> UserNotFoundException.withId(request.ownerId()));
 
-        // 이미지 처리 로직은 아직 미구현 (추후 추가)
-        String imageUrl = "";
+        // 이미지가 있을 경우에만 업로드 → imageKey 설정
+        String imageKey = Optional.ofNullable(image)
+                .map(s3ContentStorage::upload)
+                .orElse(null);
 
+        // 의상 엔티티 생성
         Clothes clothes = new Clothes(
                 owner,
                 request.name(),
-                imageUrl,
+                imageKey,
                 request.type()
         );
 
-        for (ClothesAttributeDto attrReq : request.attributes()) {
+        // 의상 속성들 추가
+        request.attributes().forEach(attrReq -> {
             var def = attributeRepository.findById(attrReq.definitionId())
                     .orElseThrow(() -> new AttributeNotFoundException(attrReq.definitionId().toString()));
             ClothesAttribute attr = new ClothesAttribute(def, attrReq.value());
             clothes.addAttribute(attr);
-        }
+        });
 
+        // 저장 및 DTO 변환
         Clothes saved = clothesRepository.save(clothes);
-        return ClothesDto.fromEntity(saved);
+        String imageUrl = s3ContentStorage.getPresignedUrl(saved.getImageKey());
+        return ClothesDto.fromEntity(saved, imageUrl);
     }
 
     @Override
@@ -120,8 +130,11 @@ public class ClothesServiceImpl implements ClothesService {
         }
 
         List<ClothesDto> data = content.stream()
-                .map(ClothesDto::fromEntity)
-                .collect(Collectors.toList());
+                .map(clothes -> {
+                    String imageUrl = s3ContentStorage.getPresignedUrl(clothes.getImageKey());
+                    return ClothesDto.fromEntity(clothes, imageUrl);
+                })
+                .toList();
 
         return new ClothesDtoCursorResponse(
                 data,
@@ -153,13 +166,18 @@ public class ClothesServiceImpl implements ClothesService {
                 .orElseThrow(() -> ClothesNotFoundException.withId(clothesId));
 
         clothes.updateDetails(request.name(), request.type());
-
         partialUpdateAttributes(clothes, request.attributes());
 
-        // 5) 저장 및 DTO 변환
+        Optional.ofNullable(image)
+                .map(s3ContentStorage::upload)
+                .ifPresent(clothes::updateImageKey);
+
         Clothes saved = clothesRepository.save(clothes);
-        return ClothesDto.fromEntity(saved);
+        String imageUrl = s3ContentStorage.getPresignedUrl(saved.getImageKey());
+
+        return ClothesDto.fromEntity(saved, imageUrl);
     }
+
 
     private void partialUpdateAttributes(
             Clothes clothes,
