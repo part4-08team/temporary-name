@@ -22,7 +22,7 @@ public class JwtLoginSuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) throws IOException, ServletException {
         ClosetUserDetails principal = (ClosetUserDetails) authentication.getPrincipal();
-        JwtSession jwtSession = jwtService.registerJwtSession(principal.getUserDto());
+        JwtSession jwtSession = jwtService.registerJwtSession(principal);
 
         String refreshToken = jwtSession.getRefreshToken();
         Cookie refreshTokenCookie = new Cookie(JwtService.REFRESH_TOKEN_COOKIE_NAME, refreshToken);

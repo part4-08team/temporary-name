@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.query.SortDirection;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,10 +23,11 @@ import project.closet.dto.request.ProfileUpdateRequest;
 import project.closet.dto.request.UserCreateRequest;
 import project.closet.dto.request.UserLockUpdateRequest;
 import project.closet.dto.request.UserRoleUpdateRequest;
-import project.closet.dto.response.PageResponse;
 import project.closet.dto.response.ProfileDto;
 import project.closet.dto.response.UserDto;
+import project.closet.dto.response.UserDtoCursorResponse;
 import project.closet.user.controller.api.UserApi;
+import project.closet.user.entity.Role;
 import project.closet.user.service.UserService;
 
 @Slf4j
@@ -37,8 +40,20 @@ public class UserController implements UserApi {
 
     @GetMapping
     @Override
-    public ResponseEntity<PageResponse<UserDto>> findAll() {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public ResponseEntity<UserDtoCursorResponse> findAll(
+            @RequestParam(name = "cursor", required = false) String cursor,
+            @RequestParam(name = "idAfter", required = false) UUID idAfter,
+            @RequestParam(name = "limit") int limit,
+            @RequestParam(name = "sortBy") String sortBy,
+            @RequestParam(name = "sortDirection") SortDirection sortDirection,
+            @RequestParam(name = "emailLike", required = false) String emailLike,
+            @RequestParam(name = "roleEqual", required = false) Role roleEqual,
+            @RequestParam(name = "locked", required = false) Boolean locked
+    ) {
+        UserDtoCursorResponse response = userService.findAll(
+                cursor, idAfter, limit, sortBy, sortDirection, emailLike, roleEqual, locked
+        );
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
@@ -86,7 +101,9 @@ public class UserController implements UserApi {
             @PathVariable("userId") UUID userId,
             @RequestBody @Valid ChangePasswordRequest changePasswordRequest
     ) {
-        throw new UnsupportedOperationException("Not yet implemented");
+        log.info("사용자 비밀번호 변경 요청: userId={}", userId);
+        userService.changePassword(userId, changePasswordRequest);
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{userId}/lock")
@@ -110,8 +127,6 @@ public class UserController implements UserApi {
         log.info("권한 수정 요청");
         UserDto userDto = userService.updateRole(userId, userRoleUpdateRequest);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(userDto);
+        return ResponseEntity.status(HttpStatus.OK).body(userDto);
     }
 }
