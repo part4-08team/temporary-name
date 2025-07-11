@@ -42,7 +42,7 @@ public class Clothes extends BaseUpdatableEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "image_url", nullable = false)
+    @Column(name = "image_key", nullable = false)
     private String imageKey;
 
     @Enumerated(EnumType.STRING)
