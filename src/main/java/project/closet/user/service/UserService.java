@@ -2,7 +2,6 @@ package project.closet.user.service;
 
 import java.util.UUID;
 import org.hibernate.query.SortDirection;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 import project.closet.dto.request.ChangePasswordRequest;
 import project.closet.dto.request.ProfileUpdateRequest;
