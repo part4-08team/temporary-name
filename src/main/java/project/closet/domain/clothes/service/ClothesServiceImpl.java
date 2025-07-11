@@ -2,6 +2,8 @@ package project.closet.domain.clothes.service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -15,9 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import project.closet.domain.clothes.dto.request.ClothesCreateRequest;
+import project.closet.domain.clothes.dto.request.ClothesUpdateRequest;
 import project.closet.domain.clothes.dto.response.ClothesAttributeDto;
 import project.closet.domain.clothes.dto.response.ClothesDto;
 import project.closet.domain.clothes.dto.response.ClothesDtoCursorResponse;
+import project.closet.domain.clothes.entity.Attribute;
 import project.closet.domain.clothes.entity.Clothes;
 import project.closet.domain.clothes.entity.ClothesAttribute;
 import project.closet.domain.clothes.entity.ClothesType;
@@ -137,5 +141,53 @@ public class ClothesServiceImpl implements ClothesService {
                 .orElseThrow(() -> ClothesNotFoundException.withId(clothesId));
 
         clothesRepository.deleteById(clothesId);
+    }
+
+    @Override
+    public ClothesDto updateClothes(
+            UUID clothesId,
+            ClothesUpdateRequest request,
+            MultipartFile image
+    ) {
+        Clothes clothes = clothesRepository.findById(clothesId)
+                .orElseThrow(() -> ClothesNotFoundException.withId(clothesId));
+
+        clothes.updateDetails(request.name(), request.type());
+
+        partialUpdateAttributes(clothes, request.attributes());
+
+        // 5) 저장 및 DTO 변환
+        Clothes saved = clothesRepository.save(clothes);
+        return ClothesDto.fromEntity(saved);
+    }
+
+    private void partialUpdateAttributes(
+            Clothes clothes,
+            List<ClothesAttributeDto> dtos
+    ) {
+        // a) 기존 속성 맵(definitionId → ClothesAttribute)
+        Map<UUID, ClothesAttribute> existing = clothes.getAttributes().stream()
+                .collect(Collectors.toMap(
+                        attr -> attr.getDefinition().getId(),
+                        attr -> attr
+                ));
+
+        // b) 요청된 DTO 순회
+        for (ClothesAttributeDto dto : dtos) {
+            UUID defId = dto.definitionId();
+            String newVal = dto.value();
+            ClothesAttribute attr = existing.get(defId);
+
+            if (attr != null) {
+                // └ 기존 속성: 값만 변경 (updateValue 내부에서 값 비교)
+                attr.updateValue(newVal);
+            } else if (newVal != null) {
+                // └ 새 정의: 생성하여 컬렉션에 추가
+                Attribute def = attributeRepository.findById(defId)
+                        .orElseThrow(() -> new AttributeNotFoundException(defId.toString()));
+                ClothesAttribute added = new ClothesAttribute(def, newVal);
+                clothes.addAttribute(added);
+            }
+        }
     }
 }

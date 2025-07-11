@@ -78,4 +78,19 @@ public class Clothes extends BaseUpdatableEntity {
         attributes.remove(attribute);
         attribute.setClothes(null);
     }
+
+    /** 이름·타입 업데이트 **/
+    public void updateDetails(String name, ClothesType type) {
+        if (name != null && !name.isBlank()) {
+            this.name = name;
+        }
+        if (type != null) {
+            this.type = type;
+        }
+    }
+
+    /** 이미지 Key 업데이트 **/
+    public void updateImageKey(String imageKey) {
+        this.imageKey = imageKey;
+    }
 }

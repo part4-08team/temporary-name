@@ -44,4 +44,10 @@ public class ClothesAttribute {
     void setClothes(Clothes clothes) {
         this.clothes = clothes;
     }
+
+    public void updateValue(String newValue) {
+        if (newValue != null && !newValue.isBlank() && !this.value.equals(newValue)) {
+            this.value = newValue;
+        }
+    }
 }
