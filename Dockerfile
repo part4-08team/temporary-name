@@ -17,7 +17,7 @@ FROM amazoncorretto:17-alpine3.21
 
 WORKDIR /app
 
-ENV JVM_OPTS=""
+ENV JVM_OPTS="-Duser.timezone=Asia/Seoul"
 
 COPY --from=builder /app/build/libs/*.jar app.jar
 

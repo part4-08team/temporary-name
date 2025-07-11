@@ -10,6 +10,7 @@ spring:
     import: optional:file:.env[.properties]
   application:
     name: ${SPRING_APP_NAME:closet}
+    time-zone: "Asia/Seoul"
   datasource:
     driver-class-name: org.postgresql.Driver
 

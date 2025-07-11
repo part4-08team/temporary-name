@@ -60,7 +60,7 @@ public class Profile extends BaseUpdatableEntity {
     public Profile(User user,
             Gender gender,
             LocalDate birthDate,
-            String profileImageUrl,
+            String profileImageKey,
             Integer temperatureSensitivity,
             Double latitude,
             Double longitude,
@@ -68,7 +68,7 @@ public class Profile extends BaseUpdatableEntity {
         this.user = user;
         this.gender = gender;
         this.birthDate = birthDate;
-        this.profileImageKey = profileImageUrl;
+        this.profileImageKey = profileImageKey;
         this.temperatureSensitivity = temperatureSensitivity;
         this.latitude = latitude;
         this.longitude = longitude;
