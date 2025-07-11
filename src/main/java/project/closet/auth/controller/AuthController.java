@@ -46,11 +46,8 @@ public class AuthController implements AuthApi {
     public ResponseEntity<String> me(
             @CookieValue(value = JwtService.REFRESH_TOKEN_COOKIE_NAME) String refreshToken
     ) {
-        LocalDate forecastBaseDate = LocalDate.now().minusDays(1);
-        LocalTime forecastTime = LocalTime.of(23, 0);
-        Instant forecastedAt = LocalDateTime.of(forecastBaseDate, forecastTime)
-                .atZone(ZoneId.of("Asia/Seoul")).toInstant();
-        log.info("내 정보 조회 요청 시간 : {}", forecastedAt);
+
+        log.info("내 정보 조회 요청");
         JwtSession jwtSession = jwtService.getSwtSession(refreshToken);
         return ResponseEntity.ok(jwtSession.getAccessToken());
     }

@@ -60,15 +60,13 @@ public class BasicMessageService implements DirectMessageService {
     @Transactional(readOnly = true)
     @Override
     public DirectMessageDtoCursorResponse getDirectMessages(UUID targetUserId, Instant cursor, UUID idAfter, int limit, UUID loginUserId) {
-        // 어떻게 짜볼까?
         List<DirectMessage> messages = directMessageRepository.findDirectMessagesBetweenUsers(
                 targetUserId, loginUserId, cursor, idAfter, limit + 1
         );
 
-        // 응답 변환 및 nextCursor 계산
         boolean hasNext = messages.size() > limit;
         if (hasNext) {
-            messages.remove(messages.size() - 1); // 초과된 하나 제거
+            messages.remove(messages.size() - 1);
         }
 
         String nextCursor = null;
