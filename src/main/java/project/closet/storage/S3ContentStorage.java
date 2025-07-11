@@ -49,7 +49,6 @@ public class S3ContentStorage {
     }
 
     public String getPresignedUrl(String key) {
-        try (s3Presigner) {
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                     .bucket(bucket)
                     .key(key)
@@ -61,6 +60,5 @@ public class S3ContentStorage {
                     .build();
 
             return s3Presigner.presignGetObject(presignRequest).url().toString();
-        }
     }
 }
