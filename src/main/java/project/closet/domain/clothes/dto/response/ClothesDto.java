@@ -3,8 +3,6 @@ package project.closet.domain.clothes.dto.response;
 import java.util.List;
 import java.util.UUID;
 
-import project.closet.domain.clothes.entity.Attribute;
-import project.closet.domain.clothes.entity.AttributeSelectableValue;
 import project.closet.domain.clothes.entity.Clothes;
 
 public record ClothesDto(
@@ -23,7 +21,7 @@ public record ClothesDto(
                 c.getId(),
                 c.getOwner().getId(),
                 c.getName(),
-                c.getImageUrl(),
+                c.getImageKey(),
                 c.getType().name(),
                 attrs
         );

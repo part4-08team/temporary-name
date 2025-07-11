@@ -43,7 +43,7 @@ public class Clothes extends BaseUpdatableEntity {
     private String name;
 
     @Column(name = "image_url", nullable = false)
-    private String imageUrl;
+    private String imageKey;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false, length = 50)
@@ -60,12 +60,12 @@ public class Clothes extends BaseUpdatableEntity {
     public Clothes(
             User owner,
             String name,
-            String imageUrl,
+            String imageKey,
             ClothesType type
     ) {
         this.owner = owner;
         this.name = name;
-        this.imageUrl = imageUrl;
+        this.imageKey = imageKey;
         this.type = type;
     }
 
