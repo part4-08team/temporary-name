@@ -29,7 +29,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
         Map<String, Object> params = new HashMap<>();
 
         if (StringUtils.hasText(emailLike)) {
-            jpql.append("AND u.email LIKE :emailLike");
+            jpql.append("AND u.email LIKE :emailLike ");
             params.put("emailLike", "%" + emailLike + "%");
         }
         if (roleEqual != null) {

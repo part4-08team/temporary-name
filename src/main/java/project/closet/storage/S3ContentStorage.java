@@ -50,16 +50,20 @@ public class S3ContentStorage {
     }
 
     public String getPresignedUrl(String key) {
-            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                    .bucket(bucket)
-                    .key(key)
-                    .build();
+        if (key == null || key.isBlank()) {
+            return null;
+        }
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .responseContentType("image/jpeg")
+                .build();
 
-            GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
-                    .signatureDuration(Duration.ofSeconds(presignedUrlExpirationSeconds))
-                    .getObjectRequest(getObjectRequest)
-                    .build();
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                .signatureDuration(Duration.ofSeconds(presignedUrlExpirationSeconds))
+                .getObjectRequest(getObjectRequest)
+                .build();
 
-            return s3Presigner.presignGetObject(presignRequest).url().toString();
+        return s3Presigner.presignGetObject(presignRequest).url().toString();
     }
 }
