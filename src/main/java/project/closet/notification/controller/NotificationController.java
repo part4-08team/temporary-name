@@ -41,6 +41,7 @@ public class NotificationController implements NotificationApi {
     @DeleteMapping("/{notificationId}")
     @Override
     public ResponseEntity<Void> delete(@PathVariable("notificationId") UUID notificationId) {
+        notificationService.deleteNotification(notificationId);
         return ResponseEntity.noContent().build();
     }
 }
