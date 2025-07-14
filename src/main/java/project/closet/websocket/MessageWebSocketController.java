@@ -21,7 +21,9 @@ public class MessageWebSocketController {
     private final SimpMessagingTemplate messagingTemplate;
 
     @MessageMapping("/direct-messages_send")
-    public void sendMessage(@Payload DirectMessageCreateRequest directMessageCreateRequest) {
+    public void sendMessage(
+            @Payload DirectMessageCreateRequest directMessageCreateRequest
+    ) {
         log.info("텍스트 메시지 생성 요청: request={}", directMessageCreateRequest);
         DirectMessageDto createdMessage = messageService.sendMessage(directMessageCreateRequest);
         log.debug("텍스트 메시지 생성 응답: {}", createdMessage);

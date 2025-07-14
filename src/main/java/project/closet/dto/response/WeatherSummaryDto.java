@@ -15,11 +15,7 @@ public record WeatherSummaryDto(
         return new WeatherSummaryDto(
                 weather.getId(),
                 weather.getSkyStatus(),
-                new PrecipitationDto(
-                        weather.getPrecipitationType(),
-                        weather.getAmount(),
-                        weather.getProbability()
-                ),
+               PrecipitationDto.from(weather),
                 new TemperatureDto(
                         weather.getCurrentTemperature(),
                         0.0,

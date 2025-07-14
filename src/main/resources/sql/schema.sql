@@ -20,7 +20,7 @@ CREATE TABLE weathers
     forecast_at         TIMESTAMP                NOT NULL,
     sky_status          VARCHAR(50)              NOT NULL,
     amount              DOUBLE PRECISION         NOT NULL,
-    probability         INTEGER                  NOT NULL,
+    probability         DOUBLE PRECISION         NOT NULL,
     precipitation_type  VARCHAR(50)              NOT NULL,
     wind_speed          DOUBLE PRECISION         NOT NULL,
     as_word             VARCHAR(50)              NOT NULL,
@@ -79,24 +79,24 @@ CREATE TABLE feeds
 -- 5. Feed Comments
 CREATE TABLE feed_comments
 (
-    id         UUID      NOT NULL PRIMARY KEY,
-    feed_id    UUID      NOT NULL,
-    author_id  UUID      NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    content    TEXT      NOT NULL
+    id         UUID                     NOT NULL PRIMARY KEY,
+    feed_id    UUID                     NOT NULL,
+    author_id  UUID                     NOT NULL,
+    created_at TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    content    TEXT                     NOT NULL
 );
 
 -- 6. Clothes
 CREATE TABLE clothes
 (
-    id         UUID          NOT NULL PRIMARY KEY,
-    owner_id   UUID          NOT NULL,
-    created_at TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    name       VARCHAR(50)   NOT NULL UNIQUE,
-    image_key  VARCHAR(1024) NOT NULL,
-    type       VARCHAR(50)   NOT NULL
+    id         UUID                     NOT NULL PRIMARY KEY,
+    owner_id   UUID                     NOT NULL,
+    created_at TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    name       VARCHAR(50)              NOT NULL UNIQUE,
+    image_key  VARCHAR(1024)            NOT NULL,
+    type       VARCHAR(50)              NOT NULL
 );
 
 -- 7. Attributes
@@ -126,21 +126,21 @@ CREATE TABLE feed_clothes
 -- 10. Follows UNIQUE 제약 조건 동일한 유저가 동일한 유저를 팔로우할 수 없도록
 CREATE TABLE follows
 (
-    id          UUID      NOT NULL PRIMARY KEY,
-    follower_id UUID      NOT NULL,
-    followee_id UUID      NOT NULL,
-    created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    id          UUID                     NOT NULL PRIMARY KEY,
+    follower_id UUID                     NOT NULL,
+    followee_id UUID                     NOT NULL,
+    created_at  TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 11. Notifications
 CREATE TABLE notifications
 (
-    id         UUID         NOT NULL PRIMARY KEY,
-    user_id    UUID         NOT NULL,
-    created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    title      VARCHAR(50)  NOT NULL,
-    content    VARCHAR(255) NOT NULL,
-    level      VARCHAR(50)  NOT NULL
+    id          UUID                     NOT NULL PRIMARY KEY,
+    receiver_id UUID                     NOT NULL,
+    created_at  TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    title       VARCHAR(50)              NOT NULL,
+    content     VARCHAR(255)             NOT NULL,
+    level       VARCHAR(50)              NOT NULL
 );
 
 -- 12. Feed Likes
@@ -166,7 +166,7 @@ CREATE TABLE direct_messages
     id          UUID                     NOT NULL PRIMARY KEY,
     receiver_id UUID                     NOT NULL,
     sender_id   UUID                     NOT NULL,
-    content     TEXT             NOT NULL,
+    content     TEXT                     NOT NULL,
     created_at  TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -177,7 +177,7 @@ CREATE TABLE jwt_sessions
     user_id         UUID                     NOT NULL,
     access_token    VARCHAR(512)             NOT NULL UNIQUE,
     refresh_token   VARCHAR(512)             NOT NULL UNIQUE,
-    expiration_Time TIMESTAMP                NOT NULL,
+    expiration_Time TIMESTAMP with time zone NOT NULL,
     created_at      TIMESTAMP with time zone NOT NULL,
     updated_at      TIMESTAMP with time zone NOT NULL
 );
@@ -227,7 +227,7 @@ ALTER TABLE follows
         CASCADE;
 
 ALTER TABLE notifications
-    ADD CONSTRAINT fk_notifications_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE;
+    ADD CONSTRAINT fk_notifications_user FOREIGN KEY (receiver_id) REFERENCES users (id) ON DELETE CASCADE;
 
 ALTER TABLE feed_likes
     ADD CONSTRAINT fk_feed_likes_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,

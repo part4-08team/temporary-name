@@ -17,6 +17,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import project.closet.domain.base.BaseUpdatableEntity;
 
 @Getter
@@ -54,6 +55,7 @@ public class Profile extends BaseUpdatableEntity {
             joinColumns = @JoinColumn(name = "profile_id")
     )
     @Column(name = "location_name", length = 50)
+    @BatchSize(size = 10)
     private List<String> locationNames = new ArrayList<>();
 
     @Builder

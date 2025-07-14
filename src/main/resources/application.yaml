@@ -15,11 +15,12 @@ spring:
     driver-class-name: org.postgresql.Driver
 
   jpa:
-    show-sql: true
+    hibernate:
+      ddl-auto: validate
     properties:
       hibernate:
-        format_sql: true
         jdbc.hibernate.jdbc.batch_size: 100
+    open-in-view: false
 
   batch:
     jdbc:
@@ -88,3 +89,6 @@ logging:
     org.hibernate.orm.jdbc.bind: trace
     org.springframework.security: trace
     org.springframework.web.socket: DEBUG
+
+sse:
+  timeout: 300_000 # 5분
