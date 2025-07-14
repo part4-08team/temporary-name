@@ -19,7 +19,6 @@ spring:
       ddl-auto: validate
     properties:
       hibernate:
-        format_sql: true
         jdbc.hibernate.jdbc.batch_size: 100
     open-in-view: false
 
