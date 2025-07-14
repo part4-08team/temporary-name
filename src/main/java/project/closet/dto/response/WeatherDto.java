@@ -37,11 +37,7 @@ public record WeatherDto(
                         null
                 ),
                 current.getSkyStatus(),
-                new PrecipitationDto(
-                        current.getPrecipitationType(),
-                        current.getAmount(),
-                        current.getProbability() / 100.0
-                ),
+                PrecipitationDto.from(current),
                 new Humidity(
                         current.getHumidity(),
                         humidityDiff

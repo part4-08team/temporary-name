@@ -41,6 +41,7 @@ public class Weather extends BaseEntity {
     @Column(nullable = false)
     private Double windSpeed; // 풍속
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
     private AsWord asWord; // 풍속 상태를 설명하는 단어
 

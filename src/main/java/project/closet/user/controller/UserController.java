@@ -76,7 +76,6 @@ public class UserController implements UserApi {
         return ResponseEntity.ok(profile);
     }
 
-    // TODO : 프로필 업데이트 이미지 처리 로직 작업해야함
     @PatchMapping(
             value = "/{userId}/profiles",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE

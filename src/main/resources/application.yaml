@@ -21,7 +21,7 @@ spring:
       hibernate:
         format_sql: true
         jdbc.hibernate.jdbc.batch_size: 100
-#    open-in-view: false
+    open-in-view: false
 
   batch:
     jdbc:
