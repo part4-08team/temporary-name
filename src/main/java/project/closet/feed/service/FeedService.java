@@ -17,7 +17,7 @@ public interface FeedService {
 
     FeedDto createFeed(FeedCreateRequest feedCreateRequest);
 
-    void likeFeed(UUID feedId, UUID userId);
+    void likeFeed(UUID feedId, UUID loginUserId);
 
     void cancelFeedLike(UUID feedId, UUID userId);
 

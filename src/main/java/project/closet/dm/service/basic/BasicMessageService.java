@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.query.SortDirection;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.closet.dm.entity.DirectMessage;
@@ -16,6 +17,7 @@ import project.closet.dto.request.DirectMessageCreateRequest;
 import project.closet.dto.response.DirectMessageDto;
 import project.closet.dto.response.DirectMessageDtoCursorResponse;
 import project.closet.dto.response.UserSummary;
+import project.closet.event.DirectMessageSentEvent;
 import project.closet.exception.user.UserNotFoundException;
 import project.closet.storage.S3ContentStorage;
 import project.closet.user.entity.User;
@@ -28,6 +30,7 @@ public class BasicMessageService implements DirectMessageService {
     private final UserRepository userRepository;
     private final DirectMessageRepository directMessageRepository;
     private final S3ContentStorage s3ContentStorage;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     @Override
@@ -45,13 +48,16 @@ public class BasicMessageService implements DirectMessageService {
         UserSummary receiverSummary = UserSummary.from(receiver, s3ContentStorage.getPresignedUrl(receiverProfileImageUrl));
 
         // TODO 같은 유저 ID 로 메시지를 보내는 경우 예외 처리 추가
+        String content = directMessageCreateRequest.content();
         DirectMessage directMessage = DirectMessage.builder()
                 .sender(sender)
                 .receiver(receiver)
-                .content(directMessageCreateRequest.content())
+                .content(content)
                 .build();
         directMessageRepository.save(directMessage);
 
+        // 알림 생성 -> 알림을 수신하는 쪽에 이벤트 발생 + sse
+        eventPublisher.publishEvent(new DirectMessageSentEvent(receiverId, sender.getName(), content));
         return new DirectMessageDto(
                 directMessage,
                 senderSummary,
