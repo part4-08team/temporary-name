@@ -9,6 +9,7 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import project.closet.event.ClothesAttributeCreatEvent;
 import project.closet.event.ClothesAttributeUpdateEvent;
+import project.closet.event.DirectMessageSentEvent;
 import project.closet.event.FeedCommentCreateEvent;
 import project.closet.event.FeedLikeCreateEvent;
 import project.closet.event.FollowCreateEvent;
@@ -136,6 +137,26 @@ public class NotificationEventListener {
             );
         } catch (Exception e) {
             log.error("팔로우 알림 이벤트 처리 실패: receiverId={}, error={}", receiverId, e.getMessage());
+            throw e;    // Retryable 예외 발생시켜 재시도 로직 시도
+        }
+    }
+
+    @Async("eventTaskExecutor")
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handle(DirectMessageSentEvent event) {
+        UUID receiverId = event.receiverId();
+        String senderUsername = event.senderUsername();
+        String content = event.messageContent();
+        log.info("새로운 DM 알림 이벤트 처리 시작: receiverId={}, senderUsername={}, content={}", receiverId, senderUsername, content);
+        try {
+            notificationService.create(
+                    receiverId,
+                    String.format("[DM] %s", senderUsername),
+                    content,
+                    NotificationLevel.INFO
+            );
+        } catch (Exception e) {
+            log.error("새로운 DM 알림 이벤트 처리 실패: receiverId={}, error={}", receiverId, e.getMessage());
             throw e;    // Retryable 예외 발생시켜 재시도 로직 시도
         }
     }
