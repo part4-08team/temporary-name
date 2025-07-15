@@ -17,4 +17,11 @@ public interface FeedRepository extends JpaRepository<Feed, UUID>, FeedRepositor
                 WHERE f.id = :feedId
             """)
     Optional<Feed> findByIdWithAll(UUID feedId);
+
+    @Query("""
+            SELECT f FROM Feed f
+            JOIN FETCH f.author
+            WHERE f.id = :feedId
+            """)
+    Optional<Feed> findByIdWithAuthor (UUID feedId);
 }

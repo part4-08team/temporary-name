@@ -9,6 +9,8 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 import project.closet.event.ClothesAttributeCreatEvent;
 import project.closet.event.ClothesAttributeUpdateEvent;
+import project.closet.event.FeedCommentCreateEvent;
+import project.closet.event.FeedLikeCreateEvent;
 import project.closet.event.RoleChangeEvent;
 import project.closet.notification.entity.NotificationLevel;
 import project.closet.notification.service.NotificationService;
@@ -39,7 +41,7 @@ public class NotificationEventListener {
             );
             log.info("권한 변경 알림 이벤트 처리 완료: receiverId={}", userId);
         } catch (Exception e) {
-            log.error("권한 변경 알림 이벤트 처리 실패: receiverId={}, error={}", userId, e.getMessage(), e);
+            log.error("권한 변경 알림 이벤트 처리 실패: receiverId={}, error={}", userId, e.getMessage());
             throw e;    // Retryable 예외 발생시켜 재시도 로직 시도
         }
     }
@@ -56,7 +58,7 @@ public class NotificationEventListener {
             );
             log.info("새로운 의상 속성 추가 알림 이벤트 처리 완료");
         } catch (Exception e) {
-            log.error("새로운 의상 속성 추가 알림 이벤트 처리 실패: error={}", e.getMessage(), e);
+            log.error("새로운 의상 속성 추가 알림 이벤트 처리 실패: error={}", e.getMessage());
             throw e;    // Retryable 예외 발생시켜 재시도 로직 시도
         }
     }
@@ -73,8 +75,59 @@ public class NotificationEventListener {
             );
             log.info("의상 속성 업데이트 알림 이벤트 처리 완료");
         } catch (Exception e) {
-            log.error("의상 속성 업데이트 알림 이벤트 처리 실패: error={}", e.getMessage(), e);
+            log.error("의상 속성 업데이트 알림 이벤트 처리 실패: error={}", e.getMessage());
             throw e;    // Retryable 예외 발생시켜 재시도 로직 시도
         }
+    }
+
+    @Async("eventTaskExecutor")
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handle(FeedLikeCreateEvent event) {
+        UUID receiverId = event.feedAuthorId();
+        String username = event.likerUsername();
+        String content = event.feedContent();
+        log.info("피드 좋아요 알림 이벤트 처리 시작: receiverId ={}, name={}, content={}", receiverId, username, content);
+        try {
+            notificationService.create(
+                    receiverId,
+                    String.format("%s님이 내 피드를 좋아합니다.", username),
+                    content,
+                    NotificationLevel.INFO
+            );
+        } catch (Exception e) {
+            log.error("피드 좋아요 알림 이벤트 처리 실패: receiverId={}, error={}", receiverId, e.getMessage());
+            throw e;    // Retryable 예외 발생시켜 재시도 로직 시도
+        }
+    }
+
+    @Async("eventTaskExecutor")
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handle(FeedCommentCreateEvent event) {
+        UUID receiverId = event.feedAuthorId();
+        String commenterUsername = event.commenterUsername();
+        String commentText = event.commentText();
+        log.info("피드 댓글 알림 이벤트 처리 시작: receiverId={}, commenterUsername={}, commentText={}", receiverId, commenterUsername, commentText);
+        try {
+            notificationService.create(
+                    receiverId,
+                    String.format("%s님이 댓글을 달았어요.", commenterUsername),
+                    commentText,
+                    NotificationLevel.INFO
+            );
+        } catch (Exception e) {
+            log.error("피드 댓글 알림 이벤트 처리 실패: receiverId={}, error={}", receiverId, e.getMessage());
+            throw e;    // Retryable 예외 발생시켜 재시도 로직 시도
+        }
+    }
+
+    @Async("eventTaskExecutor")
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handle() {
+        /*
+            "receiverId": "be8ade35-741c-4485-9e0f-772cdf690d9c",
+            "title": "buzz님이 나를 팔로우했어요.",
+            "content": "",
+            "level": "INFO"
+         */
     }
 }

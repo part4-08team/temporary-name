@@ -6,6 +6,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.query.SortDirection;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.closet.domain.clothes.repository.ClothesRepository;
@@ -19,6 +20,8 @@ import project.closet.dto.response.FeedDtoCursorResponse;
 import project.closet.dto.response.OotdDto;
 import project.closet.dto.response.UserSummary;
 import project.closet.dto.response.WeatherSummaryDto;
+import project.closet.event.FeedCommentCreateEvent;
+import project.closet.event.FeedLikeCreateEvent;
 import project.closet.exception.feed.FeedLikeAlreadyExistsException;
 import project.closet.exception.feed.FeedNotFoundException;
 import project.closet.exception.user.UserNotFoundException;
@@ -50,6 +53,7 @@ public class BasicFeedService implements FeedService {
     private final FeedLikeRepository feedLikeRepository;
     private final FeedCommentRepository feedCommentRepository;
     private final S3ContentStorage s3ContentStorage;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     @Override
@@ -72,24 +76,23 @@ public class BasicFeedService implements FeedService {
         return toFeedDto(feed, 0, false);
     }
 
-
-    // TODO : Feed Like Count 업데이트 구현해야함 + 1, -1
     @Transactional
     @Override
-    public void likeFeed(UUID feedId, UUID userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> UserNotFoundException.withId(userId));
+    public void likeFeed(UUID feedId, UUID loginUserId) {
+        User loginUser = userRepository.findById(loginUserId)
+                .orElseThrow(() -> UserNotFoundException.withId(loginUserId));
 
-        Feed feed = feedRepository.findById(feedId)
+        Feed feed = feedRepository.findByIdWithAuthor(feedId)
                 .orElseThrow(() -> FeedNotFoundException.withId(feedId));
 
         // 중복 체크
-        if (feedLikeRepository.existsByUserAndFeed(user, feed)) {
-            throw FeedLikeAlreadyExistsException.of(userId, feedId);
+        if (feedLikeRepository.existsByUserAndFeed(loginUser, feed)) {
+            throw FeedLikeAlreadyExistsException.of(loginUserId, feedId);
         }
         feed.incrementLikeCount();
 
-        feedLikeRepository.save(new FeedLike(feed, user));
+        eventPublisher.publishEvent(new FeedLikeCreateEvent(feed.getAuthor().getId(), loginUser.getName(), feed.getContent()));
+        feedLikeRepository.save(new FeedLike(feed, loginUser));
     }
 
     @Transactional
@@ -104,7 +107,6 @@ public class BasicFeedService implements FeedService {
         int deletedCount = feedLikeRepository.deleteByUserAndFeed(user, feed);
         if (deletedCount > 0) {
             feed.decrementLikeCount();
-            // 알림 삭제 또는 관련 이벤트도 여기서 처리 가능
         }
     }
 
@@ -113,17 +115,24 @@ public class BasicFeedService implements FeedService {
     public CommentDto createComment(CommentCreateRequest commentCreateRequest) {
         UUID feedId = commentCreateRequest.feedId();
         UUID authorId = commentCreateRequest.authorId();
+        String content = commentCreateRequest.content();
         User author = userRepository.findByIdWithProfile(authorId)
                 .orElseThrow(() -> UserNotFoundException.withId(authorId));
-        Feed feed = feedRepository.findById(feedId)
+        Feed feed = feedRepository.findByIdWithAuthor(feedId)
                 .orElseThrow(() -> FeedNotFoundException.withId(feedId));
-        FeedComment feedComment = new FeedComment(feed, author, commentCreateRequest.content());
+
+        FeedComment feedComment = new FeedComment(feed, author, content);
         feedCommentRepository.save(feedComment);
         String presignedUrl =
                 s3ContentStorage.getPresignedUrl(author.getProfile().getProfileImageKey());
+
+        // 알림 생성 이벤트 발생
+        eventPublisher.publishEvent(new FeedCommentCreateEvent(feed.getAuthor().getId(), author.getName(), content));
+
         return CommentDto.from(feedComment, presignedUrl);
     }
 
+    // DB 단에 Cascade 설정 때문에 FeedCommentRepository 에서 삭제하면 Feed Like 테이블 함께 삭제
     @Transactional
     @Override
     public void deleteFeed(UUID feedId) {

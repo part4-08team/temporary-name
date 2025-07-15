@@ -73,8 +73,8 @@ public class FeedController implements FeedApi {
             @PathVariable("feedId") UUID feedId,
             @AuthenticationPrincipal ClosetUserDetails closetUserDetails
     ) {
-        UUID userId = closetUserDetails.getUserId();
-        feedService.likeFeed(feedId, userId);
+        UUID loginUserId = closetUserDetails.getUserId();
+        feedService.likeFeed(feedId, loginUserId);
         return ResponseEntity.noContent().build();
     }
 
