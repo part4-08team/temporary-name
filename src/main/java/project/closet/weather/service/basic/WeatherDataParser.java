@@ -124,7 +124,7 @@ public class WeatherDataParser {
                 .map(value -> {
                     return switch (value) {
                         case "1" -> SkyStatus.CLEAR;
-                        case "3" -> SkyStatus.PARTLY_CLOUDY;
+                        case "3" -> SkyStatus.MOSTLY_CLOUDY;
                         case "4" -> SkyStatus.CLOUDY;
                         default -> SkyStatus.UNKNOWN;
                     };

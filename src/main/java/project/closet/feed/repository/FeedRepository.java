@@ -23,5 +23,5 @@ public interface FeedRepository extends JpaRepository<Feed, UUID>, FeedRepositor
             JOIN FETCH f.author
             WHERE f.id = :feedId
             """)
-    Optional<Feed> findByIdWithAuthor (UUID feedId);
+    Optional<Feed> findByIdWithAuthor(UUID feedId);
 }

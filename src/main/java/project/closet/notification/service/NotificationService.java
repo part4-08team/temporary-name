@@ -1,6 +1,7 @@
 package project.closet.notification.service;
 
 import java.time.Instant;
+import java.util.Set;
 import java.util.UUID;
 import project.closet.dto.response.NotificationDtoCursorResponse;
 import project.closet.notification.entity.NotificationLevel;
@@ -14,4 +15,6 @@ public interface NotificationService {
     void create(UUID receiverId, String title, String content, NotificationLevel level);
 
     void createForAllUsers(String title, String content, NotificationLevel level);
+
+    void createAll(Set<UUID> receiverIds, String title, String content, NotificationLevel level);
 }

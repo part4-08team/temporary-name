@@ -21,6 +21,7 @@ import project.closet.dto.response.OotdDto;
 import project.closet.dto.response.UserSummary;
 import project.closet.dto.response.WeatherSummaryDto;
 import project.closet.event.FeedCommentCreateEvent;
+import project.closet.event.FeedCreatedEvent;
 import project.closet.event.FeedLikeCreateEvent;
 import project.closet.exception.feed.FeedLikeAlreadyExistsException;
 import project.closet.exception.feed.FeedNotFoundException;
@@ -33,6 +34,7 @@ import project.closet.feed.repository.FeedCommentRepository;
 import project.closet.feed.repository.FeedLikeRepository;
 import project.closet.feed.repository.FeedRepository;
 import project.closet.feed.service.FeedService;
+import project.closet.follower.repository.FollowRepository;
 import project.closet.storage.S3ContentStorage;
 import project.closet.user.entity.User;
 import project.closet.user.repository.UserRepository;
@@ -52,9 +54,11 @@ public class BasicFeedService implements FeedService {
     private final ClothesRepository clothesRepository;
     private final FeedLikeRepository feedLikeRepository;
     private final FeedCommentRepository feedCommentRepository;
+    private final FollowRepository followRepository;
     private final S3ContentStorage s3ContentStorage;
     private final ApplicationEventPublisher eventPublisher;
 
+    // TODO 알림 생성 -> 팔로우한 사용자가 피드를 작성했을 때 알림 생성
     @Transactional
     @Override
     public FeedDto createFeed(FeedCreateRequest feedCreateRequest) {
@@ -72,6 +76,10 @@ public class BasicFeedService implements FeedService {
                 .forEach(feed::addClothes);
 
         feedRepository.save(feed);
+
+        // 피드 작성 시, 팔로우한 사용자에게 알림 생성
+        List<UUID> followerIds = followRepository.findFollowerIdsByFolloweeId(authorId);
+        eventPublisher.publishEvent(new FeedCreatedEvent(followerIds, author.getName(), feed.getContent()));
 
         return toFeedDto(feed, 0, false);
     }

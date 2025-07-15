@@ -2,6 +2,7 @@ package project.closet.notification.service.basic;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -108,6 +109,28 @@ public class BasicNotificationService implements NotificationService {
 
         // sse 이벤트 발생
         notifications.stream()
+                .map(NotificationDto::new)
+                .forEach(notificationDto -> eventPublisher.publishEvent(new NotificationCreatedEvent(notificationDto)));
+    }
+
+    @Transactional
+    @Override
+    public void createAll(Set<UUID> receiverIds, String title, String content, NotificationLevel level) {
+        log.debug("새 알림 생성 시작: receiverIds={}, ", receiverIds);
+        if (receiverIds.isEmpty()) {
+            return;
+        }
+
+        List<Notification> notifications = receiverIds.stream()
+                .map(receiverId -> Notification.builder()
+                        .receiverId(receiverId)
+                        .title(title)
+                        .content(content)
+                        .level(level)
+                        .build())
+                .toList();
+
+        notificationRepository.saveAll(notifications).stream()
                 .map(NotificationDto::new)
                 .forEach(notificationDto -> eventPublisher.publishEvent(new NotificationCreatedEvent(notificationDto)));
     }

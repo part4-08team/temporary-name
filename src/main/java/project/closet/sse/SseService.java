@@ -1,6 +1,7 @@
 package project.closet.sse;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -88,6 +89,19 @@ public class SseService {
                             log.error("Error sending SSE message: {}", e.getMessage(), e);
                         }
                     });
+                });
+    }
+
+    public void send(Collection<UUID> receiverIds, String eventName, Object data) {
+        SseMessage message = sseMessageRepository.save(SseMessage.create(receiverIds, eventName, data));
+        Set<DataWithMediaType> event = message.toEvent();
+        sseEmitterRepository.findAllByReceiverIdsIn(receiverIds)
+                .forEach(sseEmitter -> {
+                    try {
+                        sseEmitter.send(event);
+                    } catch (IOException e) {
+                        log.error(e.getMessage(), e);
+                    }
                 });
     }
 

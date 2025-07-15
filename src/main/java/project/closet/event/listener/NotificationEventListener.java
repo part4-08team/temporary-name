@@ -1,5 +1,7 @@
 package project.closet.event.listener;
 
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +13,7 @@ import project.closet.event.ClothesAttributeCreatEvent;
 import project.closet.event.ClothesAttributeUpdateEvent;
 import project.closet.event.DirectMessageSentEvent;
 import project.closet.event.FeedCommentCreateEvent;
+import project.closet.event.FeedCreatedEvent;
 import project.closet.event.FeedLikeCreateEvent;
 import project.closet.event.FollowCreateEvent;
 import project.closet.event.RoleChangeEvent;
@@ -157,6 +160,25 @@ public class NotificationEventListener {
             );
         } catch (Exception e) {
             log.error("새로운 DM 알림 이벤트 처리 실패: receiverId={}, error={}", receiverId, e.getMessage());
+            throw e;    // Retryable 예외 발생시켜 재시도 로직 시도
+        }
+    }
+
+    @Async("eventTaskExecutor")
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handle(FeedCreatedEvent event) {
+        Set<UUID> receiverIds = event.receiverIds();
+        String authorUsername = event.authorName();
+        String feedContent = event.content();
+        try {
+            notificationService.createAll(
+                    receiverIds,
+                    String.format("%s님이 새로운 피드를 작성했어요.", authorUsername),
+                    feedContent,
+                    NotificationLevel.INFO
+            );
+        } catch (Exception e) {
+            log.error("피드 생성 알림 이벤트 처리 실패: error={}", e.getMessage());
             throw e;    // Retryable 예외 발생시켜 재시도 로직 시도
         }
     }
