@@ -10,8 +10,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 
@@ -65,5 +67,19 @@ public class S3ContentStorage {
                 .build();
 
         return s3Presigner.presignGetObject(presignRequest).url().toString();
+    }
+
+    public void deleteByKey(String key) {
+        try {
+            DeleteObjectRequest request = DeleteObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(key)
+                    .build();
+
+            s3Client.deleteObject(request);
+        } catch (S3Exception e) {
+            log.error("S3에 파일 삭제 실패: {}", e.getMessage());
+            throw new RuntimeException("S3에 파일 삭제 실패: " + key, e);
+        }
     }
 }
