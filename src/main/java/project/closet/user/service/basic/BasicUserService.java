@@ -90,7 +90,7 @@ public class BasicUserService implements UserService {
         Optional.ofNullable(profileImage)
                 .map(image -> {
                     s3ContentStorage.deleteByKey(user.getProfile().getProfileImageKey());
-                    return s3ContentStorage.upload(profileImage);
+                    return s3ContentStorage.upload(image);
                 })
                 .ifPresent(user::updateProfileImageKey);
         return toProfileDto(user);

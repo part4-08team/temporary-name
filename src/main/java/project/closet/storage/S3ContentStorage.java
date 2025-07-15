@@ -79,7 +79,7 @@ public class S3ContentStorage {
             s3Client.deleteObject(request);
         } catch (S3Exception e) {
             log.error("S3에 파일 삭제 실패: {}", e.getMessage());
-            throw new RuntimeException("S3에 파일 업로드 실패: " + key, e);
+            throw new RuntimeException("S3에 파일 삭제 실패: " + key, e);
         }
     }
 }
