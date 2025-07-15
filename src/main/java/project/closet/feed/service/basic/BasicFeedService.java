@@ -101,9 +101,11 @@ public class BasicFeedService implements FeedService {
         Feed feed = feedRepository.findById(feedId)
                 .orElseThrow(() -> FeedNotFoundException.withId(feedId));
 
-        feedLikeRepository.deleteByUserAndFeed(user, feed);
-        // Like 취소 시에 알림이 필요하다면, int 반환 받아서 값이 1이면 알림 생성하도록 할 수 있음
-        feed.decrementLikeCount();
+        int deletedCount = feedLikeRepository.deleteByUserAndFeed(user, feed);
+        if (deletedCount > 0) {
+            feed.decrementLikeCount();
+            // 알림 삭제 또는 관련 이벤트도 여기서 처리 가능
+        }
     }
 
     @Transactional
