@@ -150,9 +150,13 @@ public class ClothesServiceImpl implements ClothesService {
     @Override
     public void deleteClothesById(UUID clothesId) {
 
-       clothesRepository.findById(clothesId)
+        Clothes clothes = clothesRepository.findById(clothesId)
                 .orElseThrow(() -> ClothesNotFoundException.withId(clothesId));
 
+        String existingKey = clothes.getImageKey();
+        if (existingKey != null && !existingKey.isBlank()) {
+            s3ContentStorage.deleteByKey(existingKey);
+        }
         clothesRepository.deleteById(clothesId);
     }
 
@@ -168,13 +172,22 @@ public class ClothesServiceImpl implements ClothesService {
         clothes.updateDetails(request.name(), request.type());
         partialUpdateAttributes(clothes, request.attributes());
 
-        Optional.ofNullable(image)
-                .map(s3ContentStorage::upload)
-                .ifPresent(clothes::updateImageKey);
+        if (image != null && !image.isEmpty()) {
+            String existingKey = clothes.getImageKey();
+            // 기존 Key가 빈 문자열이거나 null이 아니면 S3 삭제 요청
+            if (existingKey != null && !existingKey.isBlank()) {
+                s3ContentStorage.deleteByKey(existingKey);
+            }
+            // 새 이미지 업로드 후 키 반환 및 업데이트
+            String newKey = s3ContentStorage.upload(image);
+            clothes.updateImageKey(newKey);
+        }
 
+// 4) 변경사항 저장 및 presigned URL 생성
         Clothes saved = clothesRepository.save(clothes);
         String imageUrl = s3ContentStorage.getPresignedUrl(saved.getImageKey());
 
+        // 5) DTO로 변환하여 반환
         return ClothesDto.fromEntity(saved, imageUrl);
     }
 
