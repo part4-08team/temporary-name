@@ -4,16 +4,19 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.query.SortDirection;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.closet.dto.response.NotificationDto;
 import project.closet.dto.response.NotificationDtoCursorResponse;
 import project.closet.notification.entity.Notification;
+import project.closet.notification.entity.NotificationLevel;
 import project.closet.notification.repository.NotificationRepository;
 import project.closet.notification.service.NotificationService;
 import project.closet.user.repository.UserRepository;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BasicNotificationService implements NotificationService {
@@ -62,5 +65,11 @@ public class BasicNotificationService implements NotificationService {
     @Override
     public void deleteNotification(UUID notificationId) {
         notificationRepository.deleteById(notificationId);
+    }
+
+    @Transactional
+    @Override
+    public void create(UUID receiverId, String title, String content, NotificationLevel level) {
+        log.debug("새 알림 생성 시작: receiverId={}", receiverId);
     }
 }
