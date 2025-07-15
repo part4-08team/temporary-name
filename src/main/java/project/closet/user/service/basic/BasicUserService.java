@@ -88,7 +88,10 @@ public class BasicUserService implements UserService {
                 .orElseThrow(() -> UserNotFoundException.withId(userId));
         user.updateProfile(profileUpdateRequest);
         Optional.ofNullable(profileImage)
-                .map(s3ContentStorage::upload)
+                .map(image -> {
+                    s3ContentStorage.deleteByKey(user.getProfile().getProfileImageKey());
+                    return s3ContentStorage.upload(profileImage);
+                })
                 .ifPresent(user::updateProfileImageKey);
         return toProfileDto(user);
     }
