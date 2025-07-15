@@ -11,6 +11,7 @@ import project.closet.event.ClothesAttributeCreatEvent;
 import project.closet.event.ClothesAttributeUpdateEvent;
 import project.closet.event.FeedCommentCreateEvent;
 import project.closet.event.FeedLikeCreateEvent;
+import project.closet.event.FollowCreateEvent;
 import project.closet.event.RoleChangeEvent;
 import project.closet.notification.entity.NotificationLevel;
 import project.closet.notification.service.NotificationService;
@@ -122,12 +123,20 @@ public class NotificationEventListener {
 
     @Async("eventTaskExecutor")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handle() {
-        /*
-            "receiverId": "be8ade35-741c-4485-9e0f-772cdf690d9c",
-            "title": "buzz님이 나를 팔로우했어요.",
-            "content": "",
-            "level": "INFO"
-         */
+    public void handle(FollowCreateEvent event) {
+        UUID receiverId = event.followeeId();
+        String followerUsername = event.followerName();
+        log.info("팔로우 알림 이벤트 처리 시작: receiverId={}, followerUsername={}", receiverId, followerUsername);
+        try {
+            notificationService.create(
+                    receiverId,
+                    String.format("%s님이 나를 팔로우했어요.", followerUsername),
+                    "",
+                    NotificationLevel.INFO
+            );
+        } catch (Exception e) {
+            log.error("팔로우 알림 이벤트 처리 실패: receiverId={}, error={}", receiverId, e.getMessage());
+            throw e;    // Retryable 예외 발생시켜 재시도 로직 시도
+        }
     }
 }

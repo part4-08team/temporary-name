@@ -6,12 +6,14 @@ import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import project.closet.dto.request.FollowCreateRequest;
 import project.closet.dto.response.FollowDto;
 import project.closet.dto.response.FollowListResponse;
 import project.closet.dto.response.FollowSummaryDto;
+import project.closet.event.FollowCreateEvent;
 import project.closet.exception.follow.FollowNotFoundException;
 import project.closet.exception.user.UserNotFoundException;
 import project.closet.follower.entity.Follow;
@@ -27,11 +29,14 @@ public class BasicFollowService implements FollowService {
 
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
+    // TODO 알림 생성
     @Transactional
     @Override
     public FollowDto createFollow(FollowCreateRequest followCreateRequest) {
         log.debug("Creating follow for request: {}", followCreateRequest);
+        // TODO 중복 검사 로직 추가
         UUID followerId = followCreateRequest.followerId();
         User follower = userRepository.findByIdWithProfile(followerId)
                 .orElseThrow(() -> UserNotFoundException.withId(followerId));
@@ -44,6 +49,9 @@ public class BasicFollowService implements FollowService {
                 .follower(follower)
                 .followee(followee)
                 .build();
+
+        // 알림 생성 이벤트
+        eventPublisher.publishEvent(new FollowCreateEvent(followeeId, follower.getName()));
         return FollowDto.from(followRepository.save(follow));
     }
 
@@ -61,8 +69,7 @@ public class BasicFollowService implements FollowService {
         boolean followedByMe = myFollow.isPresent();
         UUID followedByMeId = myFollow.map(Follow::getId).orElse(null);
 
-        boolean followingMe = followRepository.existsByFollowerIdAndFolloweeId(userId,
-                currentUserId);
+        boolean followingMe = followRepository.existsByFollowerIdAndFolloweeId(userId, currentUserId);
 
         return new FollowSummaryDto(
                 userId,
