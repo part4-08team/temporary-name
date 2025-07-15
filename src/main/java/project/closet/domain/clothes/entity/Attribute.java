@@ -52,8 +52,11 @@ public class Attribute {
         setSelectableValues(values);
     }
 
-    public void setDefinitionName(String definitionName) {
-        this.definitionName = definitionName;
+    public void updateDefinitionName(String newDefinitionName) {
+        if (this.definitionName.equals(newDefinitionName)) {
+            return;
+        }
+        this.definitionName = newDefinitionName;
     }
 
     public void addSelectableValue(String value) {

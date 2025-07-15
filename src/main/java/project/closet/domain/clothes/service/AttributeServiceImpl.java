@@ -19,6 +19,7 @@ import project.closet.domain.clothes.dto.response.ClothesAttributeDefDtoCursorRe
 import project.closet.domain.clothes.entity.Attribute;
 import project.closet.domain.clothes.repository.AttributeRepository;
 import project.closet.event.ClothesAttributeCreatEvent;
+import project.closet.event.ClothesAttributeUpdateEvent;
 import project.closet.exception.clothes.attribute.AttributeDuplicateException;
 import project.closet.exception.clothes.attribute.AttributeNotFoundException;
 
@@ -54,23 +55,20 @@ public class AttributeServiceImpl implements AttributeService {
             UUID id,
             ClothesAttributeDefUpdateRequest req
     ) {
-        Attribute e = repo.findById(id)
-                .orElseThrow(
-                        () -> new AttributeNotFoundException(
-                                id.toString()
-                        )
-                );
-
-        if (!e.getDefinitionName().equals(req.name())
-                && repo.existsByDefinitionName(req.name())) {
+        if (repo.existsByDefinitionName(req.name())) {
             throw new AttributeDuplicateException();
         }
+        
+        Attribute attribute = repo.findById(id)
+                .orElseThrow(() -> new AttributeNotFoundException(id.toString()));
 
-        e.setDefinitionName(req.name());
-        e.setSelectableValues(req.selectableValues());
+        attribute.updateDefinitionName(req.name());
+        attribute.setSelectableValues(req.selectableValues());
 
         // 의상 속성 수정 시 알림 생성 이벤트 발생.
-        return ClothesAttributeDefDto.of(e);
+        eventPublisher.publishEvent(new ClothesAttributeUpdateEvent(attribute.getDefinitionName()));
+
+        return ClothesAttributeDefDto.of(attribute);
     }
 
     @Override
