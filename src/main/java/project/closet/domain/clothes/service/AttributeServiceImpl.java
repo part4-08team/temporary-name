@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -17,6 +18,8 @@ import project.closet.domain.clothes.dto.response.ClothesAttributeDefDto;
 import project.closet.domain.clothes.dto.response.ClothesAttributeDefDtoCursorResponse;
 import project.closet.domain.clothes.entity.Attribute;
 import project.closet.domain.clothes.repository.AttributeRepository;
+import project.closet.event.ClothesAttributeCreatEvent;
+import project.closet.event.ClothesAttributeUpdateEvent;
 import project.closet.exception.clothes.attribute.AttributeDuplicateException;
 import project.closet.exception.clothes.attribute.AttributeNotFoundException;
 
@@ -25,6 +28,7 @@ import project.closet.exception.clothes.attribute.AttributeNotFoundException;
 public class AttributeServiceImpl implements AttributeService {
 
     private final AttributeRepository repo;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     @Transactional
@@ -39,6 +43,8 @@ public class AttributeServiceImpl implements AttributeService {
                 req.selectableValues()
         );
         repo.save(entity);
+        // 의상 속성 추가 시 알림 생성 이벤트 발생.
+        eventPublisher.publishEvent(new ClothesAttributeCreatEvent(entity.getDefinitionName()));
 
         return ClothesAttributeDefDto.of(entity);
     }
@@ -49,22 +55,20 @@ public class AttributeServiceImpl implements AttributeService {
             UUID id,
             ClothesAttributeDefUpdateRequest req
     ) {
-        Attribute e = repo.findById(id)
-                .orElseThrow(
-                        () -> new AttributeNotFoundException(
-                                id.toString()
-                        )
-                );
-
-        if (!e.getDefinitionName().equals(req.name())
-                && repo.existsByDefinitionName(req.name())) {
+        if (repo.existsByDefinitionName(req.name())) {
             throw new AttributeDuplicateException();
         }
+        
+        Attribute attribute = repo.findById(id)
+                .orElseThrow(() -> new AttributeNotFoundException(id.toString()));
 
-        e.setDefinitionName(req.name());
-        e.setSelectableValues(req.selectableValues());
+        attribute.updateDefinitionName(req.name());
+        attribute.setSelectableValues(req.selectableValues());
 
-        return ClothesAttributeDefDto.of(e);
+        // 의상 속성 수정 시 알림 생성 이벤트 발생.
+        eventPublisher.publishEvent(new ClothesAttributeUpdateEvent(attribute.getDefinitionName()));
+
+        return ClothesAttributeDefDto.of(attribute);
     }
 
     @Override

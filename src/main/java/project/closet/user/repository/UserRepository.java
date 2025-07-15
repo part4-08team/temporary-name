@@ -1,5 +1,6 @@
 package project.closet.user.repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +17,7 @@ public interface UserRepository extends JpaRepository<User, UUID>, UserRepositor
 
     @Query("SELECT u FROM User u JOIN FETCH u.profile WHERE u.id = :userId")
     Optional<User> findByIdWithProfile(UUID userId);
+
+    @Query("SELECT u.id FROM User u")
+    List<UUID> findAllIds();
 }

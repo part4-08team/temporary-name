@@ -12,4 +12,6 @@ public interface NotificationService {
     void deleteNotification(UUID notificationId);
 
     void create(UUID receiverId, String title, String content, NotificationLevel level);
+
+    void createForAllUsers(String title, String content, NotificationLevel level);
 }

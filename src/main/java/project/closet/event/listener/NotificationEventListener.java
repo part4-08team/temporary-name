@@ -7,6 +7,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
+import project.closet.event.ClothesAttributeCreatEvent;
+import project.closet.event.ClothesAttributeUpdateEvent;
 import project.closet.event.RoleChangeEvent;
 import project.closet.notification.entity.NotificationLevel;
 import project.closet.notification.service.NotificationService;
@@ -38,6 +40,40 @@ public class NotificationEventListener {
             log.info("권한 변경 알림 이벤트 처리 완료: receiverId={}", userId);
         } catch (Exception e) {
             log.error("권한 변경 알림 이벤트 처리 실패: receiverId={}, error={}", userId, e.getMessage(), e);
+            throw e;    // Retryable 예외 발생시켜 재시도 로직 시도
+        }
+    }
+
+    @Async("eventTaskExecutor")
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handle(ClothesAttributeCreatEvent event) {
+        log.info("새로운 의상 속성 추가 알림 이벤트 처리 시작: definitionName={}", event.definitionName());
+        try {
+            notificationService.createForAllUsers(
+                    "새로운 의상 속성이 추가되었어요.",
+                    String.format("내 의상에 '%s' 속성을 추가해보세요.", event.definitionName()),
+                    NotificationLevel.INFO
+            );
+            log.info("새로운 의상 속성 추가 알림 이벤트 처리 완료");
+        } catch (Exception e) {
+            log.error("새로운 의상 속성 추가 알림 이벤트 처리 실패: error={}", e.getMessage(), e);
+            throw e;    // Retryable 예외 발생시켜 재시도 로직 시도
+        }
+    }
+
+    @Async("eventTaskExecutor")
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handle(ClothesAttributeUpdateEvent event) {
+        log.info("의상 속성 업데이트 알림 이벤트 처리 시작: definitionName={}", event.definitionName());
+        try {
+            notificationService.createForAllUsers(
+                    "의상 속성이 변경되었어요.",
+                    String.format("[%s] 속성을 확인해보세요.", event.definitionName()),
+                    NotificationLevel.INFO
+            );
+            log.info("의상 속성 업데이트 알림 이벤트 처리 완료");
+        } catch (Exception e) {
+            log.error("의상 속성 업데이트 알림 이벤트 처리 실패: error={}", e.getMessage(), e);
             throw e;    // Retryable 예외 발생시켜 재시도 로직 시도
         }
     }

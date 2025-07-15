@@ -14,11 +14,11 @@ public record NotificationDto(
         NotificationLevel level
 ) {
 
-    public NotificationDto(Notification notification, UUID receiverId) {
+    public NotificationDto(Notification notification) {
         this(
                 notification.getId(),
                 notification.getCreatedAt(),
-                receiverId,
+                notification.getReceiverId(),
                 notification.getTitle(),
                 notification.getContent(),
                 notification.getLevel()

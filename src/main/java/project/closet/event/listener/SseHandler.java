@@ -25,4 +25,5 @@ public class SseHandler {
         UUID userId = notification.receiverId();
         sseService.send(userId, EVENT_NAME, notification);
     }
+
 }

@@ -90,4 +90,17 @@ public class SseService {
                     });
                 });
     }
+
+    public void broadcast(String eventName, Object data) {
+        SseMessage message = sseMessageRepository.save(SseMessage.createBroadcast(eventName, data));
+        Set<DataWithMediaType> event = message.toEvent();
+        sseEmitterRepository.findAll()
+                .forEach(sseEmitter -> {
+                    try {
+                        sseEmitter.send(event);
+                    } catch (IOException e) {
+                        log.error(e.getMessage(), e);
+                    }
+                });
+    }
 }
