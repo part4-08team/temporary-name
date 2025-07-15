@@ -94,7 +94,7 @@ CREATE TABLE clothes
     owner_id   UUID                     NOT NULL,
     created_at TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    name       VARCHAR(50)              NOT NULL UNIQUE,
+    name       VARCHAR(50)              NOT NULL,
     image_key  VARCHAR(1024)            NOT NULL,
     type       VARCHAR(50)              NOT NULL
 );
