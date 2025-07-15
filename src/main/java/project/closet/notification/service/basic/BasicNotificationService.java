@@ -12,12 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import project.closet.dto.response.NotificationDto;
 import project.closet.dto.response.NotificationDtoCursorResponse;
 import project.closet.event.NotificationCreatedEvent;
-import project.closet.exception.user.UserNotFoundException;
 import project.closet.notification.entity.Notification;
 import project.closet.notification.entity.NotificationLevel;
 import project.closet.notification.repository.NotificationRepository;
 import project.closet.notification.service.NotificationService;
-import project.closet.user.entity.User;
 import project.closet.user.repository.UserRepository;
 
 @Slf4j
@@ -42,7 +40,7 @@ public class BasicNotificationService implements NotificationService {
         }
 
         List<NotificationDto> dtos = notifications.stream()
-                .map(notification -> new NotificationDto(notification, loginUserId))
+                .map(NotificationDto::new)
                 .toList();
 
         Instant nextCursor = null;
@@ -76,10 +74,8 @@ public class BasicNotificationService implements NotificationService {
     @Override
     public void create(UUID receiverId, String title, String content, NotificationLevel level) {
         log.debug("새 알림 생성 시작: receiverId={}", receiverId);
-        User user = userRepository.findById(receiverId)
-                .orElseThrow(() -> UserNotFoundException.withId(receiverId));
         Notification notification = Notification.builder()
-                .receiver(user)
+                .receiverId(receiverId)
                 .title(title)
                 .content(content)
                 .level(level)
@@ -88,7 +84,31 @@ public class BasicNotificationService implements NotificationService {
         notificationRepository.save(notification);
         log.info("새 알림 생성 완료: id={}, receiverId={}", notification.getId(), receiverId);
         // SSE 이벤트 발생
-        NotificationDto notificationDto = new NotificationDto(notification, receiverId);
+        NotificationDto notificationDto = new NotificationDto(notification);
         eventPublisher.publishEvent(new NotificationCreatedEvent(notificationDto));
+    }
+
+    @Transactional
+    @Override
+    public void createForAllUsers(String title, String content, NotificationLevel level) {
+        log.debug("모든 사용자에게 새 알림 생성 시작");
+        List<UUID> allIds = userRepository.findAllIds();
+
+        List<Notification> notifications = allIds.stream()
+                .map(id -> Notification.builder()
+                        .receiverId(id)
+                        .title(title)
+                        .content(content)
+                        .level(level)
+                        .build())
+                .toList();
+
+        notificationRepository.saveAll(notifications);
+        log.info("모든 사용자에게 새 알림 생성 완료: title={}, content={}", title, content);
+
+        // sse 이벤트 발생
+        notifications.stream()
+                .map(NotificationDto::new)
+                .forEach(notificationDto -> eventPublisher.publishEvent(new NotificationCreatedEvent(notificationDto)));
     }
 }

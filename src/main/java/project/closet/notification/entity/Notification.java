@@ -8,6 +8,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,9 +22,8 @@ import project.closet.user.entity.User;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Notification extends BaseEntity {
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "receiver_id", nullable = false)
-    private User receiver;
+    @Column(name = "receiver_id", columnDefinition = "uuid", nullable = false)
+    private UUID receiverId;
 
     @Column(name = "title", nullable = false, length = 50)
     private String title;
@@ -36,8 +36,8 @@ public class Notification extends BaseEntity {
     private NotificationLevel level;
 
     @Builder
-    public Notification(User receiver, String title, String content, NotificationLevel level) {
-        this.receiver = receiver;
+    public Notification(UUID receiverId, String title, String content, NotificationLevel level) {
+        this.receiverId = receiverId;
         this.title = title;
         this.content = content;
         this.level = level;
