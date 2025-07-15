@@ -60,4 +60,15 @@ public class Feed extends BaseUpdatableEntity {
         }
         this.content = content;
     }
+
+    public void incrementLikeCount() {
+        this.likeCount++;
+    }
+
+    public void decrementLikeCount() {
+        if (this.likeCount <= 0) {
+            throw new IllegalStateException("Like count cannot be negative");
+        }
+        this.likeCount--;
+    }
 }
