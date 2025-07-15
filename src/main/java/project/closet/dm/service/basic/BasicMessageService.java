@@ -1,7 +1,9 @@
 package project.closet.dm.service.basic;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.query.SortDirection;
@@ -77,20 +79,28 @@ public class BasicMessageService implements DirectMessageService {
             nextIdAfter = last.getId();
         }
 
+        // 캐시를 사용하여 사용자 이미지 URL을 저장
+        Map<UUID, String> userImageUrlCache = new HashMap<>();
+
         List<DirectMessageDto> dmDtos = messages.stream()
                 .map(directMessage -> {
-                    String senderImageKey = directMessage.getSender().getProfile().getProfileImageKey();
-                    String presignedUrl = s3ContentStorage.getPresignedUrl(senderImageKey);
-                    UserSummary senderSummary = UserSummary.from(directMessage.getSender(), presignedUrl);
+                    UUID senderId = directMessage.getSender().getId();
+                    UUID receiverId = directMessage.getReceiver().getId();
 
-                    String receiverImageKey = directMessage.getReceiver().getProfile().getProfileImageKey();
-                    String receiverPresignedUrl = s3ContentStorage.getPresignedUrl(receiverImageKey);
-                    UserSummary receiverSummary = UserSummary.from(directMessage.getReceiver(), receiverPresignedUrl);
-                    return new DirectMessageDto(
-                            directMessage,
-                            senderSummary,
-                            receiverSummary
-                    );
+                    String senderImageUrl = userImageUrlCache.computeIfAbsent(senderId, id -> {
+                        String imageKey = directMessage.getSender().getProfile().getProfileImageKey();
+                        return s3ContentStorage.getPresignedUrl(imageKey);
+                    });
+
+                    String receiverImageUrl = userImageUrlCache.computeIfAbsent(receiverId, id -> {
+                        String imageKey = directMessage.getReceiver().getProfile().getProfileImageKey();
+                        return s3ContentStorage.getPresignedUrl(imageKey);
+                    });
+
+                    UserSummary senderSummary = UserSummary.from(directMessage.getSender(), senderImageUrl);
+                    UserSummary receiverSummary = UserSummary.from(directMessage.getReceiver(), receiverImageUrl);
+
+                    return new DirectMessageDto(directMessage, senderSummary, receiverSummary);
                 }).toList();
 
         long totalCount = directMessageRepository.countDirectMessagesBetweenUsers(targetUserId, loginUserId);

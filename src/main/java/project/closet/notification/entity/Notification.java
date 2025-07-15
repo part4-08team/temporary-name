@@ -9,6 +9,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.closet.domain.base.BaseEntity;
@@ -34,6 +35,7 @@ public class Notification extends BaseEntity {
     @Column(name = "level", nullable = false)
     private NotificationLevel level;
 
+    @Builder
     public Notification(User receiver, String title, String content, NotificationLevel level) {
         this.receiver = receiver;
         this.title = title;
