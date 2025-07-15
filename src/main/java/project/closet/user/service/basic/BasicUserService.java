@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.hibernate.query.SortDirection;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import project.closet.dto.response.ProfileDto;
 import project.closet.dto.response.UserDto;
 import project.closet.dto.response.UserDtoCursorResponse;
 import project.closet.dto.response.WeatherAPILocation;
+import project.closet.event.RoleChangeEvent;
 import project.closet.exception.user.UserAlreadyExistsException;
 import project.closet.exception.user.UserNotFoundException;
 import project.closet.security.jwt.JwtService;
@@ -44,6 +46,7 @@ public class BasicUserService implements UserService {
     private final GeoGridConverter geoGridConverter;
     private final JwtService jwtService;
     private final S3ContentStorage s3ContentStorage;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     @Override
@@ -124,10 +127,16 @@ public class BasicUserService implements UserService {
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     @Override
-    public UserDto updateRole(UUID userId, UserRoleUpdateRequest userRoleUpdateRequest) {
+    public UserDto updateRole(UUID userId, UserRoleUpdateRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> UserNotFoundException.withId(userId));
-        user.updateRole(userRoleUpdateRequest.role());
+        Role oldRole = user.getRole();
+        user.updateRole(request.role());
+        
+        // Role 변경 이벤트 발생
+        if (!oldRole.equals(request.role())) {
+            eventPublisher.publishEvent(new RoleChangeEvent(user.getId(), oldRole, request.role()));
+        }
 
         jwtService.invalidateJwtSession(user.getId());
         return UserDto.from(user);
