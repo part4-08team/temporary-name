@@ -87,6 +87,7 @@ public class BasicFeedService implements FeedService {
         if (feedLikeRepository.existsByUserAndFeed(user, feed)) {
             throw FeedLikeAlreadyExistsException.of(userId, feedId);
         }
+        feed.incrementLikeCount();
 
         feedLikeRepository.save(new FeedLike(feed, user));
     }
@@ -102,6 +103,7 @@ public class BasicFeedService implements FeedService {
 
         feedLikeRepository.deleteByUserAndFeed(user, feed);
         // Like 취소 시에 알림이 필요하다면, int 반환 받아서 값이 1이면 알림 생성하도록 할 수 있음
+        feed.decrementLikeCount();
     }
 
     @Transactional
