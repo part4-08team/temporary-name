@@ -50,7 +50,7 @@ public enum TemperatureCategory {
             ClothesType.OUTER,  Set.of("패딩"),
             ClothesType.SHOES,  Set.of("부츠/워커")
     )),
-    FREEZING(Double.MIN_VALUE, 5, Map.of(
+    FREEZING(Double.NEGATIVE_INFINITY, 5, Map.of(
             ClothesType.TOP,        Set.of("긴팔"),
             ClothesType.BOTTOM,     Set.of("긴바지"),
             ClothesType.OUTER,      Set.of("패딩"),
