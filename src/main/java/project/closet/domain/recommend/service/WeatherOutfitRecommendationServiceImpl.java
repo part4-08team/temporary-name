@@ -34,6 +34,15 @@ import project.closet.weather.repository.WeatherRepository;
 @RequiredArgsConstructor
 public class WeatherOutfitRecommendationServiceImpl implements WeatherOutfitRecommendationService {
 
+    private static final double[] SENSITIVITY_OFFSETS = {
+            -4.5,  // 0: 추위를 아주 많이 탐
+            -3.0,  // 1: 추위를 좀 탐
+            -1.5,  // 2: 표준
+            1.5,  // 3: 더위를 좀 탐
+            3.0,  // 4: 더위를 많이 탐
+            4.5   // 5: 극한 더위 민감
+    };
+
     private final WeatherRepository   weatherRepository;
     private final UserRepository      userRepository;
     private final ClothesRepository   clothesRepository;
@@ -41,6 +50,7 @@ public class WeatherOutfitRecommendationServiceImpl implements WeatherOutfitReco
 
     @Override
     public RecommendationDto getRecommendationForWeather(UUID weatherId) {
+
         // 1) 날씨 조회 → 현재 기온만 사용
         Weather weather = weatherRepository.findById(weatherId)
                 .orElseThrow(() -> WeatherNotFoundException.withId(weatherId));
@@ -60,8 +70,12 @@ public class WeatherOutfitRecommendationServiceImpl implements WeatherOutfitReco
                 ? user.getProfile().getTemperatureSensitivity()
                 : 0;
 
+        // 4) Δ온도(offset) 테이블에서 꺼내기 (0~5 벗어나도 안전하게)
+        int idx = Math.max(0, Math.min(SENSITIVITY_OFFSETS.length - 1, sensitivity));
+        double offset = SENSITIVITY_OFFSETS[idx];
+
         // 4) 체감 온도 계산 (현재 온도 + 민감도)
-        double adjustedTemp = currentTemp + sensitivity;
+        double adjustedTemp = currentTemp + offset;
 
         // 5) 온도 구간 결정 및 허용 타입·세부속성 목록 추출
         TemperatureCategory category = TemperatureCategory.of(adjustedTemp);

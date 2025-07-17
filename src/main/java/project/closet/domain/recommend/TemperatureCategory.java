@@ -24,7 +24,7 @@ public enum TemperatureCategory {
             ClothesType.TOP,    Set.of("반팔", "긴팔"),
             ClothesType.BOTTOM, Set.of("반바지", "긴바지"),
             ClothesType.OUTER,  Set.of("카디건", "후드 집업"),
-            ClothesType.SHOES,  Set.of("스니커즈","구두")
+            ClothesType.SHOES,  Set.of("스니커즈","구두","스포츠화")
     )),
     COOL(17, 20, Map.of(
             ClothesType.TOP,    Set.of("긴팔"),
