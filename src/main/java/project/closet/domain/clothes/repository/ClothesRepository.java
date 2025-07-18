@@ -13,6 +13,10 @@ import project.closet.domain.clothes.entity.ClothesType;
 
 public interface ClothesRepository extends JpaRepository<Clothes, UUID> {
 
+
+    List<Clothes> findByOwnerId(UUID ownerId);
+
+    List<Clothes> findByOwnerIdAndType(UUID ownerId, ClothesType typeEqual);
     /**
      * 첫 페이지 조회: cursor 없음.
      */
