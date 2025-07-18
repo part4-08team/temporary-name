@@ -117,7 +117,7 @@ public class UserController implements UserApi {
         return ResponseEntity.ok(updatedUserId);
     }
 
-    @PostMapping("/{userId}/role")
+    @PatchMapping("/{userId}/role")
     @Override
     public ResponseEntity<UserDto> updateRole(
             @PathVariable(value = "userId") UUID userId,
