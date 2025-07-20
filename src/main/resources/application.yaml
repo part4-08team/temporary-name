@@ -40,10 +40,6 @@ spring:
             enable: true
         from: ${MAIL_FROM:noreply@closet.com}
     default-encoding: UTF-8
-  #            required: true
-#          connection-timeout: 5000  # 나중에 recilence 도입하면 그거보다는 길게
-#        location: ${MAIL_LOCATION:localhost}
-#        from: ${MAIL_FROM:carer3759@gmail.com}  # 헤더에 한글 들어가는 것 때문
 
   data:
     redis:
