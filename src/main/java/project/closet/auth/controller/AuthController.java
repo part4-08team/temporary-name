@@ -73,7 +73,8 @@ public class AuthController implements AuthApi {
     public ResponseEntity<Void> resetPassword(
             @RequestBody @Valid ResetPasswordRequest resetPasswordRequest
     ) {
-        authService.resetPassword(resetPasswordRequest.email());
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        throw new UnsupportedOperationException("비밀번호 재설정 기능은 현재 지원하지 않습니다.");
+//        authService.resetPassword(resetPasswordRequest.email());
+//        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
