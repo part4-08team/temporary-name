@@ -13,7 +13,6 @@ spring:
     time-zone: "Asia/Seoul"
   datasource:
     driver-class-name: org.postgresql.Driver
-
   jpa:
     hibernate:
       ddl-auto: validate
@@ -28,21 +27,19 @@ spring:
 
   # 임시 비밀번호 메일 전송
   mail:
-    host: ${MAIL_HOST:smtp.gmail.com}
-    port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:carer3759@gmail.com} # 임시 이메일
-    password: ${MAIL_PASSWORD} # gamil 비번 아니 아니라 '앱 비밀번호' 발급 받고 ㄱ
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME} # 임시 이메일
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
-        debug: true # dev
+        debug: true
         smtp:
           auth: true
           starttls:
             enable: true
-            required: true
-          connection-timeout: 5000  # 나중에 recilence 도입하면 그거보다는 길게
-        location: ${MAIL_LOCATION:localhost}
-        from: ${MAIL_FROM:carer3759@gmail.com}  # 헤더에 한글 들어가는 것 때문
+        from: ${MAIL_FROM:noreply@closet.com}
+    default-encoding: UTF-8
 
   data:
     redis:
