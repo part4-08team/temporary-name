@@ -18,7 +18,7 @@ public class NotificationRepositoryImpl implements NotificationRepositoryCustom 
     public List<Notification> findAllByReceiverWithCursor(UUID receiverId, Instant cursor, UUID idAfter, int limit) {
         StringBuilder jpql = new StringBuilder("""
                 SELECT n FROM Notification n
-                WHERE n.receiver.id = :receiverId
+                WHERE n.receiverId = :receiverId
                 """);
 
         if (cursor != null && idAfter != null) {
