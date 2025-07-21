@@ -213,3 +213,4 @@ gradle-app.setting
 .env*
 .idea/
 /closet.pem
+/nginx/
