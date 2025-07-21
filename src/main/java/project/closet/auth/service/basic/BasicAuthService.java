@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import project.closet.auth.service.AuthService;
 import project.closet.dto.response.UserDto;
 import project.closet.exception.user.UserNotFoundException;
+import project.closet.mail.MailService;
 import project.closet.security.jwt.JwtService;
 import project.closet.user.entity.Profile;
 import project.closet.user.entity.Role;
@@ -38,6 +39,7 @@ public class BasicAuthService implements AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final MailService mailService;
 
     @Override
     public void initAdmin() {
@@ -72,6 +74,11 @@ public class BasicAuthService implements AuthService {
         // 4. 임시 비밀번호 만료 테이블에 저장
 
         // 초기화된 임시 비밀번호를 User email 로 발송해주기
+        mailService.sendMimeMail(
+                email,
+                "[Closet] 임시 비밀번호 발급",
+                tempPassword
+        );
     }
 
     private String generateTempPassword() {
