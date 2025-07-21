@@ -42,6 +42,8 @@ public class WeatherDataParser {
         // ✅ TMN (최저기온, 06:00) 및 TMX (최고기온, 15:00) 데이터 매핑
         Map<LocalDate, Double> minTempMap = extractTemperatureMap(items, "TMN", "0600");
         Map<LocalDate, Double> maxTempMap = extractTemperatureMap(items, "TMX", "1500");
+
+        // 습도 평균을 구하는 메소드 리팩토링 -> 모든 시간대의 습도를 각각 매핑
         Map<LocalDate, Double> humidityMap = computeAverageHumidityByDate(items);
         Map<LocalDate, Double> popMap = computeAveragePrecipitationProbabilityByDate(items);
         Map<LocalDate, Double> windSpeedMap = computeAverageWindSpeedByDate(items);

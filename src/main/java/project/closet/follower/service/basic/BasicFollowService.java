@@ -31,12 +31,11 @@ public class BasicFollowService implements FollowService {
     private final UserRepository userRepository;
     private final ApplicationEventPublisher eventPublisher;
 
-    // TODO 알림 생성
     @Transactional
     @Override
     public FollowDto createFollow(FollowCreateRequest followCreateRequest) {
         log.debug("Creating follow for request: {}", followCreateRequest);
-        // TODO 중복 검사 로직 추가
+        // TODO 중복 검사 로직 추가 or 데이터베이스 제약조건 추가
         UUID followerId = followCreateRequest.followerId();
         User follower = userRepository.findByIdWithProfile(followerId)
                 .orElseThrow(() -> UserNotFoundException.withId(followerId));
