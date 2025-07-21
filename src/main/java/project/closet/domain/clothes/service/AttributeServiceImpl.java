@@ -55,9 +55,6 @@ public class AttributeServiceImpl implements AttributeService {
             UUID id,
             ClothesAttributeDefUpdateRequest req
     ) {
-        if (repo.existsByDefinitionName(req.name())) {
-            throw new AttributeDuplicateException();
-        }
         
         Attribute attribute = repo.findById(id)
                 .orElseThrow(() -> new AttributeNotFoundException(id.toString()));
