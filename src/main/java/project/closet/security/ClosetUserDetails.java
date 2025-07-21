@@ -25,6 +25,7 @@ public class ClosetUserDetails implements UserDetails {
     private final String name;
     private final String email;
     private final String password;
+    private final boolean locked;
 
     public static ClosetUserDetails from(User user) {
         return new ClosetUserDetails(
@@ -32,7 +33,8 @@ public class ClosetUserDetails implements UserDetails {
                 user.getRole(),
                 user.getName(),
                 user.getEmail(),
-                user.getPassword()
+                user.getPassword(),
+                user.isLocked()
         );
     }
 
@@ -42,7 +44,8 @@ public class ClosetUserDetails implements UserDetails {
                 jwtObject.role(),
                 jwtObject.name(),
                 jwtObject.email(),
-                null // JWT does not contain password
+                null, // JWT does not contain password,
+                true // JWT does not have locked status, assuming non-locked
         );
     }
 
@@ -61,4 +64,13 @@ public class ClosetUserDetails implements UserDetails {
         return name;
     }
 
+    /**
+     * 계정이 잠금되지 않았는지 확인합니다.
+     * @return
+     * true 를 반환하면 계정이 잠기지 않았음을 의미합니다.
+     */
+    @Override
+    public boolean isAccountNonLocked() {
+        return !locked;
+    }
 }
