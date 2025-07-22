@@ -2,13 +2,17 @@ package project.closet.exception;
 
 import java.util.HashMap;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -61,17 +65,39 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR.value()));
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    protected ResponseEntity<ErrorResponse> handleValidationExceptions(
+            MethodArgumentNotValidException exception
+    ) {
+        log.error("요청 유효성 검사 실패: {}", exception.getMessage());
+
+        Map<String, Object> validationErrors = new HashMap<>();
+        exception.getBindingResult().getAllErrors().forEach(error -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            validationErrors.put(fieldName, errorMessage);
+        });
+
+        ErrorResponse response = new ErrorResponse(
+                "VALIDATION_ERROR",
+                "요청 데이터 유효성 검사에 실패했습니다",
+                validationErrors,
+                HttpStatus.BAD_REQUEST.value()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(response);
+    }
+
     private HttpStatus mapToHttpStatus(ErrorCode code) {
         return switch (code) {
-            case DM_NOT_FOUND, FEED_NOT_FOUND,
-                 USER_NOT_FOUND,
-                 ATTRIBUTE_DEFINITION_NOT_FOUND,
-                 CLOTHES_NOT_FOUND
-                    -> HttpStatus.NOT_FOUND;
-            case INVALID_REQUEST, ATTRIBUTE_DEFINITION_DUPLICATE, FEED_ALREADY_LIKE_EXISTS -> HttpStatus.BAD_REQUEST;
+            case DM_NOT_FOUND, FEED_NOT_FOUND, USER_NOT_FOUND, ATTRIBUTE_DEFINITION_NOT_FOUND,
+                 CLOTHES_NOT_FOUND, DUPLICATE_USER, FOLLOW_NOT_FOUND, WEATHER_NOT_FOUND -> HttpStatus.NOT_FOUND;
+            case INVALID_REQUEST, ATTRIBUTE_DEFINITION_DUPLICATE, FEED_ALREADY_LIKE_EXISTS,
+                 SELF_FOLLOW_NOT_ALLOWED -> HttpStatus.BAD_REQUEST;
             case INVALID_TOKEN, TOKEN_NOT_FOUND, INVALID_TOKEN_SECRET -> HttpStatus.UNAUTHORIZED;
             case INTERNAL_ERROR -> HttpStatus.INTERNAL_SERVER_ERROR;
-            default -> HttpStatus.INTERNAL_SERVER_ERROR;
         };
     }
 }
