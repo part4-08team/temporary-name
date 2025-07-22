@@ -62,7 +62,7 @@ public class WeatherDataParser {
 
             // ⚠️ TMN/TMX 데이터 없는 날짜 제외
             if (!minTempMap.containsKey(date) || !maxTempMap.containsKey(date)) {
-                log.warn("⏭️ TMN/TMX 누락 → {}일 데이터 생략", date);
+                log.debug("⏭️ TMN/TMX 누락 → {}일 데이터 생략", date);
                 continue;
             }
 
