@@ -56,7 +56,7 @@ public class BasicWeatherService implements WeatherService {
         );
     }
 
-    @Scheduled(cron = "0 0 23 * * *")
+    @Scheduled(cron = "0 0 23 * * *", zone = "Asia/Seoul")
     public void fetchAndSaveWeatherForecast() {
         log.info("🌤️ 날씨 정보 처리 요청");
 
