@@ -1,12 +1,11 @@
 package project.closet.exception;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
 public class ErrorResponse {
 
     private final String exceptionName;
@@ -14,6 +13,12 @@ public class ErrorResponse {
     private final Map<String, Object> details;
     private final int status;
 
+    public ErrorResponse(String exceptionName, String message, Map<String, Object> details, int status) {
+        this.exceptionName = exceptionName;
+        this.message = message;
+        this.details = details != null ? details : new HashMap<>();
+        this.status = status;
+    }
 
     public ErrorResponse(ClosetException exception, int status) {
         this(
