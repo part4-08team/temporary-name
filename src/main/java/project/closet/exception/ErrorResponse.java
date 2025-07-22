@@ -8,7 +8,6 @@ import lombok.Getter;
 @Getter
 public class ErrorResponse {
 
-    private final Instant timestamp = Instant.now();
     private final String exceptionName;
     private final String message;
     private final Map<String, Object> details;
