@@ -100,7 +100,10 @@ public class BasicUserService implements UserService {
         user.updateProfile(profileUpdateRequest);
         Optional.ofNullable(profileImage)
                 .map(image -> {
-                    s3ContentStorage.deleteByKey(user.getProfile().getProfileImageKey());
+                    if (user.getProfile().getProfileImageKey() != null) {
+                        log.debug("기존 프로필 이미지 삭제: {}", user.getProfile().getProfileImageKey());
+                        s3ContentStorage.deleteByKey(user.getProfile().getProfileImageKey());
+                    }
                     return s3ContentStorage.upload(image);
                 })
                 .ifPresent(user::updateProfileImageKey);
