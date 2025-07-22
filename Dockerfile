@@ -6,6 +6,7 @@ WORKDIR /app
 COPY gradle ./gradle
 COPY gradlew ./gradlew
 COPY build.gradle settings.gradle ./
+RUN chmod +x gradlew
 
 RUN ./gradlew build -x test --no-daemon || true
 

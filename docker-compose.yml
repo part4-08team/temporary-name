@@ -15,10 +15,7 @@ services:
       - ./nginx/ssl/server.crt:/etc/nginx/ssl/server.crt:ro
       - ./nginx/ssl/server.key:/etc/nginx/ssl/server.key:ro
   app:
-    image: closet:local
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: 592835403754.dkr.ecr.ap-northeast-2.amazonaws.com/ootd-closet:latest
     container_name: closet
     env_file:
       - .env
