@@ -1,22 +1,29 @@
 package project.closet.domain.recommend.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import project.closet.domain.clothes.dto.response.ClothesDto;
 import project.closet.domain.clothes.entity.Clothes;
 import project.closet.domain.clothes.entity.ClothesAttribute;
 import project.closet.domain.clothes.entity.ClothesType;
 import project.closet.domain.clothes.repository.ClothesRepository;
-import project.closet.domain.recommend.TemperatureCategory;
-import project.closet.domain.recommend.dto.responses.ClothesForRecommendDto;
 import project.closet.domain.recommend.dto.responses.RecommendationDto;
+import project.closet.domain.recommend.entity.CategoryAllowedDetailEntity;
+import project.closet.domain.recommend.entity.CategoryAllowedTypeEntity;
+import project.closet.domain.recommend.entity.TemperatureCategoryEntity;
+import project.closet.domain.recommend.repository.TemperatureCategoryRepository;
 import project.closet.exception.user.UserNotFoundException;
 import project.closet.exception.weather.WeatherNotFoundException;
 import project.closet.security.ClosetUserDetails;
@@ -44,6 +51,7 @@ public class WeatherOutfitRecommendationServiceImpl implements WeatherOutfitReco
     private final UserRepository      userRepository;
     private final ClothesRepository   clothesRepository;
     private final S3ContentStorage    s3ContentStorage;
+    private final TemperatureCategoryRepository categoryRepo;
 
     @Override
     public RecommendationDto getRecommendationForWeather(UUID weatherId) {
@@ -74,41 +82,49 @@ public class WeatherOutfitRecommendationServiceImpl implements WeatherOutfitReco
         // 4) 체감 온도 계산 (현재 온도 + 민감도)
         double adjustedTemp = currentTemp + offset;
 
-        // 5) 온도 구간 결정 및 허용 타입·세부속성 목록 추출
-        TemperatureCategory category = TemperatureCategory.of(adjustedTemp);
-        List<ClothesType> allowedTypes = category.allowedTypes();
+        // 5) DB에서 카테고리 조회 (minTemp ≤ adjustedTemp < maxTemp)
+        TemperatureCategoryEntity category = categoryRepo
+                .findFirstByMinTempLessThanEqualAndMaxTempGreaterThan(adjustedTemp, adjustedTemp)
+                .orElseThrow(() -> new IllegalStateException("적절한 온도 구간을 찾을 수 없습니다."));
+
+        // 5-1) DB 엔티티에서 allowedTypes·allowedDetails 맵핑
+        Map<ClothesType, Set<String>> allowedDetailMap = category.getAllowedTypes().stream()
+                .collect(Collectors.toMap(
+                        CategoryAllowedTypeEntity::getClothesType,
+                        t -> t.getAllowedDetails().stream()
+                                .map(CategoryAllowedDetailEntity::getDetailValue)
+                                .collect(Collectors.toSet())
+                ));
+        Set<ClothesType> allowedTypes = allowedDetailMap.keySet();
 
         // 6) 의상 전체 조회 → 대분류+세부속성 필터링
         List<Clothes> filtered = clothesRepository.findByOwnerId(userId).stream()
                 .filter(c -> {
-                    // 6-1) 대분류 필터
+                    // 대분류 필터
                     if (!allowedTypes.contains(c.getType())) {
                         return false;
                     }
-                    // 6-2) 세부속성 필터
-                    Set<String> allowedDetails = category.allowedDetails(c.getType());
-                    if (allowedDetails.isEmpty()) {
+                    // 세부속성 필터
+                    Set<String> allowedDetails = allowedDetailMap.get(c.getType());
+                    if (allowedDetails == null || allowedDetails.isEmpty()) {
                         return true;
                     }
-                    // 의상 상세 종류 속성만 추출
-                    List<String> detailValues = c.getAttributes().stream()
+                    return c.getAttributes().stream()
                             .filter(a -> a.getDefinition().getDefinitionName().startsWith("의상 상세 종류"))
                             .map(ClothesAttribute::getValue)
-                            .toList();
-                    // 하나라도 허용 목록에 있으면 통과
-                    return detailValues.stream().anyMatch(allowedDetails::contains);
+                            .anyMatch(allowedDetails::contains);
                 })
                 .toList();
 
         // 7) 타입별 그룹핑 → 그룹당 하나의 아이템을 랜덤으로 선택 → ClothesDto 변환
-        List<ClothesForRecommendDto> clothesList = filtered.stream()
+        List<ClothesDto> clothesList = filtered.stream()
                 .collect(Collectors.groupingBy(Clothes::getType))
                 .values().stream()
                 .map(list -> {
                     // 필터링된 후보 중 랜덤 선택
                     Clothes pick = list.get(ThreadLocalRandom.current().nextInt(list.size()));
                     String imageUrl = s3ContentStorage.getPresignedUrl(pick.getImageKey());
-                    return new ClothesForRecommendDto(pick, imageUrl);
+                    return ClothesDto.fromEntity(pick, imageUrl);
                 })
                 .toList();
 
