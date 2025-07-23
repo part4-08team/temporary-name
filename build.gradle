@@ -65,6 +65,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     testImplementation 'org.subethamail:subethasmtp:3.1.7'
 
+    // Actuator
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+
     // Test 에서 롬복 사용 설정
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'

@@ -2,6 +2,7 @@ package project.closet.weather.service.basic;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,17 +22,16 @@ public class WeatherInitializer implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        Instant forecastedAt = LocalDate.now()
-                .minusDays(1)
-                .atTime(23, 0)
+        LocalDate baseDate = LocalDate.now().minusDays(1);
+        LocalTime forecastTime = LocalTime.of(23, 0);
+        Instant forecastedAt = baseDate
+                .atTime(forecastTime)
                 .atZone(ZoneId.of("Asia/Seoul"))
                 .toInstant();
 
-        boolean exists = weatherRepository.existsByForecastedAt(forecastedAt);
-
-        if (!exists) {
+        if (!weatherRepository.existsByForecastedAt(forecastedAt)) {
             log.info("🌤️ 어제 23시 예보 데이터가 없어 초기 fetch 실행");
-            weatherService.fetchAndSaveWeatherForecast();
+            weatherService.fetchAndSave(baseDate, forecastTime, forecastedAt);
             log.info("✅ 초기 날씨 데이터 저장 완료");
         } else {
             log.info("📦 forecastedAt {} 기준 데이터가 이미 존재합니다. 초기화 생략", forecastedAt);

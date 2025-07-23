@@ -31,6 +31,7 @@ import project.closet.weather.service.basic.GeoGridConverter.Grid;
 @Service
 @RequiredArgsConstructor
 public class BasicWeatherService implements WeatherService {
+    private static final ZoneId SEOUL = ZoneId.of("Asia/Seoul");
 
     private final AddressClient addressClient;
     private final WeatherRepository weatherRepository;
@@ -56,14 +57,21 @@ public class BasicWeatherService implements WeatherService {
         );
     }
 
-    @Scheduled(cron = "0 0 23 * * *", zone = "Asia/Seoul")
+    @Override
+    @Scheduled(cron = "0 30 23 * * *", zone = "Asia/Seoul")
     public void fetchAndSaveWeatherForecast() {
-        log.info("🌤️ 날씨 정보 처리 요청");
-
-        LocalDate forecastBaseDate = LocalDate.now().minusDays(1);
+        LocalDate forecastBaseDate = LocalDate.now();
         LocalTime forecastTime = LocalTime.of(23, 0);
         Instant forecastedAt = LocalDateTime.of(forecastBaseDate, forecastTime)
-                .atZone(ZoneId.of("Asia/Seoul")).toInstant();
+                .atZone(SEOUL)
+                .toInstant();
+
+        fetchAndSave(forecastBaseDate, forecastTime, forecastedAt);
+    }
+
+    @Override
+    public void fetchAndSave(LocalDate baseDate, LocalTime forecastTime, Instant forecastedAt) {
+        log.info("🌤️ 날씨 정보 처리 요청: baseDate={}, forecastTime={}", baseDate, forecastTime);
 
         List<WeatherLocation> locations = weatherLocationRepository.findAll();
         int batchSize = 100;  // 원하는 batch 크기
@@ -75,13 +83,13 @@ public class BasicWeatherService implements WeatherService {
 
             List<CompletableFuture<List<Weather>>> futures = batch.stream()
                     .map(location -> weatherAPIClient.fetchWeatherAsync(
-                                    location.getX(), location.getY(), forecastBaseDate, forecastTime)
+                                    location.getX(), location.getY(), baseDate, forecastTime)
                             .thenApply(response -> weatherDataParser.parseToWeatherEntities(
                                     response, forecastedAt, location.getX(), location.getY()))
                             .exceptionally(ex -> {
                                 log.warn("❌ 날씨 요청 실패 (x={}, y={}): {}", location.getX(),
                                         location.getY(), ex.getMessage());
-                                return Collections.emptyList();  // 실패 시 빈 리스트 반환
+                                return Collections.emptyList();
                             })
                     ).toList();
 
@@ -120,7 +128,7 @@ public class BasicWeatherService implements WeatherService {
         LocalDate forecastDate = LocalDate.now().minusDays(1);
         LocalTime forecastTime = LocalTime.of(23, 0);
         Instant baseForecastedAt = LocalDateTime.of(forecastDate, forecastTime)
-                .atZone(ZoneId.of("Asia/Seoul"))
+                .atZone(SEOUL)
                 .toInstant();
         // 3. 날씨 정보 가공 후 반환
         List<Weather> weathers =
