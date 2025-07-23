@@ -6,19 +6,16 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import project.closet.domain.clothes.dto.response.ClothesDto;
 import project.closet.domain.clothes.entity.Clothes;
 import project.closet.domain.clothes.entity.ClothesAttribute;
 import project.closet.domain.clothes.entity.ClothesType;
 import project.closet.domain.clothes.repository.ClothesRepository;
+import project.closet.domain.recommend.dto.responses.ClothesForRecommendDto;
 import project.closet.domain.recommend.dto.responses.RecommendationDto;
 import project.closet.domain.recommend.entity.CategoryAllowedDetailEntity;
 import project.closet.domain.recommend.entity.CategoryAllowedTypeEntity;
@@ -117,14 +114,14 @@ public class WeatherOutfitRecommendationServiceImpl implements WeatherOutfitReco
                 .toList();
 
         // 7) 타입별 그룹핑 → 그룹당 하나의 아이템을 랜덤으로 선택 → ClothesDto 변환
-        List<ClothesDto> clothesList = filtered.stream()
+        List<ClothesForRecommendDto> clothesList = filtered.stream()
                 .collect(Collectors.groupingBy(Clothes::getType))
                 .values().stream()
                 .map(list -> {
                     // 필터링된 후보 중 랜덤 선택
                     Clothes pick = list.get(ThreadLocalRandom.current().nextInt(list.size()));
                     String imageUrl = s3ContentStorage.getPresignedUrl(pick.getImageKey());
-                    return ClothesDto.fromEntity(pick, imageUrl);
+                    return new ClothesForRecommendDto(pick, imageUrl);
                 })
                 .toList();
 

@@ -1,4 +1,4 @@
-package project.closet.dto.response;
+package project.closet.domain.recommend.dto.responses;
 
 import java.util.List;
 import java.util.UUID;
@@ -6,7 +6,7 @@ import project.closet.domain.clothes.dto.response.ClothesAttributeWithDefDto;
 import project.closet.domain.clothes.entity.Clothes;
 import project.closet.domain.clothes.entity.ClothesType;
 
-public record OotdDto(
+public record ClothesForRecommendDto(
         UUID clothesId,
         String name,
         String imageUrl,
@@ -14,17 +14,13 @@ public record OotdDto(
         List<ClothesAttributeWithDefDto> attributes
 ) {
 
-    public static OotdDto from(Clothes clothes, String presignedUrl) {
-
-        List<ClothesAttributeWithDefDto> attribute =
-                ClothesAttributeWithDefDto.fromClothes(clothes);
-
-        return new OotdDto(
+    public ClothesForRecommendDto(Clothes clothes, String imageUrl) {
+        this(
                 clothes.getId(),
                 clothes.getName(),
-                presignedUrl,
+                imageUrl,
                 clothes.getType(),
-                attribute
+                ClothesAttributeWithDefDto.fromClothes(clothes)
         );
     }
 }
