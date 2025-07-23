@@ -17,6 +17,7 @@ RUN ./gradlew build -x test --no-daemon
 FROM amazoncorretto:17-alpine3.21
 
 WORKDIR /app
+RUN apk add --no-cache tzdata
 
 ENV JVM_OPTS="-Duser.timezone=Asia/Seoul"
 
