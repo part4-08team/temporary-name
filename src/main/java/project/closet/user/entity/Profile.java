@@ -78,7 +78,9 @@ public class Profile extends BaseUpdatableEntity {
     }
 
     public static Profile createDefault(User user) {
-        Profile profile = Profile.builder().user(user).build();
+        Profile profile = Profile.builder()
+                .user(user)
+                .build();
         user.setProfileInternal(profile);
         return profile;
     }
@@ -108,7 +110,7 @@ public class Profile extends BaseUpdatableEntity {
             this.longitude = newLongitude;
         }
         if (newLocationName != null && !newLocationName.equals(this.locationNames)) {
-            this.locationNames = newLocationName;
+            this.locationNames = new ArrayList<>(newLocationName);
         }
     }
 

@@ -64,8 +64,12 @@ public class JwtService {
                 refreshTokenValiditySeconds
         );
 
-        JwtSession jwtSession = new JwtSession(userDetails.getUserId(), accessJwtObject.token(),
-                refreshJwtObject.token(), accessJwtObject.expirationTime());
+        JwtSession jwtSession = JwtSession.builder()
+                .userId(userDetails.getUserId())
+                .accessToken(accessJwtObject.token())
+                .refreshToken(refreshJwtObject.token())
+                .expirationTime(refreshJwtObject.expirationTime())
+                .build();
         jwtSessionRepository.save(jwtSession);
 
         return jwtSession;

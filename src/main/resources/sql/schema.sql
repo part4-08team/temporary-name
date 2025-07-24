@@ -190,25 +190,27 @@ CREATE TABLE jwt_sessions
 -- 18) 온도 구간 테이블 생성
 CREATE TABLE temperature_category
 (
-    id        UUID             NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),      -- 자동 랜덤 UUID 생성
-    name      VARCHAR(50)      NOT NULL UNIQUE,
-    min_temp  DOUBLE PRECISION NOT NULL,
-    max_temp  DOUBLE PRECISION NOT NULL
+    id       UUID             NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(), -- 자동 랜덤 UUID 생성
+    name     VARCHAR(50)      NOT NULL UNIQUE,
+    min_temp DOUBLE PRECISION NOT NULL,
+    max_temp DOUBLE PRECISION NOT NULL
 );
 
 -- 19) 온도구간 ↔ 의상 상위 타입 매핑 테이블 생성
-CREATE TABLE category_allowed_type (
-                                       category_id  UUID        NOT NULL,
-                                       clothes_type VARCHAR(50) NOT NULL,
-                                       PRIMARY KEY (category_id, clothes_type)
+CREATE TABLE category_allowed_type
+(
+    category_id  UUID        NOT NULL,
+    clothes_type VARCHAR(50) NOT NULL,
+    PRIMARY KEY (category_id, clothes_type)
 );
 
 -- 20) 온도구간+타입 ↔ 의상 세부 옵션 매핑 테이블 생성
-CREATE TABLE category_allowed_detail (
-                                         category_id  UUID          NOT NULL,
-                                         clothes_type VARCHAR(50)   NOT NULL,
-                                         detail_value VARCHAR(100)  NOT NULL,
-                                         PRIMARY KEY (category_id, clothes_type, detail_value)
+CREATE TABLE category_allowed_detail
+(
+    category_id  UUID         NOT NULL,
+    clothes_type VARCHAR(50)  NOT NULL,
+    detail_value VARCHAR(100) NOT NULL,
+    PRIMARY KEY (category_id, clothes_type, detail_value)
 );
 
 
