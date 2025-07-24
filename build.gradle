@@ -72,6 +72,8 @@ dependencies {
     // Test 에서 롬복 사용 설정
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
+
+    implementation 'org.jsoup:jsoup:1.15.4'
 }
 
 tasks.named('test') {

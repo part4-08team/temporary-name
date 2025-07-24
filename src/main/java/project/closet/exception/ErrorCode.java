@@ -33,7 +33,9 @@ public enum ErrorCode {
     ATTRIBUTE_DEFINITION_DUPLICATE("이미 존재하는 속성 정의 이름입니다."),
 
     //의상 에러 코드
-    CLOTHES_NOT_FOUND("의상을 찾을 수 없습니다.");
+    CLOTHES_NOT_FOUND("의상을 찾을 수 없습니다."),
+    EXTRACTION_FAILED("상품 정보 추출에 실패했습니다."),
+    UNSUPPORTED_SHOP("지원하지 않는 쇼핑몰입니다.");
 
     private final String message;
 
