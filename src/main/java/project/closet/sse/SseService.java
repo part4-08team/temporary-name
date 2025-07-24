@@ -34,10 +34,12 @@ public class SseService {
         sseEmitter.onTimeout(() -> {
             log.debug("SSE onTimeout");
             sseEmitterRepository.delete(receiverId, sseEmitter);
+            sseEmitter.complete();
         });
         sseEmitter.onError((ex) -> {
             log.debug("SSE onError");
             sseEmitterRepository.delete(receiverId, sseEmitter);
+            sseEmitter.completeWithError(ex);
         });
 
         sseEmitterRepository.save(receiverId, sseEmitter);

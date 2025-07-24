@@ -10,6 +10,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @Slf4j
@@ -88,6 +89,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(response);
+    }
+
+    // SSE stream 의 타임아웃은 무시만 하고 아무것도 리턴하지 않습니다.
+    @ExceptionHandler(AsyncRequestTimeoutException.class)
+    public void handleSseTimeout(AsyncRequestTimeoutException ex) {
+        // no-op: suppress the timeout exception, so GlobalExceptionHandler 에게 안 넘어감
+        log.debug("SSE request timed out: {}", ex.getMessage());
     }
 
     private HttpStatus mapToHttpStatus(ErrorCode code) {

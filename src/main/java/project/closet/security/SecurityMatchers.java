@@ -35,7 +35,10 @@ public abstract class SecurityMatchers {
     public static final RequestMatcher RESET_PASSWORD =
             new AntPathRequestMatcher("/api/auth/reset-password", HttpMethod.POST.name());
 
+    public static final RequestMatcher ERROR =
+            new AntPathRequestMatcher("/error");
+
     public static final RequestMatcher[] PUBLIC_MATCHERS = new RequestMatcher[]{
-            NON_API, GET_CSRF_TOKEN, SIGN_UP, LOGIN, ME, REFRESH, LOGOUT, RESET_PASSWORD
+            NON_API, GET_CSRF_TOKEN, SIGN_UP, LOGIN, ME, REFRESH, LOGOUT, RESET_PASSWORD, ERROR
     };
 }

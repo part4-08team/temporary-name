@@ -49,10 +49,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             } else {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                ErrorResponse errorResponse = new ErrorResponse(
-                        new JwtException(ErrorCode.INVALID_TOKEN,
-                                Map.of("accessToken", accessToken)),
-                        HttpServletResponse.SC_UNAUTHORIZED);
+                ErrorResponse errorResponse =
+                        new ErrorResponse(
+                                new JwtException(
+                                        ErrorCode.INVALID_TOKEN,
+                                        Map.of("accessToken", accessToken)
+                                ),
+                                HttpServletResponse.SC_UNAUTHORIZED
+                        );
                 response.setCharacterEncoding("UTF-8");
                 response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
             }
