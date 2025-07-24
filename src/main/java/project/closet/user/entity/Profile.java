@@ -85,6 +85,37 @@ public class Profile extends BaseUpdatableEntity {
         return profile;
     }
 
+    public void updateGender(Gender newGender) {
+        if (newGender != null && !newGender.equals(this.gender)) {
+            this.gender = newGender;
+        }
+    }
+
+    public void updateBirthDate(LocalDate newBirthDate) {
+        if (newBirthDate != null && !newBirthDate.equals(this.birthDate)) {
+            this.birthDate = newBirthDate;
+        }
+    }
+
+    public void updateTemperatureSensitivity(Integer newTemperatureSensitivity) {
+        if (newTemperatureSensitivity != null
+                && !newTemperatureSensitivity.equals(this.temperatureSensitivity)) {
+            this.temperatureSensitivity = newTemperatureSensitivity;
+        }
+    }
+
+    public void updateLocation(Double newLatitude, Double newLongitude, List<String> newLocationName) {
+        if (newLatitude != null && !newLatitude.equals(this.latitude)) {
+            this.latitude = newLatitude;
+        }
+        if (newLongitude != null && !newLongitude.equals(this.longitude)) {
+            this.longitude = newLongitude;
+        }
+        if (newLocationName != null && !newLocationName.equals(this.locationNames)) {
+            this.locationNames = new ArrayList<>(newLocationName);
+        }
+    }
+
     public void updateProfile(
             Gender newGender,
             LocalDate newBirthDate,
