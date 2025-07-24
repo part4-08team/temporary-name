@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 import project.closet.auth.controller.api.AuthApi;
 import project.closet.auth.service.AuthService;
 import project.closet.dto.request.ResetPasswordRequest;
+import project.closet.exception.ErrorCode;
+import project.closet.security.jwt.JwtException;
 import project.closet.security.jwt.JwtService;
 import project.closet.security.jwt.JwtSession;
 
@@ -44,10 +46,13 @@ public class AuthController implements AuthApi {
     @Override
     @GetMapping("/me")
     public ResponseEntity<String> me(
-            @CookieValue(value = JwtService.REFRESH_TOKEN_COOKIE_NAME) String refreshToken
+            @CookieValue(value = JwtService.REFRESH_TOKEN_COOKIE_NAME, required = false) String refreshToken
     ) {
-
         log.info("내 정보 조회 요청");
+        if (refreshToken == null || refreshToken.isBlank()) {
+            throw new JwtException(ErrorCode.TOKEN_NOT_FOUND);
+        }
+
         JwtSession jwtSession = jwtService.getSwtSession(refreshToken);
         return ResponseEntity.ok(jwtSession.getAccessToken());
     }

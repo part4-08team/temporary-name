@@ -22,6 +22,7 @@ public class GlobalExceptionHandler {
         String name = ex.getName();
         String value = ex.getValue() != null ? ex.getValue().toString() : "null";
         String message = String.format("잘못된 요청 파라미터입니다: '%s' 값 '%s'는 유효하지 않습니다.", name, value);
+        log.warn("파라미터 타입 불일치: parameter='{}', invalidValue='{}'", name, value);
 
         Map<String, Object> details = new HashMap<>();
         details.put("parameter", name);
@@ -36,9 +37,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(response);
     }
 
-    //도메인에서 명시적으로 발생시킨 사용자 정의 예외
     @ExceptionHandler(ClosetException.class)
     public ResponseEntity<ErrorResponse> handleClosetException(ClosetException ex) {
+        log.warn("비즈니스 예외 발생: code={}, message={}", ex.getErrorCode(), ex.getMessage());
+
         HttpStatus status = mapToHttpStatus(ex.getErrorCode());
         ErrorResponse response = new ErrorResponse(
                 ex.getClass().getSimpleName(),
@@ -49,18 +51,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(status).body(response);
     }
 
-    @ExceptionHandler(AuthorizationDeniedException.class)
-    public ResponseEntity<ErrorResponse> handleAuthorizationDeniedException(
-            AuthorizationDeniedException exception) {
-        ErrorResponse errorResponse = new ErrorResponse(exception, HttpStatus.FORBIDDEN.value());
-        return ResponseEntity
-                .status(errorResponse.getStatus())
-                .body(errorResponse);
-    }
-
     //모든 예상하지 못한 예외
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneric(Exception ex) {
+        log.error("알 수 없는 예외 발생", ex);
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse(ex, HttpStatus.INTERNAL_SERVER_ERROR.value()));
@@ -95,7 +89,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AsyncRequestTimeoutException.class)
     public void handleSseTimeout(AsyncRequestTimeoutException ex) {
         // no-op: suppress the timeout exception, so GlobalExceptionHandler 에게 안 넘어감
-        log.debug("SSE request timed out: {}", ex.getMessage());
+        log.debug("SSE 타임아웃 발생(무시): {}", ex.getMessage());
     }
 
     private HttpStatus mapToHttpStatus(ErrorCode code) {
