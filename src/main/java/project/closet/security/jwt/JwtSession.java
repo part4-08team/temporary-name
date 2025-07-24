@@ -6,6 +6,7 @@ import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.UUID;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.closet.domain.base.BaseUpdatableEntity;
@@ -28,6 +29,7 @@ public class JwtSession extends BaseUpdatableEntity {
     @Column(columnDefinition = "timestamp with time zone", nullable = false)
     private Instant expirationTime;
 
+    @Builder
     public JwtSession(UUID userId, String accessToken, String refreshToken,
             Instant expirationTime) {
         this.userId = userId;

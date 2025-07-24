@@ -3,11 +3,6 @@ package project.closet.auth.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -53,7 +48,7 @@ public class AuthController implements AuthApi {
             throw new JwtException(ErrorCode.TOKEN_NOT_FOUND);
         }
 
-        JwtSession jwtSession = jwtService.getSwtSession(refreshToken);
+        JwtSession jwtSession = jwtService.getJwtSession(refreshToken);
         return ResponseEntity.ok(jwtSession.getAccessToken());
     }
 

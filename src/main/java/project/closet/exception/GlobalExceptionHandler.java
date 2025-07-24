@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.async.AsyncRequestTimeoutException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Slf4j
 @RestControllerAdvice
@@ -90,6 +91,12 @@ public class GlobalExceptionHandler {
     public void handleSseTimeout(AsyncRequestTimeoutException ex) {
         // no-op: suppress the timeout exception, so GlobalExceptionHandler 에게 안 넘어감
         log.debug("SSE 타임아웃 발생(무시): {}", ex.getMessage());
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<Void> handleNoResource(NoResourceFoundException ex) {
+        log.debug("No static resource: {}", ex.getResourcePath());
+        return ResponseEntity.notFound().build();
     }
 
     private HttpStatus mapToHttpStatus(ErrorCode code) {

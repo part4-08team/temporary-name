@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import project.closet.domain.base.BaseUpdatableEntity;
 import project.closet.dto.request.ProfileUpdateRequest;
+import project.closet.dto.response.WeatherAPILocation;
 
 @Entity
 @Table(name = "users")
@@ -22,7 +23,7 @@ public class User extends BaseUpdatableEntity {
     @Column(name = "name", nullable = false, length = 50, unique = true)
     private String name;
 
-    @Column(name = "email", nullable = false, length = 100, unique = true)
+    @Column(name = "email", nullable = false, length = 100, unique = true, updatable = false)
     private String email;
 
     @Column(nullable = false)
@@ -62,14 +63,22 @@ public class User extends BaseUpdatableEntity {
         if (request.name() != null && !name.equals(request.name())) {
             this.name = request.name();
         }
-        this.profile.updateProfile(
-                request.gender(),
-                request.birthDate(),
-                request.temperatureSensitivity(),
-                request.location().latitude(),
-                request.location().longitude(),
-                request.location().locationNames()
-        );
+
+        if (this.profile == null) {
+            this.profile = Profile.createDefault(this);
+        }
+        profile.updateGender(request.gender());
+        profile.updateBirthDate(request.birthDate());
+        profile.updateTemperatureSensitivity(request.temperatureSensitivity());
+
+        WeatherAPILocation location = request.location();
+        if (location != null) {
+            profile.updateLocation(
+                    location.latitude(),
+                    location.longitude(),
+                    location.locationNames()
+            );
+        }
     }
 
     public void updatePassword(String encodedPassword) {
