@@ -68,7 +68,7 @@ public class JwtService {
                 .userId(userDetails.getUserId())
                 .accessToken(accessJwtObject.token())
                 .refreshToken(refreshJwtObject.token())
-                .expirationTime(refreshJwtObject.expirationTime())
+                .expirationTime(accessJwtObject.expirationTime())
                 .build();
         jwtSessionRepository.save(jwtSession);
 
@@ -140,7 +140,7 @@ public class JwtService {
                 user.getName(),
                 user.getEmail(),
                 user.getRole(),
-                accessTokenValiditySeconds
+                refreshTokenValiditySeconds
         );
 
         session.update(
@@ -205,7 +205,7 @@ public class JwtService {
         );
     }
 
-    public JwtSession getSwtSession(String refreshToken) {
+    public JwtSession getJwtSession(String refreshToken) {
         return jwtSessionRepository.findByRefreshToken(refreshToken)
                 .orElseThrow(() -> new JwtException(ErrorCode.TOKEN_NOT_FOUND,
                         Map.of("refreshToken", refreshToken)));
