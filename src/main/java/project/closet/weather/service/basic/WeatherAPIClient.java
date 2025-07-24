@@ -35,8 +35,12 @@ public class WeatherAPIClient {
     }
 
     @Async("weatherExecutor")
-    public CompletableFuture<WeatherApiResponse> fetchWeatherAsync(int x, int y, LocalDate baseDate,
-            LocalTime baseTime) {
+    public CompletableFuture<WeatherApiResponse> fetchWeatherAsync(
+            int x,
+            int y,
+            LocalDate baseDate,
+            LocalTime baseTime
+    ) {
         return CompletableFuture.completedFuture(
                 getWeatherRawData(x, y, baseDate, baseTime)
         );

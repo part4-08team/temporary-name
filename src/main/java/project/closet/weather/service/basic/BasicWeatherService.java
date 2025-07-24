@@ -58,7 +58,7 @@ public class BasicWeatherService implements WeatherService {
     }
 
     @Override
-    @Scheduled(cron = "0 30 23 * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 55 23 * * *", zone = "Asia/Seoul")
     public void fetchAndSaveWeatherForecast() {
         LocalDate forecastBaseDate = LocalDate.now();
         LocalTime forecastTime = LocalTime.of(23, 0);
@@ -77,18 +77,16 @@ public class BasicWeatherService implements WeatherService {
         int batchSize = 100;  // 원하는 batch 크기
 
         for (int i = 0; i < locations.size(); i += batchSize) {
-            List<WeatherLocation> batch = locations.subList(i,
-                    Math.min(i + batchSize, locations.size()));
+            List<WeatherLocation> batch = locations.subList(i, Math.min(i + batchSize, locations.size()));
             log.info("🚀 {}~{}번째 지역 날씨 요청 시작", i + 1, Math.min(i + batchSize, locations.size()));
 
             List<CompletableFuture<List<Weather>>> futures = batch.stream()
-                    .map(location -> weatherAPIClient.fetchWeatherAsync(
-                                    location.getX(), location.getY(), baseDate, forecastTime)
-                            .thenApply(response -> weatherDataParser.parseToWeatherEntities(
-                                    response, forecastedAt, location.getX(), location.getY()))
+                    .map(location -> weatherAPIClient.fetchWeatherAsync(location.getX(), location.getY(), baseDate, forecastTime)
+                            .thenApply(response ->
+                                    weatherDataParser.parseToWeatherEntities(response, forecastedAt, location.getX(), location.getY())
+                            )
                             .exceptionally(ex -> {
-                                log.warn("❌ 날씨 요청 실패 (x={}, y={}): {}", location.getX(),
-                                        location.getY(), ex.getMessage());
+                                log.warn("❌ 날씨 요청 실패 (x={}, y={}): {}", location.getX(), location.getY(), ex.getMessage());
                                 return Collections.emptyList();
                             })
                     ).toList();
