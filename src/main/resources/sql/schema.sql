@@ -1,3 +1,6 @@
+-- 확장 기능 활성화 (UUID 함수 사용)
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 -- 1. Users
 CREATE TABLE users
 (
@@ -33,6 +36,7 @@ CREATE TABLE weathers
     created_at          TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 3. weather_locations
 CREATE TABLE weather_locations
 (
     id UUID    NOT NULL PRIMARY KEY,
@@ -41,7 +45,7 @@ CREATE TABLE weather_locations
     UNIQUE (x, y)
 );
 
--- 3. Profiles
+-- 4. Profiles
 CREATE TABLE profiles
 (
     id                      UUID                     NOT NULL PRIMARY KEY,
@@ -57,6 +61,7 @@ CREATE TABLE profiles
     location_name           VARCHAR(50)
 );
 
+-- 5. profile_location_names
 CREATE TABLE profile_location_names
 (
     profile_id    UUID NOT NULL,
@@ -64,7 +69,7 @@ CREATE TABLE profile_location_names
     CONSTRAINT fk_profile_location FOREIGN KEY (profile_id) REFERENCES profiles (id)
 );
 
--- 4. Feeds
+-- 6. Feeds
 CREATE TABLE feeds
 (
     id         UUID                     NOT NULL PRIMARY KEY,
@@ -76,7 +81,7 @@ CREATE TABLE feeds
     like_count INTEGER                  NOT NULL DEFAULT 0
 );
 
--- 5. Feed Comments
+-- 7. Feed Comments
 CREATE TABLE feed_comments
 (
     id         UUID                     NOT NULL PRIMARY KEY,
@@ -87,7 +92,7 @@ CREATE TABLE feed_comments
     content    TEXT                     NOT NULL
 );
 
--- 6. Clothes
+-- 8. Clothes
 CREATE TABLE clothes
 (
     id         UUID                     NOT NULL PRIMARY KEY,
@@ -99,14 +104,14 @@ CREATE TABLE clothes
     type       VARCHAR(50)              NOT NULL
 );
 
--- 7. Attributes
+-- 9. Attributes
 CREATE TABLE attributes
 (
     id              UUID        NOT NULL PRIMARY KEY,
     definition_name VARCHAR(50) NOT NULL UNIQUE
 );
 
--- 8. Clothes Attributes
+-- 10. Clothes Attributes
 CREATE TABLE clothes_attributes
 (
     id            UUID        NOT NULL PRIMARY KEY,
@@ -115,7 +120,7 @@ CREATE TABLE clothes_attributes
     value         VARCHAR(50) NOT NULL
 );
 
--- 9. Feed-Clothes Association
+-- 11. Feed-Clothes Association
 CREATE TABLE feed_clothes
 (
     id         UUID NOT NULL PRIMARY KEY,
@@ -123,7 +128,7 @@ CREATE TABLE feed_clothes
     clothes_id UUID NOT NULL
 );
 
--- 10. Follows UNIQUE 제약 조건 동일한 유저가 동일한 유저를 팔로우할 수 없도록
+-- 12. Follows UNIQUE 제약 조건 동일한 유저가 동일한 유저를 팔로우할 수 없도록
 CREATE TABLE follows
 (
     id          UUID                     NOT NULL PRIMARY KEY,
@@ -132,7 +137,7 @@ CREATE TABLE follows
     created_at  TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- 11. Notifications
+-- 13. Notifications
 CREATE TABLE notifications
 (
     id          UUID                     NOT NULL PRIMARY KEY,
@@ -143,7 +148,7 @@ CREATE TABLE notifications
     level       VARCHAR(50)              NOT NULL
 );
 
--- 12. Feed Likes
+-- 14. Feed Likes
 CREATE TABLE feed_likes
 (
     id      UUID NOT NULL PRIMARY KEY,
@@ -152,7 +157,7 @@ CREATE TABLE feed_likes
     CONSTRAINT uk_feed_like UNIQUE (user_id, feed_id)
 );
 
--- 13. Attribute Selectable Values
+-- 15. Attribute Selectable Values
 CREATE TABLE attribute_selectable_value
 (
     id            UUID         NOT NULL PRIMARY KEY,
@@ -160,7 +165,7 @@ CREATE TABLE attribute_selectable_value
     value         VARCHAR(100) NOT NULL
 );
 
--- 14. Direct Messages
+-- 16. Direct Messages
 CREATE TABLE direct_messages
 (
     id          UUID                     NOT NULL PRIMARY KEY,
@@ -170,7 +175,7 @@ CREATE TABLE direct_messages
     created_at  TIMESTAMP with time zone NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- 15. JWT SESSIONS
+-- 17. JWT SESSIONS
 CREATE TABLE jwt_sessions
 (
     id              UUID                     NOT NULL PRIMARY KEY,
@@ -181,6 +186,32 @@ CREATE TABLE jwt_sessions
     created_at      TIMESTAMP with time zone NOT NULL,
     updated_at      TIMESTAMP with time zone NOT NULL
 );
+
+-- 18) 온도 구간 테이블 생성
+CREATE TABLE temperature_category
+(
+    id        UUID             NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),      -- 자동 랜덤 UUID 생성
+    name      VARCHAR(50)      NOT NULL UNIQUE,
+    min_temp  DOUBLE PRECISION NOT NULL,
+    max_temp  DOUBLE PRECISION NOT NULL
+);
+
+-- 19) 온도구간 ↔ 의상 상위 타입 매핑 테이블 생성
+CREATE TABLE category_allowed_type (
+                                       category_id  UUID        NOT NULL,
+                                       clothes_type VARCHAR(50) NOT NULL,
+                                       PRIMARY KEY (category_id, clothes_type)
+);
+
+-- 20) 온도구간+타입 ↔ 의상 세부 옵션 매핑 테이블 생성
+CREATE TABLE category_allowed_detail (
+                                         category_id  UUID          NOT NULL,
+                                         clothes_type VARCHAR(50)   NOT NULL,
+                                         detail_value VARCHAR(100)  NOT NULL,
+                                         PRIMARY KEY (category_id, clothes_type, detail_value)
+);
+
+
 
 -- --------------------------------------------------------
 -- Foreign key constraints
@@ -243,3 +274,29 @@ ALTER TABLE direct_messages
     ADD CONSTRAINT fk_direct_messages_sender FOREIGN KEY (sender_id) REFERENCES users (id) ON
         DELETE
         CASCADE;
+
+-- category_allowed_type → temperature_category FK
+ALTER TABLE category_allowed_type
+    ADD CONSTRAINT fk_cat_type_category
+        FOREIGN KEY (category_id)
+            REFERENCES temperature_category (id)
+            ON DELETE CASCADE;
+
+-- temperature_category 온도 범위 유효성 검사
+ALTER TABLE temperature_category
+    ADD CONSTRAINT chk_temp_range
+        CHECK (min_temp < max_temp);
+
+-- category_allowed_detail → temperature_category FK
+ALTER TABLE category_allowed_detail
+    ADD CONSTRAINT fk_cat_detail_category
+        FOREIGN KEY (category_id)
+            REFERENCES temperature_category (id)
+            ON DELETE CASCADE;
+
+-- category_allowed_detail → category_allowed_type 복합 FK
+ALTER TABLE category_allowed_detail
+    ADD CONSTRAINT fk_detail_to_type
+        FOREIGN KEY (category_id, clothes_type)
+            REFERENCES category_allowed_type (category_id, clothes_type)
+            ON DELETE CASCADE;
