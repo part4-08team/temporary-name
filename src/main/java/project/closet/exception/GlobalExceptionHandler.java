@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
         String name = ex.getName();
         String value = ex.getValue() != null ? ex.getValue().toString() : "null";
         String message = String.format("잘못된 요청 파라미터입니다: '%s' 값 '%s'는 유효하지 않습니다.", name, value);
-        log.warn("파라미터 타입 불일치: parameter='{}', invalidValue='{}'", name, value, ex);
+        log.warn("파라미터 타입 불일치: parameter='{}', invalidValue='{}'", name, value);
 
         Map<String, Object> details = new HashMap<>();
         details.put("parameter", name);
@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ClosetException.class)
     public ResponseEntity<ErrorResponse> handleClosetException(ClosetException ex) {
-        log.warn("비즈니스 예외 발생: code={}, message={}", ex.getErrorCode(), ex.getMessage(), ex);
+        log.warn("비즈니스 예외 발생: code={}, message={}", ex.getErrorCode(), ex.getMessage());
 
         HttpStatus status = mapToHttpStatus(ex.getErrorCode());
         ErrorResponse response = new ErrorResponse(
