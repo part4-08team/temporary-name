@@ -28,6 +28,7 @@ import org.springframework.security.web.authentication.logout.HttpStatusReturnin
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import project.closet.security.CustomAccessDeniedHandler;
 import project.closet.security.CustomLoginFailureHandler;
 import project.closet.security.JsonUsernamePasswordAuthenticationFilter;
 import project.closet.security.SecurityMatchers;
@@ -82,6 +83,9 @@ public class SecurityConfig {
                 .addFilterBefore(
                         new JwtAuthenticationFilter(jwtService, objectMapper),
                         JsonUsernamePasswordAuthenticationFilter.class
+                )
+                .exceptionHandling(exception -> exception
+                        .accessDeniedHandler(new CustomAccessDeniedHandler(objectMapper))
                 )
         ;
 
