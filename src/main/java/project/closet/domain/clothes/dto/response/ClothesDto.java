@@ -26,4 +26,9 @@ public record ClothesDto(
                 attrs
         );
     }
+
+    /** OG/스크래핑 전용 생성자 */
+    public static ClothesDto extraction(String name, String imageUrl) {
+        return new ClothesDto(null, null, name, imageUrl, null, null);
+    }
 }

@@ -23,6 +23,7 @@ import project.closet.domain.clothes.dto.request.ClothesUpdateRequest;
 import project.closet.domain.clothes.dto.response.ClothesDto;
 import project.closet.domain.clothes.dto.response.ClothesDtoCursorResponse;
 import project.closet.domain.clothes.entity.ClothesType;
+import project.closet.domain.clothes.service.ClothesExtractionService;
 import project.closet.domain.clothes.service.ClothesService;
 
 @RestController
@@ -30,9 +31,11 @@ import project.closet.domain.clothes.service.ClothesService;
 public class ClothesController {
 
     private final ClothesService clothesService;
+    private final ClothesExtractionService extractionService;
 
-    public ClothesController(ClothesService clothesService) {
+    public ClothesController(ClothesService clothesService, ClothesExtractionService extractionService) {
         this.clothesService = clothesService;
+        this.extractionService = extractionService;
     }
 
     @PostMapping
@@ -84,6 +87,12 @@ public class ClothesController {
     ) {
         ClothesDto updated = clothesService.updateClothes(clothesId, request, image);
         return ResponseEntity.ok(updated);
+    }
+
+    @GetMapping("/extractions")
+    public ResponseEntity<ClothesDto> extract(@RequestParam("url") String url) {
+        ClothesDto dto = extractionService.extractFromUrl(url);
+        return ResponseEntity.ok(dto);
     }
 
 }
